@@ -32,6 +32,9 @@
                 <a href="#users" class="nav-item" onclick="showSection('users')">
                     <span>👥</span> Kullanıcılar
                 </a>
+                <a href="#academicians" class="nav-item" onclick="showSection('academicians')">
+                    <span>👨‍🏫</span> Akademisyenler
+                </a>
                 <a href="#courses" class="nav-item" onclick="showSection('courses')">
                     <span>📚</span> Dersler
                 </a>
@@ -130,6 +133,46 @@
                 </div>
 
                 <div id="usersList" class="table-container">
+                    <div class="loading">Yükleniyor...</div>
+                </div>
+            </section>
+
+            <!-- Academicians Section -->
+            <section id="academicians" class="content-section">
+                <div class="section-header">
+                    <h1>Akademisyen Üniversite Yönetimi</h1>
+                </div>
+                
+                <!-- Assign University Modal -->
+                <div id="assignUniversityModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Üniversite Ata</h3>
+                            <button onclick="closeAssignUniversityModal()" class="close-btn">&times;</button>
+                        </div>
+                        <form id="assignUniversityForm" onsubmit="assignUniversity(event)">
+                            <input type="hidden" id="assignUserId">
+                            <div class="form-group">
+                                <label>Akademisyen</label>
+                                <input type="text" id="assignAcademicianName" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Üniversite *</label>
+                                <select id="assignUniversitySelect" required>
+                                    <option value="">Üniversite seçin...</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Ata</button>
+                                <button type="button" onclick="removeUniversity()" class="delete-btn">Üniversite Atamasını Kaldır</button>
+                                <button type="button" onclick="closeAssignUniversityModal()" class="cancel-btn">İptal</button>
+                            </div>
+                            <div id="assignUniversityMessage" class="form-message"></div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="academiciansList" class="table-container">
                     <div class="loading">Yükleniyor...</div>
                 </div>
             </section>
@@ -274,6 +317,7 @@
             // İlk yükleme
             loadStatistics();
             loadUsers();
+            loadAcademicians();
             loadCourses();
             loadUniversities();
         });
@@ -741,6 +785,186 @@
             document.getElementById('addUniversityForm').style.display = 'none';
             document.getElementById('universityFormMessage').textContent = '';
             document.getElementById('universityFormMessage').className = 'form-message';
+        }
+
+        async function loadAcademicians() {
+            const container = document.getElementById('academiciansList');
+            container.innerHTML = '<div class="loading">Yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/academicians`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    if (data.academicians.length === 0) {
+                        container.innerHTML = '<p>Henüz akademisyen yok</p>';
+                        return;
+                    }
+                    
+                    let html = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad Soyad</th>
+                                    <th>Email</th>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>Üniversite</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    data.academicians.forEach(academician => {
+                        html += `
+                            <tr>
+                                <td>${academician.user_id}</td>
+                                <td>${academician.first_name} ${academician.last_name}</td>
+                                <td>${academician.email}</td>
+                                <td>${academician.username}</td>
+                                <td>
+                                    ${academician.university_name 
+                                        ? `<span class="badge badge-success">${academician.university_name}</span>` 
+                                        : '<span class="badge badge-warning">Atanmamış</span>'}
+                                </td>
+                                <td>${new Date(academician.created_at).toLocaleDateString('tr-TR')}</td>
+                                <td>
+                                    <button onclick="openAssignUniversityModal(${academician.user_id}, '${academician.first_name} ${academician.last_name}', ${academician.university_id || 'null'})" class="edit-btn">Üniversite Ata</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `</tbody></table>`;
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p class="error">Akademisyenler yüklenirken bir hata oluştu</p>';
+                }
+            } catch (error) {
+                console.error('Akademisyen yükleme hatası:', error);
+                container.innerHTML = '<p class="error">Sunucuya bağlanılamadı</p>';
+            }
+        }
+
+        async function openAssignUniversityModal(userId, academicianName, currentUniversityId) {
+            document.getElementById('assignUserId').value = userId;
+            document.getElementById('assignAcademicianName').value = academicianName;
+            
+            // Üniversiteleri yükle
+            try {
+                const response = await fetch(`${API_URL}/universities`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('assignUniversitySelect');
+                    select.innerHTML = '<option value="">Üniversite seçin...</option>';
+                    
+                    data.universities.forEach(uni => {
+                        const option = document.createElement('option');
+                        option.value = uni.id;
+                        option.textContent = `${uni.name} - ${uni.city || 'Türkiye'}`;
+                        if (uni.id === currentUniversityId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Üniversiteler yüklenirken hata:', error);
+            }
+            
+            document.getElementById('assignUniversityModal').style.display = 'flex';
+        }
+
+        function closeAssignUniversityModal() {
+            document.getElementById('assignUniversityModal').style.display = 'none';
+            document.getElementById('assignUniversityMessage').textContent = '';
+            document.getElementById('assignUniversityMessage').className = 'form-message';
+        }
+
+        async function assignUniversity(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById('assignUserId').value;
+            const universityId = document.getElementById('assignUniversitySelect').value;
+            const messageDiv = document.getElementById('assignUniversityMessage');
+            
+            if (!universityId) {
+                messageDiv.textContent = 'Lütfen bir üniversite seçin';
+                messageDiv.className = 'form-message error';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/academicians/${userId}/university`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({ universityId: parseInt(universityId) })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Üniversite başarıyla atandı!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeAssignUniversityModal();
+                        loadAcademicians();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Üniversite atanırken bir hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Üniversite atama hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
+        }
+
+        async function removeUniversity() {
+            if (!confirm('Bu akademisyenin üniversite atamasını kaldırmak istediğinize emin misiniz?')) {
+                return;
+            }
+
+            const userId = document.getElementById('assignUserId').value;
+            const messageDiv = document.getElementById('assignUniversityMessage');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/academicians/${userId}/university`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({ universityId: null })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Üniversite ataması başarıyla kaldırıldı!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeAssignUniversityModal();
+                        loadAcademicians();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Üniversite ataması kaldırılırken bir hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Üniversite ataması kaldırma hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
         }
 
         function logout() {

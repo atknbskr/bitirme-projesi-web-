@@ -196,7 +196,8 @@
             const token = localStorage.getItem('token');
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             
-            if (token && (user.userType === 'academician' || user.userType === 'admin')) {
+            // Sadece admin üniversite ekleyebilir
+            if (token && user.userType === 'admin') {
                 isAcademician = true;
                 document.getElementById('addUniversityBtn').style.display = 'block';
             }
@@ -244,8 +245,12 @@
             // Kısaltma oluştur
             const shortName = uni.name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 4);
 
+            // Sadece admin silme butonunu görebilir
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const isAdmin = user.userType === 'admin';
+
             card.innerHTML = `
-                ${isAcademician ? `<button class="delete-btn" onclick="deleteUniversity(${uni.id}, '${uni.name}')" title="Üniversiteyi Sil">🗑️</button>` : ''}
+                ${isAdmin ? `<button class="delete-btn" onclick="deleteUniversity(${uni.id}, '${uni.name}')" title="Üniversiteyi Sil">🗑️</button>` : ''}
                 <div class="universite-badge ${uni.type || 'devlet'}">${getTypeName(uni.type)}</div>
                 <div class="universite-logo">
                     <span>${shortName}</span>

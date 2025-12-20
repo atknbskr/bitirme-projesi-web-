@@ -35,6 +35,11 @@
           <label for="username">Kullanıcı Adı:</label>
           <input type="text" id="username" name="username" required />
 
+          <label for="university">Üniversite: *</label>
+          <select id="university" name="university" required>
+            <option value="">Üniversite seçin...</option>
+          </select>
+
           <label for="password">Şifre:</label>
           <input
             type="password"
@@ -69,6 +74,31 @@
     <script>
       const API_URL = `${window.location.origin}/api`;
 
+      // Sayfa yüklendiğinde üniversiteleri yükle
+      document.addEventListener('DOMContentLoaded', async () => {
+        await loadUniversities();
+      });
+
+      // Üniversiteleri yükle
+      async function loadUniversities() {
+        try {
+          const response = await fetch(`${API_URL}/universities`);
+          const data = await response.json();
+          
+          if (data.success && data.universities) {
+            const select = document.getElementById('university');
+            data.universities.forEach(uni => {
+              const option = document.createElement('option');
+              option.value = uni.id;
+              option.textContent = `${uni.name} - ${uni.city || 'Türkiye'}`;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error('Üniversiteler yüklenirken hata:', error);
+        }
+      }
+
       document
         .getElementById("registerForm")
         .addEventListener("submit", async (e) => {
@@ -83,9 +113,16 @@
           const lastName = document.getElementById("lastName").value.trim();
           const email = document.getElementById("email").value.trim();
           const username = document.getElementById("username").value.trim();
+          const universityId = document.getElementById("university").value;
           const password = document.getElementById("password").value;
           const passwordConfirm =
             document.getElementById("passwordConfirm").value;
+
+          // Üniversite kontrolü
+          if (!universityId) {
+            errorDiv.textContent = "Lütfen bir üniversite seçin!";
+            return;
+          }
 
           // Şifre kontrolü
           if (password !== passwordConfirm) {
@@ -109,6 +146,7 @@
                   lastName,
                   email,
                   username,
+                  universityId: parseInt(universityId),
                   password,
                 }),
               }
