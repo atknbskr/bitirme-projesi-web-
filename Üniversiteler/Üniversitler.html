@@ -44,16 +44,16 @@
     <section class="hero-section">
         <div class="container">
             <div class="hero-content">
-                <h1>Üniversiteler</h1>
-                <p>200+ üniversiteden yaz dersleri ile akademik geleceğinizi şekillendirin</p>
+                <h1>Fakülteler</h1>
+                <p>Üniversitelerin fakültelerini keşfedin ve yaz dersleri ile akademik kariyerinizi şekillendirin</p>
                 <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number" id="facultyCount">0</div>
+                        <div class="stat-label">Fakülte</div>
+                    </div>
                     <div class="stat">
                         <div class="stat-number">200+</div>
                         <div class="stat-label">Üniversite</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">81</div>
-                        <div class="stat-label">Şehir</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number">500+</div>
@@ -64,79 +64,46 @@
         </div>
     </section>
 
-    <!-- Arama Section -->
-    <section class="search-section">
+    <!-- Fakülteler Section -->
+    <section class="fakulteler-section">
         <div class="container">
-            <div class="search-container">
+            <div class="section-header" style="margin-bottom: 3rem;">
                 <div class="search-header-row">
-                    <h2>Üniversite Ara</h2>
-                    <button class="add-university-btn" id="addUniversityBtn" style="display: none;">
-                        ➕ Üniversite Ekle
+                    <div>
+                        <h2 style="margin-bottom: 0.5rem;">Fakülteler</h2>
+                        <p id="universityInfoText" style="color: #666; font-size: 1rem;">Üniversiteye ait fakülteler</p>
+                    </div>
+                    <button class="add-faculty-btn" id="addFacultyBtnTop" style="display: none;">
+                        ➕ Fakülte Ekle
                     </button>
                 </div>
-                <div class="search-form">
-                    <div class="search-input-group">
-                        <input type="text" id="searchInput" placeholder="Üniversite adı yazın..." class="search-input">
-                        <button class="search-btn" onclick="searchUniversities()">🔍</button>
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">Tümü</button>
-                        <button class="filter-btn" data-filter="devlet">Devlet</button>
-                        <button class="filter-btn" data-filter="ozel">Özel</button>
-                        <button class="filter-btn" data-filter="vakif">Vakıf</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Üniversiteler Section -->
-    <section class="universiteler-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Popüler Üniversiteler</h2>
-                <p>En çok tercih edilen üniversiteler ve yaz dersleri</p>
             </div>
             
-            <div class="universiteler-grid" id="universitiesGrid">
-                <!-- Üniversiteler dinamik olarak yüklenecek -->
+            <div class="fakulteler-grid" id="facultiesGrid">
+                <!-- Fakülteler dinamik olarak yüklenecek -->
             </div>
         </div>
     </section>
 
-    <!-- Üniversite Ekleme Modal -->
-    <div id="addUniversityModal" class="modal" style="display: none;">
+    <!-- Fakülte Ekleme Modal -->
+    <div id="addFacultyModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close" onclick="closeAddModal()">&times;</span>
-            <h2>Yeni Üniversite Ekle</h2>
-            <form id="addUniversityForm" onsubmit="addUniversity(event)">
+            <span class="close" onclick="closeAddFacultyModal()">&times;</span>
+            <h2>Yeni Fakülte Ekle</h2>
+            <p id="facultyUniversityName" style="color: #666; margin-bottom: 20px;"></p>
+            <form id="addFacultyForm" onsubmit="addFaculty(event)">
+                <input type="hidden" id="facultyUniversityId">
                 <div class="form-group">
-                    <label for="universityName">Üniversite Adı *</label>
-                    <input type="text" id="universityName" required>
+                    <label for="facultyName">Fakülte Adı *</label>
+                    <input type="text" id="facultyName" required>
                 </div>
                 <div class="form-group">
-                    <label for="universityCity">Şehir</label>
-                    <input type="text" id="universityCity">
-                </div>
-                <div class="form-group">
-                    <label for="universityWebsite">Web Sitesi</label>
-                    <input type="url" id="universityWebsite" placeholder="https://www.universite.edu.tr">
-                </div>
-                <div class="form-group">
-                    <label for="universityDescription">Açıklama</label>
-                    <textarea id="universityDescription" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="universityType">Tür</label>
-                    <select id="universityType">
-                        <option value="devlet">Devlet</option>
-                        <option value="vakif">Vakıf</option>
-                        <option value="ozel">Özel</option>
-                    </select>
+                    <label for="facultyDescription">Açıklama</label>
+                    <textarea id="facultyDescription" rows="3"></textarea>
                 </div>
                 <div class="form-buttons">
                     <button type="submit" class="btn-primary">Ekle</button>
-                    <button type="button" class="btn-secondary" onclick="closeAddModal()">İptal</button>
+                    <button type="button" class="btn-secondary" onclick="closeAddFacultyModal()">İptal</button>
                 </div>
             </form>
         </div>
@@ -177,175 +144,142 @@
     
     <script>
         const API_URL = 'http://localhost:5500/api';
-        let allUniversities = [];
-        let currentFilter = 'all';
+        let allFaculties = [];
         let isAcademician = false;
+        let isAdmin = false;
+        let currentUser = null;
 
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
-            loadUniversities();
-            setupFilterButtons();
+            loadFaculties();
             
-            // "Üniversite Ekle" butonuna event listener ekle
-            document.getElementById('addUniversityBtn')?.addEventListener('click', openAddModal);
+            // "Fakülte Ekle" butonuna event listener ekle
+            document.getElementById('addFacultyBtnTop')?.addEventListener('click', openAddFacultyModalTop);
         });
 
         // Kullanıcı kimlik doğrulamasını kontrol et
         function checkAuth() {
             const token = localStorage.getItem('token');
             const user = JSON.parse(localStorage.getItem('user') || '{}');
+            currentUser = user;
             
-            // Sadece admin üniversite ekleyebilir
+            // Admin kontrolü
             if (token && user.userType === 'admin') {
+                isAdmin = true;
+            }
+            
+            // Akademisyen kontrolü ve fakülte ekle butonu göster
+            if (token && user.userType === 'academician') {
                 isAcademician = true;
-                document.getElementById('addUniversityBtn').style.display = 'block';
+                document.getElementById('addFacultyBtnTop').style.display = 'inline-flex';
+                
+                // Üniversite bilgisini göster
+                if (user.universityName) {
+                    document.getElementById('universityInfoText').textContent = 
+                        `${user.universityName} - Fakülteler`;
+                }
             }
         }
 
-        // Üniversiteleri yükle
-        async function loadUniversities() {
+        // Fakülteleri yükle
+        async function loadFaculties() {
             try {
-                const response = await fetch(`${API_URL}/universities`);
+                const token = localStorage.getItem('token');
+                
+                // Akademisyen ise sadece kendi üniversitesinin fakültelerini getir
+                let url = `${API_URL}/faculties`;
+                if (isAcademician && currentUser.universityId) {
+                    url += `?universityId=${currentUser.universityId}`;
+                }
+                
+                const response = await fetch(url, {
+                    headers: token ? {
+                        'Authorization': `Bearer ${token}`
+                    } : {}
+                });
                 const data = await response.json();
                 
                 if (data.success) {
-                    allUniversities = data.universities;
-                    displayUniversities(allUniversities);
+                    allFaculties = data.faculties;
+                    displayFaculties(allFaculties);
+                } else {
+                    displayFaculties([]);
                 }
             } catch (error) {
-                console.error('Üniversiteler yüklenirken hata:', error);
-                // Hata durumunda varsayılan üniversiteleri göster
-                displayDefaultUniversities();
+                console.error('Fakülteler yüklenirken hata:', error);
+                displayFaculties([]);
             }
         }
 
-        // Üniversiteleri göster
-        function displayUniversities(universities) {
-            const grid = document.getElementById('universitiesGrid');
+        // Fakülteleri göster
+        function displayFaculties(faculties) {
+            const grid = document.getElementById('facultiesGrid');
             grid.innerHTML = '';
 
-            if (universities.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Üniversite bulunamadı.</p>';
+            // Fakülte sayısını güncelle
+            document.getElementById('facultyCount').textContent = faculties.length;
+
+            if (faculties.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <p style="font-size: 1.2rem; color: #666; margin-bottom: 1rem;">Henüz fakülte eklenmemiş.</p>
+                        ${isAcademician ? '<p style="color: #999;">Yeni fakülte eklemek için yukarıdaki butona tıklayın.</p>' : ''}
+                    </div>
+                `;
                 return;
             }
 
-            universities.forEach(uni => {
-                const card = createUniversityCard(uni);
+            faculties.forEach(faculty => {
+                const card = createFacultyCard(faculty);
                 grid.appendChild(card);
             });
         }
 
-        // Üniversite kartı oluştur
-        function createUniversityCard(uni) {
+        // Fakülte kartı oluştur
+        function createFacultyCard(faculty) {
             const card = document.createElement('div');
-            card.className = 'universite-card';
-            card.setAttribute('data-type', uni.type || 'devlet');
+            card.className = 'fakulte-card';
 
             // Kısaltma oluştur
-            const shortName = uni.name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 4);
+            const shortName = faculty.name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 3);
 
-            // Sadece admin silme butonunu görebilir
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const isAdmin = user.userType === 'admin';
+            // Sadece akademisyen kendi eklediği fakülteleri silebilir
+            const showDeleteBtn = isAcademician;
 
             card.innerHTML = `
-                ${isAdmin ? `<button class="delete-btn" onclick="deleteUniversity(${uni.id}, '${uni.name}')" title="Üniversiteyi Sil">🗑️</button>` : ''}
-                <div class="universite-badge ${uni.type || 'devlet'}">${getTypeName(uni.type)}</div>
-                <div class="universite-logo">
+                ${showDeleteBtn ? `<button class="delete-btn" onclick="deleteFaculty(${faculty.id}, '${faculty.name}')" title="Fakülteyi Sil">🗑️</button>` : ''}
+                <div class="fakulte-logo">
                     <span>${shortName}</span>
                 </div>
-                <h3>${uni.name}</h3>
-                <p class="universite-location">📍 ${uni.city || 'Türkiye'}</p>
-                <div class="universite-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">-</span>
-                        <span class="stat-label">Yaz Dersi</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">-</span>
-                        <span class="stat-label">Fakülte</span>
-                    </div>
-                </div>
-                ${uni.website ? `<a href="${uni.website}" target="_blank" class="universite-button">Web Sitesine Git</a>` : '<button class="universite-button" disabled>Web Sitesi Yok</button>'}
+                <h3>${faculty.name}</h3>
+                ${faculty.description ? `<p class="fakulte-description">${faculty.description}</p>` : ''}
+                ${faculty.academician_name ? `<p class="fakulte-academician">👤 ${faculty.academician_name}</p>` : ''}
+                <p class="fakulte-date">📅 ${new Date(faculty.created_at).toLocaleDateString('tr-TR')}</p>
             `;
 
             return card;
         }
 
-        // Tip adını al
-        function getTypeName(type) {
-            const types = {
-                'devlet': 'Devlet',
-                'vakif': 'Vakıf',
-                'ozel': 'Özel'
-            };
-            return types[type] || 'Devlet';
-        }
-
-        // Filtre butonlarını ayarla
-        function setupFilterButtons() {
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Aktif sınıfı değiştir
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Filtreyi uygula
-                    currentFilter = this.getAttribute('data-filter');
-                    applyFilter();
-                });
-            });
-        }
-
-        // Filtreyi uygula
-        function applyFilter() {
-            let filtered = allUniversities;
-            
-            if (currentFilter !== 'all') {
-                filtered = allUniversities.filter(uni => uni.type === currentFilter);
+        // Fakülte ekleme modalını aç (üst butondan)
+        function openAddFacultyModalTop() {
+            if (currentUser.universityId && currentUser.universityName) {
+                document.getElementById('facultyUniversityId').value = currentUser.universityId;
+                document.getElementById('facultyUniversityName').textContent = `Üniversite: ${currentUser.universityName}`;
+                document.getElementById('addFacultyModal').style.display = 'flex';
+            } else {
+                alert('Üniversite bilginiz eksik. Lütfen tekrar giriş yapın.');
             }
-            
-            displayUniversities(filtered);
         }
 
-        // Arama yap
-        function searchUniversities() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            let filtered = allUniversities.filter(uni => 
-                uni.name.toLowerCase().includes(searchTerm) ||
-                (uni.city && uni.city.toLowerCase().includes(searchTerm))
-            );
-
-            if (currentFilter !== 'all') {
-                filtered = filtered.filter(uni => uni.type === currentFilter);
-            }
-
-            displayUniversities(filtered);
+        // Fakülte ekleme modalını kapat
+        function closeAddFacultyModal() {
+            document.getElementById('addFacultyModal').style.display = 'none';
+            document.getElementById('addFacultyForm').reset();
         }
 
-        // Enter tuşuyla arama
-        document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchUniversities();
-            }
-        });
-
-        // Modal aç
-        function openAddModal() {
-            document.getElementById('addUniversityModal').style.display = 'flex';
-        }
-
-        // Modal kapat
-        function closeAddModal() {
-            document.getElementById('addUniversityModal').style.display = 'none';
-            document.getElementById('addUniversityForm').reset();
-        }
-
-        // Üniversite ekle
-        async function addUniversity(event) {
+        // Fakülte ekle
+        async function addFaculty(event) {
             event.preventDefault();
             
             const token = localStorage.getItem('token');
@@ -354,46 +288,42 @@
                 return;
             }
 
-            const name = document.getElementById('universityName').value;
-            const city = document.getElementById('universityCity').value;
-            const website = document.getElementById('universityWebsite').value;
-            const description = document.getElementById('universityDescription').value;
-            const type = document.getElementById('universityType').value;
+            const universityId = document.getElementById('facultyUniversityId').value;
+            const facultyName = document.getElementById('facultyName').value;
+            const facultyDescription = document.getElementById('facultyDescription').value;
 
             try {
-                const response = await fetch(`${API_URL}/universities`, {
+                const response = await fetch(`${API_URL}/faculties`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        name,
-                        city: city || null,
-                        website: website || null,
-                        description: description || null,
-                        type: type || 'devlet'
+                        universityId: parseInt(universityId),
+                        name: facultyName,
+                        description: facultyDescription || null
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Üniversite başarıyla eklendi!');
-                    closeAddModal();
-                    loadUniversities(); // Listeyi yenile
+                    alert('Fakülte başarıyla eklendi!');
+                    closeAddFacultyModal();
+                    loadFaculties(); // Listeyi yenile
                 } else {
                     alert('Hata: ' + data.message);
                 }
             } catch (error) {
-                console.error('Üniversite eklenirken hata:', error);
-                alert('Üniversite eklenirken bir hata oluştu');
+                console.error('Fakülte eklenirken hata:', error);
+                alert('Fakülte eklenirken bir hata oluştu');
             }
         }
 
-        // Üniversite sil
-        async function deleteUniversity(id, name) {
-            if (!confirm(`"${name}" üniversitesini silmek istediğinizden emin misiniz?`)) {
+        // Fakülte sil
+        async function deleteFaculty(id, name) {
+            if (!confirm(`"${name}" fakültesini silmek istediğinizden emin misiniz?`)) {
                 return;
             }
 
@@ -404,7 +334,7 @@
             }
 
             try {
-                const response = await fetch(`${API_URL}/universities/${id}`, {
+                const response = await fetch(`${API_URL}/faculties/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -414,39 +344,23 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Üniversite başarıyla silindi!');
-                    loadUniversities(); // Listeyi yenile
+                    alert('Fakülte başarıyla silindi!');
+                    loadFaculties(); // Listeyi yenile
                 } else {
                     alert('Hata: ' + data.message);
                 }
             } catch (error) {
-                console.error('Üniversite silinirken hata:', error);
-                alert('Üniversite silinirken bir hata oluştu');
+                console.error('Fakülte silinirken hata:', error);
+                alert('Fakülte silinirken bir hata oluştu');
             }
-        }
-
-        // Varsayılan üniversiteleri göster (API hatası durumunda)
-        function displayDefaultUniversities() {
-            const defaultUniversities = [
-                { id: 1, name: 'Hasan Kalyoncu Üniversitesi', city: 'Gaziantep', type: 'ozel', website: 'https://www.hku.edu.tr' },
-                { id: 2, name: 'Orta Doğu Teknik Üniversitesi', city: 'Ankara', type: 'devlet', website: 'https://www.metu.edu.tr' },
-                { id: 3, name: 'Boğaziçi Üniversitesi', city: 'İstanbul', type: 'devlet', website: 'https://www.bogazici.edu.tr' },
-                { id: 4, name: 'Ankara Üniversitesi', city: 'Ankara', type: 'devlet', website: 'https://www.ankara.edu.tr' },
-                { id: 5, name: 'İstanbul Üniversitesi', city: 'İstanbul', type: 'devlet', website: 'https://www.istanbul.edu.tr' },
-                { id: 6, name: 'İstanbul Teknik Üniversitesi', city: 'İstanbul', type: 'devlet', website: 'https://www.itu.edu.tr' },
-                { id: 7, name: 'Sabancı Üniversitesi', city: 'İstanbul', type: 'vakif', website: 'https://www.sabanciuniv.edu' },
-                { id: 8, name: 'Koç Üniversitesi', city: 'İstanbul', type: 'vakif', website: 'https://www.ku.edu.tr' }
-            ];
-            
-            allUniversities = defaultUniversities;
-            displayUniversities(defaultUniversities);
         }
 
         // Modal dışına tıklanınca kapat
         window.onclick = function(event) {
-            const modal = document.getElementById('addUniversityModal');
-            if (event.target === modal) {
-                closeAddModal();
+            const addFacultyModal = document.getElementById('addFacultyModal');
+            
+            if (event.target === addFacultyModal) {
+                closeAddFacultyModal();
             }
         }
     </script>
