@@ -196,12 +196,18 @@
             document.getElementById('addCourseForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
+                console.log('Ders ekleme başlıyor...');
+                console.log('Current User:', currentUser);
+                console.log('Token:', userToken ? 'Var' : 'Yok');
+                
                 const formData = {
                     courseName: document.getElementById('courseName').value.trim(),
                     courseCode: document.getElementById('courseCode').value.trim() || null,
                     category: document.getElementById('category').value || null,
                     description: document.getElementById('description').value.trim() || null
                 };
+
+                console.log('Form Data:', formData);
 
                 try {
                     const response = await fetch(`${API_URL}/courses`, {
@@ -221,12 +227,26 @@
                     if (response.ok && data.success) {
                         messageDiv.textContent = 'Ders başarıyla eklendi!';
                         messageDiv.className = 'form-message success';
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.padding = '15px';
+                        messageDiv.style.marginTop = '15px';
+                        messageDiv.style.borderRadius = '8px';
+                        messageDiv.style.backgroundColor = '#d4edda';
+                        messageDiv.style.color = '#155724';
+                        messageDiv.style.border = '1px solid #c3e6cb';
                         document.getElementById('addCourseForm').reset();
-                        loadCourses();
+                        setTimeout(() => loadCourses(), 1000);
                     } else {
                         const errorMsg = data.message || `Hata: ${response.status} - ${response.statusText}`;
                         messageDiv.textContent = errorMsg;
                         messageDiv.className = 'form-message error';
+                        messageDiv.style.display = 'block';
+                        messageDiv.style.padding = '15px';
+                        messageDiv.style.marginTop = '15px';
+                        messageDiv.style.borderRadius = '8px';
+                        messageDiv.style.backgroundColor = '#f8d7da';
+                        messageDiv.style.color = '#721c24';
+                        messageDiv.style.border = '1px solid #f5c6cb';
                         console.error('API Error:', data);
                     }
                 } catch (error) {
@@ -234,6 +254,13 @@
                     const messageDiv = document.getElementById('courseFormMessage');
                     messageDiv.textContent = `Sunucuya bağlanılamadı: ${error.message}`;
                     messageDiv.className = 'form-message error';
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.padding = '15px';
+                    messageDiv.style.marginTop = '15px';
+                    messageDiv.style.borderRadius = '8px';
+                    messageDiv.style.backgroundColor = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
                 }
             });
         }
@@ -246,6 +273,9 @@
             const loadingDiv = document.getElementById('loadingMessage');
             const gridDiv = document.getElementById('derslerGrid');
             
+            console.log('Dersler yükleniyor...');
+            console.log('Current User:', currentUser);
+            
             loadingDiv.style.display = 'block';
             gridDiv.innerHTML = '';
 
@@ -257,19 +287,41 @@
                 if (currentUser && currentUser.userType === 'academician') {
                     url = `${API_URL}/courses/my-courses`;
                     headers['Authorization'] = `Bearer ${userToken}`;
+                    console.log('Akademisyen dersleri yükleniyor:', url);
                 }
 
+                console.log('Fetching from:', url);
                 const response = await fetch(url, { headers });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 const data = await response.json();
+                console.log('Raw API Response:', data);
+                console.log('data.success:', data.success);
+                console.log('data.courses type:', typeof data.courses);
+                console.log('data.courses:', data.courses);
 
                 if (response.ok && data.success) {
-                    displayCourses(data.courses);
+                    if (data.courses && Array.isArray(data.courses)) {
+                        console.log('Toplam ders sayısı:', data.courses.length);
+                        if (data.courses.length === 0) {
+                            console.warn('Hiç ders bulunamadı!');
+                            gridDiv.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş. Yukarıdaki formdan ders ekleyebilirsiniz.</p>';
+                        } else {
+                            displayCourses(data.courses);
+                        }
+                    } else {
+                        console.error('data.courses bir array değil:', data.courses);
+                        gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Ders verisi hatalı formatta</p>';
+                    }
                 } else {
-                    gridDiv.innerHTML = '<p class="error-message">Dersler yüklenirken bir hata oluştu</p>';
+                    console.error('Ders yükleme hatası:', data);
+                    gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Dersler yüklenirken bir hata oluştu: ' + (data.message || 'Bilinmeyen hata') + '</p>';
                 }
             } catch (error) {
                 console.error('Ders yükleme hatası:', error);
-                gridDiv.innerHTML = '<p class="error-message">Sunucuya bağlanılamadı</p>';
+                gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Sunucuya bağlanılamadı: ' + error.message + '</p>';
             } finally {
                 loadingDiv.style.display = 'none';
             }
@@ -278,8 +330,17 @@
         async function displayCourses(courses) {
             const gridDiv = document.getElementById('derslerGrid');
             
+            console.log('displayCourses çağrıldı, courses:', courses);
+            
+            // Güvenlik kontrolü
+            if (!courses || !Array.isArray(courses)) {
+                console.error('Courses geçerli bir array değil:', courses);
+                gridDiv.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Ders verisi hatalı</p>';
+                return;
+            }
+            
             if (courses.length === 0) {
-                gridDiv.innerHTML = '<p>Henüz ders eklenmemiş</p>';
+                gridDiv.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş</p>';
                 return;
             }
 
