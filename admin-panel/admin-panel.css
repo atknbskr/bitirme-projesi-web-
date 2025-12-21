@@ -526,5 +526,21 @@ body {
     }
 }
 
+/* Badge Colors */
+.badge-info {
+    background: #17a2b8;
+}
 
+.badge-danger {
+    background: #dc3545;
+}
+
+.badge-warning {
+    background: #ffc107;
+    color: #333;
+}
+
+.badge-success {
+    background: #28a745;
+}
 

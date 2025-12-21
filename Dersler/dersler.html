@@ -120,6 +120,220 @@
         </div>
     </section>
 
+    <!-- Ders Detay Modal -->
+    <div id="courseDetailModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeCourseDetail()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCourseDetail()">×</button>
+            <div id="modalBody" class="modal-body">
+                <div class="loading-message">Yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f8f9fa;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: #e9ecef;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 40px;
+        }
+
+        .course-detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: -40px -40px 30px -40px;
+        }
+
+        .course-detail-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .course-detail-header .course-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section h3 {
+            color: #212529;
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .detail-item value {
+            display: block;
+            color: #212529;
+            font-size: 16px;
+        }
+
+        .academician-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .academician-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .academician-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .academician-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #495057;
+        }
+
+        .academician-info-item strong {
+            color: #212529;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .course-detail-header {
+                padding: 20px;
+                margin: -20px -20px 20px -20px;
+            }
+
+            .detail-grid,
+            .academician-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -429,20 +643,23 @@
                         <span class="stat-item">👥 ${course.student_count || 0} Öğrenci</span>
                     </div>
                     ${!isMyCourse && course.academician_name ? `<p class="academician-name">Öğretmen: ${course.academician_name}</p>` : ''}
-                    <div class="course-actions">
+                    <div class="course-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                         ${isMyCourse ? `
-                            <button class="delete-btn" onclick="deleteCourse(${course.id})" style="background: #dc3545;">🗑️ Dersi Sil</button>
+                            <button class="delete-btn" onclick="deleteCourse(${course.id})" style="background: #dc3545; flex: 1; min-width: 120px;">🗑️ Dersi Sil</button>
                         ` : ''}
                         ${isStudent && !isExpired ? `
-                            <button class="favorite-btn" id="fav-${course.id}" onclick="toggleFavorite(${course.id})">
+                            <button class="favorite-btn" id="fav-${course.id}" onclick="toggleFavorite(${course.id})" style="flex: 1; min-width: 150px;">
                                 <span class="fav-icon">♡</span> Favoriye Ekle
                             </button>
                         ` : ''}
                         ${isStudent && isExpired ? `
-                            <button class="favorite-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+                            <button class="favorite-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1; min-width: 150px;">
                                 ⏰ Başvuru Süresi Doldu
                             </button>
                         ` : ''}
+                        <button class="detail-btn" onclick="showCourseDetail(${course.id})" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; flex: 1; min-width: 120px;">
+                            📋 Detay Gör
+                        </button>
                     </div>
                 `;
 
@@ -595,6 +812,255 @@
                 }
             }
         }
+
+        // Ders detayını göster
+        async function showCourseDetail(courseId) {
+            const modal = document.getElementById('courseDetailModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            // Modal'ı göster ve loading state
+            modal.style.display = 'flex';
+            modalBody.innerHTML = '<div class="loading-message" style="text-align: center; padding: 40px;">Yükleniyor...</div>';
+            
+            try {
+                console.log('Ders detayı yükleniyor, ID:', courseId);
+                const response = await fetch(`${API_URL}/courses/${courseId}/details`);
+                
+                if (!response.ok) {
+                    throw new Error('Ders detayları yüklenemedi');
+                }
+                
+                const data = await response.json();
+                console.log('Ders detayı:', data);
+                
+                if (data.success && data.course) {
+                    displayCourseDetail(data.course);
+                } else {
+                    modalBody.innerHTML = '<div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">Ders detayları yüklenemedi</div>';
+                }
+            } catch (error) {
+                console.error('Ders detay hatası:', error);
+                modalBody.innerHTML = '<div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">Hata: ' + error.message + '</div>';
+            }
+        }
+
+        // Ders detayını göster
+        function displayCourseDetail(course) {
+            const modalBody = document.getElementById('modalBody');
+            
+            const formatDate = (dateStr) => {
+                if (!dateStr) return 'Belirtilmemiş';
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            };
+
+            const formatPrice = (price) => {
+                if (!price || price == 0) return 'Ücretsiz';
+                return `₺${parseFloat(price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            };
+
+            // Akademisyen bilgileri
+            let academicianHTML = '';
+            if (course.academician) {
+                const acad = course.academician;
+                academicianHTML = `
+                    <div class="detail-section">
+                        <h3>👨‍🏫 Dersi Veren Akademisyen</h3>
+                        <div class="academician-card">
+                            <div class="academician-name">
+                                ${acad.title || ''} ${acad.full_name || 'Belirtilmemiş'}
+                            </div>
+                            ${acad.department ? `<p style="color: #666; margin: 5px 0;">📚 ${acad.department}</p>` : ''}
+                            <div class="academician-info">
+                                ${acad.email ? `
+                                    <div class="academician-info-item">
+                                        <span>📧</span>
+                                        <div>
+                                            <strong>E-posta:</strong><br>
+                                            <a href="mailto:${acad.email}" style="color: #667eea;">${acad.email}</a>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${acad.office ? `
+                                    <div class="academician-info-item">
+                                        <span>🏢</span>
+                                        <div>
+                                            <strong>Ofis:</strong><br>
+                                            ${acad.office}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${acad.office_hours ? `
+                                    <div class="academician-info-item">
+                                        <span>🕐</span>
+                                        <div>
+                                            <strong>Ofis Saatleri:</strong><br>
+                                            ${acad.office_hours}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = `
+                <div class="course-detail-header">
+                    <h2>${course.course_name}</h2>
+                    ${course.course_code ? `<span class="course-code">${course.course_code}</span>` : ''}
+                    ${course.category ? `<span class="course-code" style="margin-left: 10px;">📚 ${course.category}</span>` : ''}
+                </div>
+
+                <div class="detail-section">
+                    <h3>📝 Ders Hakkında</h3>
+                    <p style="line-height: 1.6; color: #495057;">${course.description || 'Açıklama bulunmuyor.'}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>💰 Ders Bilgileri</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>💵 Ücret</label>
+                            <value style="font-size: 20px; font-weight: bold; color: #28a745;">${formatPrice(course.price)}</value>
+                        </div>
+                        <div class="detail-item">
+                            <label>🎓 Kredi</label>
+                            <value>${course.credits || 3} Kredi</value>
+                        </div>
+                        <div class="detail-item">
+                            <label>⏰ Ders Saati</label>
+                            <value>${course.course_hours || 42} Saat</value>
+                        </div>
+                        <div class="detail-item">
+                            <label>👥 Kontenjan</label>
+                            <value>${course.quota || 30} Kişi</value>
+                        </div>
+                        <div class="detail-item">
+                            <label>📊 Kayıtlı Öğrenci</label>
+                            <value style="color: #667eea; font-weight: bold;">${course.student_count || 0} Öğrenci</value>
+                        </div>
+                        <div class="detail-item">
+                            <label>📈 Doluluk Oranı</label>
+                            <value>${course.quota ? Math.round((course.student_count || 0) / course.quota * 100) : 0}%</value>
+                        </div>
+                    </div>
+                </div>
+
+                ${course.application_deadline || course.start_date || course.end_date ? `
+                    <div class="detail-section">
+                        <h3>📅 Önemli Tarihler</h3>
+                        <div class="detail-grid">
+                            ${course.application_deadline ? `
+                                <div class="detail-item">
+                                    <label>📝 Başvuru Son Tarihi</label>
+                                    <value>${formatDate(course.application_deadline)}</value>
+                                </div>
+                            ` : ''}
+                            ${course.start_date ? `
+                                <div class="detail-item">
+                                    <label>🎯 Başlangıç Tarihi</label>
+                                    <value>${formatDate(course.start_date)}</value>
+                                </div>
+                            ` : ''}
+                            ${course.end_date ? `
+                                <div class="detail-item">
+                                    <label>🏁 Bitiş Tarihi</label>
+                                    <value>${formatDate(course.end_date)}</value>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${course.requirements ? `
+                    <div class="detail-section">
+                        <h3>✅ Ön Koşullar</h3>
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                            <p style="margin: 0; color: #856404;">${course.requirements}</p>
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${course.equivalency_info ? `
+                    <div class="detail-section">
+                        <h3>🔄 Denklik Bilgisi</h3>
+                        <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                            <p style="margin: 0; color: #0c5460;">${course.equivalency_info}</p>
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${academicianHTML}
+
+                <div class="detail-section" style="border-bottom: none; text-align: center; padding-top: 20px;">
+                    ${currentUser && currentUser.userType === 'student' && !isExpired(course.application_deadline) ? `
+                        <button class="favorite-btn" onclick="toggleFavoriteFromModal(${course.id})" id="modal-fav-${course.id}" style="padding: 15px 40px; font-size: 16px;">
+                            <span class="fav-icon">♡</span> Favoriye Ekle
+                        </button>
+                    ` : ''}
+                    <button onclick="closeCourseDetail()" style="background: #6c757d; color: white; border: none; padding: 15px 40px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px;">
+                        ❌ Kapat
+                    </button>
+                </div>
+            `;
+
+            // Eğer öğrenci ise favori durumunu kontrol et
+            if (currentUser && currentUser.userType === 'student') {
+                checkFavoriteStatusInModal(course.id);
+            }
+        }
+
+        function isExpired(deadlineDate) {
+            if (!deadlineDate) return false;
+            return new Date(deadlineDate) < new Date();
+        }
+
+        // Modal'dan favori ekleme
+        async function toggleFavoriteFromModal(courseId) {
+            await toggleFavorite(courseId);
+            // Ana sayfadaki butonu da güncelle
+            setTimeout(() => {
+                checkFavoriteStatusInModal(courseId);
+            }, 500);
+        }
+
+        // Modal içindeki favori durumunu kontrol et
+        async function checkFavoriteStatusInModal(courseId) {
+            if (!userToken) return;
+
+            try {
+                const response = await fetch(`${API_URL}/favorites/check/${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.isFavorite) {
+                    const favBtn = document.getElementById(`modal-fav-${courseId}`);
+                    if (favBtn) {
+                        favBtn.innerHTML = '<span class="fav-icon">♥</span> Favorilerden Çıkar';
+                    }
+                }
+            } catch (error) {
+                console.error('Favori durumu kontrol hatası:', error);
+            }
+        }
+
+        // Modal'ı kapat
+        function closeCourseDetail() {
+            const modal = document.getElementById('courseDetailModal');
+            modal.style.display = 'none';
+        }
+
+        // ESC tuşu ile modal'ı kapat
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeCourseDetail();
+            }
+        });
     </script>
 
 </body>

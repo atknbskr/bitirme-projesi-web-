@@ -41,42 +41,34 @@
           </div>
         </nav>
 
-        <!-- Giriş/Profil Bölümü -->
-        <div class="auth-section" id="authSection">
-          <!-- Giriş yapmamış kullanıcılar için -->
-          <div class="auth-buttons" id="authButtons" style="display: none;">
-            <a href="../website-giriş-sayfası/website-giriş-sayfası.html" class="btn-login">Giriş Yap</a>
-            <a href="../website-giriş-sayfası/website-giriş-sayfası.html" class="btn-register">Kayıt Ol</a>
+        <!-- Profil Bölümü -->
+        <div class="profile-section">
+          <div class="profile-avatar" id="profileToggle">
+            <span id="avatarInitials">?</span>
           </div>
-          
-          <!-- Giriş yapmış kullanıcılar için -->
-          <div class="profile-section" id="profileSection" style="display: none;">
-            <div class="profile-avatar" id="profileToggle">
-              <span id="avatarInitials">?</span>
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="profile-header">
+              <div class="profile-avatar-large">
+                <span id="avatarInitialsLarge">?</span>
+              </div>
+              <div class="profile-info">
+                <h4 id="profileName">Kullanıcı</h4>
+                <p id="profileEmail">email@example.com</p>
+              </div>
             </div>
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="profile-header">
-                <div class="profile-avatar-large">
-                  <span id="avatarInitialsLarge">?</span>
-                </div>
-                <div class="profile-info">
-                  <h4 id="profileName">Kullanıcı</h4>
-                  <p id="profileEmail">email@example.com</p>
-                </div>
+            <div class="profile-details">
+              <div class="profile-detail-item">
+                <span class="detail-label">Kullanıcı Tipi:</span>
+                <span class="detail-value" id="profileType">-</span>
               </div>
-              <div class="profile-details">
-                <div class="profile-detail-item">
-                  <span class="detail-label">Kullanıcı Tipi:</span>
-                  <span class="detail-value" id="profileType">-</span>
-                </div>
-                <div class="profile-detail-item">
-                  <span class="detail-label">ID:</span>
-                  <span class="detail-value" id="profileStudentNumber">-</span>
-                </div>
+              <div class="profile-detail-item">
+                <span class="detail-label">Okul Numarası:</span>
+                <span class="detail-value" id="profileStudentNumber">-</span>
               </div>
-              <div class="profile-actions">
-                <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
-              </div>
+            </div>
+            <div class="profile-actions">
+              <button class="btn-edit-profile" id="editProfileBtn">✏️ Profil Düzenle</button>
+              <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
             </div>
           </div>
         </div>
@@ -87,11 +79,7 @@
       <div class="container">
         <div class="hero-content">
           <h1>Türkiye'nin En Kapsamlı Yaz Dersleri Platformu</h1>
-          <p>200+ üniversiteden binlerce yaz dersi seçeneği tek platformda. Akademik hedeflerinize ulaşmanın en kolay yolu.</p>
-          <div class="hero-buttons">
-            <a href="#search" class="btn-primary-large">🔍 Ders Ara</a>
-            <a href="../Dersler/dersler.html" class="btn-secondary-large">📚 Dersleri Keşfet</a>
-          </div>
+          <p>200+ üniversiteden binlerce yaz dersi seçeneği tek platformda.</p>
           <div class="hero-stats">
             <div class="stat">
               <div class="stat-number">200+</div>
@@ -110,7 +98,7 @@
       </div>
     </section>
 
-    <section class="search-section" id="searchSection" style="display: none;">
+    <section class="search-section" id="search">
       <div class="container">
         <div class="search-container">
           <h2 class="search-title">İdeal Yaz Dersini Bul</h2>
@@ -167,163 +155,110 @@
       </div>
     </section>
 
-    <!-- Özellikler Section -->
-    <section class="features-section">
-      <div class="container">
-        <div class="section-header">
-          <h2>Neden Campus Summer?</h2>
-          <p>Akademik başarınız için ihtiyacınız olan her şey burada</p>
+    <!-- Profil Düzenleme Modalı -->
+    <div class="modal-overlay" id="editProfileModal" style="display: none;">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Profil Düzenle</h2>
+          <button class="modal-close" id="closeModal">&times;</button>
         </div>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🎓</div>
-            <h3>200+ Üniversite</h3>
-            <p>Türkiye'nin önde gelen üniversitelerinden yaz dersi seçenekleri</p>
+        <form class="modal-form" id="editProfileForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editFirstName">Ad</label>
+              <input
+                type="text"
+                id="editFirstName"
+                name="firstName"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="editLastName">Soyad</label>
+              <input
+                type="text"
+                id="editLastName"
+                name="lastName"
+                required
+              />
+            </div>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">📚</div>
-            <h3>500+ Ders</h3>
-            <p>Binlerce yaz dersi arasından size uygun olanı bulun</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3>Hızlı Arama</h3>
-            <p>Gelişmiş filtreleme ile saniyeler içinde aradığınız dersi bulun</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">💼</div>
-            <h3>Akademisyen Desteği</h3>
-            <p>Akademisyenler derslerini kolayca ekleyip yönetebilir</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>Mobil Uyumlu</h3>
-            <p>Her cihazdan kolayca erişim sağlayın</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔔</div>
-            <h3>Favori Sistemİ</h3>
-            <p>İlgilendiğiniz dersleri favorilerinize ekleyin</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Nasıl Çalışır Section (Sadece giriş yapmamış kullanıcılar için) -->
-    <section class="how-it-works-section" id="howItWorksSection" style="display: none;">
-      <div class="container">
-        <div class="section-header">
-          <h2>Nasıl Çalışır?</h2>
-          <p>3 basit adımda yaz dersine başlayın</p>
-        </div>
-        <div class="steps-grid">
-          <div class="step-card">
-            <div class="step-number">1</div>
-            <h3>Kayıt Olun</h3>
-            <p>Öğrenci veya akademisyen olarak hızlıca ücretsiz kayıt olun</p>
+          <div class="form-group">
+            <label for="editEmail">E-posta</label>
+            <input type="email" id="editEmail" name="email" required />
           </div>
-          <div class="step-arrow">→</div>
-          <div class="step-card">
-            <div class="step-number">2</div>
-            <h3>Ders Arayın</h3>
-            <p>Üniversite, fakülte ve dile göre size uygun dersleri bulun</p>
+
+          <div class="form-group">
+            <label for="editStudentNumber">Okul Numarası / Kullanıcı Adı</label>
+            <input
+              type="text"
+              id="editStudentNumber"
+              name="studentNumber"
+              readonly
+            />
+            <small style="color: #666;">Bu alan değiştirilemez</small>
           </div>
-          <div class="step-arrow">→</div>
-          <div class="step-card">
-            <div class="step-number">3</div>
-            <h3>Kaydolun</h3>
-            <p>İlgilendiğiniz dersleri favorilerinize ekleyin ve takip edin</p>
+
+          <div class="password-section">
+            <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 15px;">
+              Şifre Değiştir (Opsiyonel)
+            </h3>
+            <div class="form-group">
+              <label for="editCurrentPassword">Mevcut Şifre</label>
+              <input
+                type="password"
+                id="editCurrentPassword"
+                name="currentPassword"
+                placeholder="Boş bırakılabilir"
+              />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editNewPassword">Yeni Şifre</label>
+                <input
+                  type="password"
+                  id="editNewPassword"
+                  name="newPassword"
+                  placeholder="Boş bırakılabilir"
+                />
+              </div>
+              <div class="form-group">
+                <label for="editConfirmPassword">Şifre Tekrar</label>
+                <input
+                  type="password"
+                  id="editConfirmPassword"
+                  name="confirmPassword"
+                  placeholder="Boş bırakılabilir"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- CTA Section (Sadece giriş yapmamış kullanıcılar için) -->
-    <section class="cta-section" id="ctaSection" style="display: none;">
-      <div class="container">
-        <div class="cta-content">
-          <h2>Hemen Başlayın!</h2>
-          <p>Akademik hedeflerinize ulaşmak için ilk adımı atın</p>
-          <div class="cta-buttons">
-            <a href="../website-giriş-sayfası/website-giriş-sayfası.html" class="btn-cta">Hemen Başla</a>
-            <a href="../website-giriş-sayfası/website-giriş-sayfası.html" class="btn-cta-secondary">Giriş Yap</a>
+          <div id="editErrorMessage" class="edit-error-message"></div>
+          <div id="editSuccessMessage" class="edit-success-message"></div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" id="cancelEdit">
+              İptal
+            </button>
+            <button type="submit" class="btn-save">Kaydet</button>
           </div>
-        </div>
+        </form>
       </div>
-    </section>
-
-    <!-- Hoş Geldiniz Section (Sadece giriş yapmış kullanıcılar için) -->
-    <section class="welcome-section" id="welcomeSection" style="display: none;">
-      <div class="container">
-        <div class="welcome-content">
-          <h2>Hoş Geldiniz, <span id="welcomeUserName">Kullanıcı</span>!</h2>
-          <p id="welcomeMessage">Akademik hedeflerinize ulaşmak için hazırsınız</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Öğrenci İçin Özel Bölüm - Favori Dersler -->
-    <section class="my-courses-section" id="studentCoursesSection" style="display: none;">
-      <div class="container">
-        <div class="section-header">
-          <h2>Favori Derslerim</h2>
-          <p>Favori olarak işaretlediğiniz dersler</p>
-        </div>
-        <div id="studentCoursesGrid" class="courses-grid">
-          <div class="loading-message">Yükleniyor...</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Akademisyen İçin Özel Bölüm - Verdiği Dersler -->
-    <section class="my-courses-section" id="academicianCoursesSection" style="display: none;">
-      <div class="container">
-        <div class="section-header">
-          <h2>Verdiğim Dersler</h2>
-          <p>Eklediğiniz ve yönettiğiniz dersler</p>
-        </div>
-        <div id="academicianCoursesGrid" class="courses-grid">
-          <div class="loading-message">Yükleniyor...</div>
-        </div>
-      </div>
-    </section>
+    </div>
 
     <script>
-      const API_URL = 'http://localhost:5500/api';
-
       // Kullanıcı bilgilerini yükle
       function loadUserProfile() {
         const user = JSON.parse(localStorage.getItem("user"));
         const token = localStorage.getItem("token");
 
-        const authButtons = document.getElementById("authButtons");
-        const profileSection = document.getElementById("profileSection");
-        const howItWorksSection = document.getElementById("howItWorksSection");
-        const ctaSection = document.getElementById("ctaSection");
-        const welcomeSection = document.getElementById("welcomeSection");
-        const studentCoursesSection = document.getElementById("studentCoursesSection");
-        const academicianCoursesSection = document.getElementById("academicianCoursesSection");
-        const searchSection = document.getElementById("searchSection");
-
         if (!user || !token) {
-          // Giriş yapmamış kullanıcılar için
-          authButtons.style.display = "flex";
-          profileSection.style.display = "none";
-          howItWorksSection.style.display = "block";
-          ctaSection.style.display = "block";
-          welcomeSection.style.display = "none";
-          studentCoursesSection.style.display = "none";
-          academicianCoursesSection.style.display = "none";
-          searchSection.style.display = "none";
+          // Giriş yapmamış kullanıcıyı giriş sayfasına yönlendir
+          window.location.href = "../öğrenci-giriş/öğrenci-giriş.html";
           return;
         }
-
-        // Giriş yapmış kullanıcılar için
-        authButtons.style.display = "none";
-        profileSection.style.display = "block";
-        howItWorksSection.style.display = "none";
-        ctaSection.style.display = "none";
-        welcomeSection.style.display = "block";
 
         // Profil bilgilerini doldur
         const initials =
@@ -336,265 +271,186 @@
           user.firstName || ""
         } ${user.lastName || ""}`;
         document.getElementById("profileEmail").textContent = user.email || "";
-        
-        // Welcome bölümünü güncelle
-        document.getElementById("welcomeUserName").textContent = user.firstName || "Kullanıcı";
-        
-        // Kullanıcı tipine göre göster
-        let userTypeText = "Kullanıcı";
-        if (user.userType === "student") {
-          userTypeText = "Öğrenci";
-          document.getElementById("welcomeMessage").textContent = "Favori derslerinizi görüntüleyin ve yeni dersler keşfedin";
-          studentCoursesSection.style.display = "block";
-          academicianCoursesSection.style.display = "none";
-          searchSection.style.display = "block"; // Öğrenci için arama bölümünü göster
-          loadStudentFavorites(token);
-        } else if (user.userType === "academician") {
-          userTypeText = "Akademisyen";
-          document.getElementById("welcomeMessage").textContent = "Derslerinizi yönetin ve yeni dersler ekleyin";
-          studentCoursesSection.style.display = "none";
-          academicianCoursesSection.style.display = "block";
-          searchSection.style.display = "none"; // Akademisyen için arama bölümünü gizle
-          loadAcademicianCourses(token);
-        } else if (user.userType === "admin") {
-          userTypeText = "Admin";
-          document.getElementById("welcomeMessage").textContent = "Sistemi yönetmek için yönetici paneline gidin";
-          studentCoursesSection.style.display = "none";
-          academicianCoursesSection.style.display = "none";
-          searchSection.style.display = "none"; // Admin için arama bölümünü gizle
-        }
-        
-        document.getElementById("profileType").textContent = userTypeText;
+        document.getElementById("profileType").textContent =
+          user.userType === "student" ? "Öğrenci" : "Akademisyen";
         document.getElementById("profileStudentNumber").textContent =
-          user.studentNumber || user.username || user.adminCode || "-";
+          user.studentNumber || user.username || "-";
+      }
 
-        // Profil dropdown toggle
-        document
-          .getElementById("profileToggle")
-          .addEventListener("click", function (e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById("profileDropdown");
-            dropdown.classList.toggle("active");
-          });
-
-        // Dropdown dışına tıklanınca kapat
-        document.addEventListener("click", function (e) {
+      // Profil dropdown toggle
+      document
+        .getElementById("profileToggle")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
           const dropdown = document.getElementById("profileDropdown");
-          const profileSectionEl = document.getElementById("profileSection");
-          if (!profileSectionEl.contains(e.target)) {
-            dropdown.classList.remove("active");
-          }
+          dropdown.classList.toggle("active");
         });
 
-        // Çıkış yap
-        document
-          .getElementById("logoutBtn")
-          .addEventListener("click", function () {
-            if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              // Anasayfayı yenile
-              window.location.reload();
-            }
-          });
-      }
-
-      // Öğrenci favori derslerini yükle
-      async function loadStudentFavorites(token) {
-        try {
-          const response = await fetch(`${API_URL}/favorites`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error('Favori dersler yüklenemedi');
-          }
-
-          const data = await response.json();
-          const grid = document.getElementById('studentCoursesGrid');
-          
-          if (!data.favorites || data.favorites.length === 0) {
-            grid.innerHTML = `
-              <div class="empty-state">
-                <p>Henüz favori dersınız yok</p>
-                <a href="../Dersler/dersler.html" class="btn-primary">Ders Ara</a>
-              </div>
-            `;
-            return;
-          }
-
-          grid.innerHTML = data.favorites.map(fav => createCourseCard(fav.course)).join('');
-        } catch (error) {
-          console.error('Hata:', error);
-          document.getElementById('studentCoursesGrid').innerHTML = `
-            <div class="error-message">
-              <p>Favori dersler yüklenirken bir hata oluştu</p>
-              <button onclick="loadStudentFavorites('${token}')" class="btn-primary">Tekrar Dene</button>
-            </div>
-          `;
+      // Dropdown dışına tıklanınca kapat
+      document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("profileDropdown");
+        const profileSection = document.querySelector(".profile-section");
+        if (!profileSection.contains(e.target)) {
+          dropdown.classList.remove("active");
         }
-      }
-
-      // Akademisyen derslerini yükle
-      async function loadAcademicianCourses(token) {
-        try {
-          const response = await fetch(`${API_URL}/courses/my-courses-with-students`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error('Dersler yüklenemedi');
-          }
-
-          const data = await response.json();
-          const grid = document.getElementById('academicianCoursesGrid');
-          
-          if (!data.courses || data.courses.length === 0) {
-            grid.innerHTML = `
-              <div class="empty-state">
-                <p>Henüz ders eklemediniz</p>
-                <a href="../Dersler/dersler.html" class="btn-primary">Ders Ekle</a>
-              </div>
-            `;
-            return;
-          }
-
-          grid.innerHTML = data.courses.map(course => createAcademicianCourseCard(course)).join('');
-        } catch (error) {
-          console.error('Hata:', error);
-          document.getElementById('academicianCoursesGrid').innerHTML = `
-            <div class="error-message">
-              <p>Dersler yüklenirken bir hata oluştu</p>
-              <button onclick="loadAcademicianCourses('${token}')" class="btn-primary">Tekrar Dene</button>
-            </div>
-          `;
-        }
-      }
-
-      // Öğrenci için ders kartı oluştur
-      function createCourseCard(course) {
-        // Hem course_name hem de name destekle (API'lerde farklı field isimleri olabilir)
-        const courseName = course.course_name || course.name || 'İsimsiz Ders';
-        const courseCode = course.course_code || course.code || '-';
-        const academicianName = course.academician_name || '-';
-        const description = course.description || 'Açıklama bulunmuyor.';
-        const category = course.category || 'Genel';
-        const studentCount = course.student_count || 0;
-        
-        return `
-          <div class="course-card">
-            <div class="course-header">
-              <h3>${courseName}</h3>
-              <span class="course-code">${courseCode}</span>
-            </div>
-            <div class="course-info">
-              <p><strong>📚 Kategori:</strong> ${category}</p>
-              <p><strong>👨‍🏫 Akademisyen:</strong> ${academicianName}</p>
-              <p><strong>👥 Öğrenci Sayısı:</strong> ${studentCount}</p>
-            </div>
-            <div class="course-description">
-              <p>${description}</p>
-            </div>
-            <div class="course-footer">
-              <span class="course-date">📅 ${new Date(course.created_at || Date.now()).toLocaleDateString('tr-TR')}</span>
-              <a href="../Dersler/dersler.html" class="btn-view">Detay</a>
-            </div>
-          </div>
-        `;
-      }
-
-      // Akademisyen için ders kartı oluştur (öğrenci listesi ile)
-      function createAcademicianCourseCard(course) {
-        const courseName = course.course_name || course.name || 'İsimsiz Ders';
-        const courseCode = course.course_code || course.code || '-';
-        const description = course.description || 'Açıklama bulunmuyor.';
-        const category = course.category || 'Genel';
-        const students = course.students || [];
-        
-        // Öğrenci listesi HTML'i
-        let studentsHTML = '';
-        if (students.length === 0) {
-          studentsHTML = '<p class="no-students">Henüz öğrenci yok</p>';
-        } else {
-          studentsHTML = `
-            <div class="students-list">
-              <table class="students-table">
-                <thead>
-                  <tr>
-                    <th>Öğrenci</th>
-                    <th>Öğrenci No</th>
-                    <th>Not</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${students.map(student => `
-                    <tr>
-                      <td>${student.first_name} ${student.last_name}</td>
-                      <td>${student.student_number}</td>
-                      <td>
-                        <span class="grade ${student.grade ? 'has-grade' : 'no-grade'}">
-                          ${student.grade || 'Girilmedi'}
-                        </span>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
-        }
-        
-        return `
-          <div class="course-card academician-course-card">
-            <div class="course-header">
-              <h3>${courseName}</h3>
-              <span class="course-code">${courseCode}</span>
-            </div>
-            <div class="course-info">
-              <p><strong>📚 Kategori:</strong> ${category}</p>
-              <p><strong>👥 Öğrenci Sayısı:</strong> ${students.length}</p>
-            </div>
-            <div class="course-description">
-              <p>${description}</p>
-            </div>
-            <div class="students-section">
-              <h4>📋 Kayıtlı Öğrenciler</h4>
-              ${studentsHTML}
-            </div>
-            <div class="course-footer">
-              <span class="course-date">📅 ${new Date(course.created_at || Date.now()).toLocaleDateString('tr-TR')}</span>
-              <a href="../Dersler/dersler.html" class="btn-view">Detay</a>
-            </div>
-          </div>
-        `;
-      }
-
-      // Arama formu
-      document.querySelector('.search-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Dersler sayfasına yönlendir
-        window.location.href = '../Dersler/dersler.html';
       });
 
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          const href = this.getAttribute('href');
-          if (href !== '#') {
-            e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-              target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              });
-            }
-          }
+      // Çıkış yap
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function () {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          // Ana giriş sayfasına yönlendir
+          const basePath = window.location.pathname.split('/campusumer-anasayfa')[0];
+          window.location.href = basePath + '/website-giri%C5%9F-sayfas%C4%B1/website-giri%C5%9F-sayfas%C4%B1.html';
         });
+
+      // Profil Düzenleme Modal İşlemleri
+      const modal = document.getElementById("editProfileModal");
+      const editProfileBtn = document.getElementById("editProfileBtn");
+      const closeModalBtn = document.getElementById("closeModal");
+      const cancelEditBtn = document.getElementById("cancelEdit");
+      const editProfileForm = document.getElementById("editProfileForm");
+
+      // Modal açma
+      editProfileBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          // Form alanlarını doldur
+          document.getElementById("editFirstName").value = user.firstName || "";
+          document.getElementById("editLastName").value = user.lastName || "";
+          document.getElementById("editEmail").value = user.email || "";
+          document.getElementById("editStudentNumber").value = 
+            user.studentNumber || user.username || "";
+          
+          // Şifre alanlarını temizle
+          document.getElementById("editCurrentPassword").value = "";
+          document.getElementById("editNewPassword").value = "";
+          document.getElementById("editConfirmPassword").value = "";
+
+          // Mesajları temizle
+          document.getElementById("editErrorMessage").style.display = "none";
+          document.getElementById("editSuccessMessage").style.display = "none";
+
+          modal.style.display = "flex";
+          // Dropdown'u kapat
+          document.getElementById("profileDropdown").classList.remove("active");
+        }
+      });
+
+      // Modal kapama fonksiyonları
+      function closeModal() {
+        modal.style.display = "none";
+      }
+
+      closeModalBtn.addEventListener("click", closeModal);
+      cancelEditBtn.addEventListener("click", closeModal);
+
+      // Modal dışına tıklandığında kapat
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Profil güncelleme formu
+      editProfileForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const errorDiv = document.getElementById("editErrorMessage");
+        const successDiv = document.getElementById("editSuccessMessage");
+        errorDiv.style.display = "none";
+        successDiv.style.display = "none";
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
+
+        if (!user || !token) {
+          errorDiv.textContent = "Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapın.";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        // Form verilerini al
+        const firstName = document.getElementById("editFirstName").value.trim();
+        const lastName = document.getElementById("editLastName").value.trim();
+        const email = document.getElementById("editEmail").value.trim();
+        const currentPassword = document.getElementById("editCurrentPassword").value;
+        const newPassword = document.getElementById("editNewPassword").value;
+        const confirmPassword = document.getElementById("editConfirmPassword").value;
+
+        // Şifre doğrulaması
+        if (newPassword || confirmPassword) {
+          if (!currentPassword) {
+            errorDiv.textContent = "Şifre değiştirmek için mevcut şifrenizi girmelisiniz.";
+            errorDiv.style.display = "block";
+            return;
+          }
+          if (newPassword !== confirmPassword) {
+            errorDiv.textContent = "Yeni şifreler eşleşmiyor.";
+            errorDiv.style.display = "block";
+            return;
+          }
+          if (newPassword.length < 6) {
+            errorDiv.textContent = "Yeni şifre en az 6 karakter olmalıdır.";
+            errorDiv.style.display = "block";
+            return;
+          }
+        }
+
+        // API isteği için veri hazırla
+        const updateData = {
+          firstName,
+          lastName,
+          email,
+        };
+
+        if (newPassword) {
+          updateData.currentPassword = currentPassword;
+          updateData.newPassword = newPassword;
+        }
+
+        try {
+          const API_URL = `${window.location.origin}/api`;
+          const endpoint = `${API_URL}/auth/profile/update`;
+
+          const response = await fetch(endpoint, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updateData),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            successDiv.textContent = "Profil başarıyla güncellendi!";
+            successDiv.style.display = "block";
+
+            // LocalStorage'ı güncelle
+            const updatedUser = { ...user, ...updateData };
+            delete updatedUser.currentPassword;
+            delete updatedUser.newPassword;
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
+            // Profil bilgilerini yeniden yükle
+            setTimeout(() => {
+              loadUserProfile();
+              closeModal();
+            }, 1500);
+          } else {
+            errorDiv.textContent = data.message || "Profil güncellenirken bir hata oluştu.";
+            errorDiv.style.display = "block";
+          }
+        } catch (error) {
+          console.error("Profil güncelleme hatası:", error);
+          errorDiv.textContent = "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.";
+          errorDiv.style.display = "block";
+        }
       });
 
       // Sayfa yüklendiğinde profili yükle

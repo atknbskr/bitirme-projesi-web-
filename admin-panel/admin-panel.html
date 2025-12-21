@@ -29,11 +29,14 @@
                 <a href="#dashboard" class="nav-item active" onclick="showSection('dashboard')">
                     <span>📊</span> Dashboard
                 </a>
-                <a href="#users" class="nav-item" onclick="showSection('users')">
-                    <span>👥</span> Kullanıcılar
+                <a href="#students" class="nav-item" onclick="showSection('students')">
+                    <span>🎓</span> Öğrenciler
                 </a>
                 <a href="#academicians" class="nav-item" onclick="showSection('academicians')">
                     <span>👨‍🏫</span> Akademisyenler
+                </a>
+                <a href="#admins" class="nav-item" onclick="showSection('admins')">
+                    <span>🔐</span> Adminler
                 </a>
                 <a href="#courses" class="nav-item" onclick="showSection('courses')">
                     <span>📚</span> Dersler
@@ -50,7 +53,7 @@
         <!-- Main Panel -->
         <main class="main-panel">
             <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
+            <section id="dashboard" class="content-section">
                 <h1>Dashboard</h1>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card">
@@ -91,48 +94,47 @@
                 </div>
             </section>
 
-            <!-- Users Section -->
-            <section id="users" class="content-section">
+            <!-- Students Section -->
+            <section id="students" class="content-section active">
                 <div class="section-header">
-                    <h1>Kullanıcı Yönetimi</h1>
+                    <h1>Öğrenci Yönetimi</h1>
                 </div>
                 
-                <!-- Edit User Modal -->
-                <div id="editUserModal" class="modal" style="display: none;">
+                <!-- Edit Student Modal -->
+                <div id="editStudentModal" class="modal" style="display: none;">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3>Kullanıcı Düzenle</h3>
-                            <button onclick="closeEditUserModal()" class="close-btn">&times;</button>
+                            <h3>Öğrenci Düzenle</h3>
+                            <button onclick="closeEditStudentModal()" class="close-btn">&times;</button>
                         </div>
-                        <form id="editUserForm" onsubmit="updateUser(event)">
-                            <input type="hidden" id="editUserId">
-                            <input type="hidden" id="editUserType">
+                        <form id="editStudentForm" onsubmit="updateStudent(event)">
+                            <input type="hidden" id="editStudentUserId">
                             <div class="form-group">
                                 <label>Ad *</label>
-                                <input type="text" id="editFirstName" required>
+                                <input type="text" id="editStudentFirstName" required>
                             </div>
                             <div class="form-group">
                                 <label>Soyad *</label>
-                                <input type="text" id="editLastName" required>
+                                <input type="text" id="editStudentLastName" required>
                             </div>
                             <div class="form-group">
                                 <label>Email *</label>
-                                <input type="email" id="editEmail" required>
+                                <input type="email" id="editStudentEmail" required>
                             </div>
                             <div class="form-group">
-                                <label id="identifierLabel">Öğrenci Numarası</label>
-                                <input type="text" id="editIdentifier">
+                                <label>Öğrenci Numarası</label>
+                                <input type="text" id="editStudentNumber" readonly>
                             </div>
                             <div class="form-actions">
                                 <button type="submit" class="submit-btn">Güncelle</button>
-                                <button type="button" onclick="closeEditUserModal()" class="cancel-btn">İptal</button>
+                                <button type="button" onclick="closeEditStudentModal()" class="cancel-btn">İptal</button>
                             </div>
-                            <div id="editUserMessage" class="form-message"></div>
+                            <div id="editStudentMessage" class="form-message"></div>
                         </form>
                     </div>
                 </div>
 
-                <div id="usersList" class="table-container">
+                <div id="studentsList" class="table-container">
                     <div class="loading">Yükleniyor...</div>
                 </div>
             </section>
@@ -140,7 +142,41 @@
             <!-- Academicians Section -->
             <section id="academicians" class="content-section">
                 <div class="section-header">
-                    <h1>Akademisyen Üniversite Yönetimi</h1>
+                    <h1>Akademisyen Yönetimi</h1>
+                </div>
+                
+                <!-- Edit Academician Modal -->
+                <div id="editAcademicianModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Akademisyen Düzenle</h3>
+                            <button onclick="closeEditAcademicianModal()" class="close-btn">&times;</button>
+                        </div>
+                        <form id="editAcademicianForm" onsubmit="updateAcademician(event)">
+                            <input type="hidden" id="editAcademicianUserId">
+                            <div class="form-group">
+                                <label>Ad *</label>
+                                <input type="text" id="editAcademicianFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Soyad *</label>
+                                <input type="text" id="editAcademicianLastName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="editAcademicianEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kullanıcı Adı</label>
+                                <input type="text" id="editAcademicianUsername" readonly>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Güncelle</button>
+                                <button type="button" onclick="closeEditAcademicianModal()" class="cancel-btn">İptal</button>
+                            </div>
+                            <div id="editAcademicianMessage" class="form-message"></div>
+                        </form>
+                    </div>
                 </div>
                 
                 <!-- Assign University Modal -->
@@ -278,6 +314,51 @@
                 </div>
             </section>
 
+            <!-- Admins Section -->
+            <section id="admins" class="content-section">
+                <div class="section-header">
+                    <h1>Admin Yönetimi</h1>
+                </div>
+                
+                <!-- Edit Admin Modal -->
+                <div id="editAdminModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Admin Düzenle</h3>
+                            <button onclick="closeEditAdminModal()" class="close-btn">&times;</button>
+                        </div>
+                        <form id="editAdminForm" onsubmit="updateAdmin(event)">
+                            <input type="hidden" id="editAdminUserId">
+                            <div class="form-group">
+                                <label>Ad *</label>
+                                <input type="text" id="editAdminFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Soyad *</label>
+                                <input type="text" id="editAdminLastName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="editAdminEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Admin Kodu</label>
+                                <input type="text" id="editAdminCode" readonly>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Güncelle</button>
+                                <button type="button" onclick="closeEditAdminModal()" class="cancel-btn">İptal</button>
+                            </div>
+                            <div id="editAdminMessage" class="form-message"></div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="adminsList" class="table-container">
+                    <div class="loading">Yükleniyor...</div>
+                </div>
+            </section>
+
             <!-- Statistics Section -->
             <section id="statistics" class="content-section">
                 <h1>İstatistikler</h1>
@@ -316,8 +397,9 @@
             
             // İlk yükleme
             loadStatistics();
-            loadUsers();
+            loadStudents();
             loadAcademicians();
+            loadAdmins();
             loadCourses();
             loadUniversities();
         });
@@ -357,8 +439,8 @@
             }
         }
 
-        async function loadUsers() {
-            const container = document.getElementById('usersList');
+        async function loadStudents() {
+            const container = document.getElementById('studentsList');
             container.innerHTML = '<div class="loading">Yükleniyor...</div>';
             
             try {
@@ -368,8 +450,11 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    if (data.users.length === 0) {
-                        container.innerHTML = '<p>Henüz kullanıcı yok</p>';
+                    // Sadece öğrencileri filtrele
+                    const students = data.users.filter(user => user.user_type === 'student');
+                    
+                    if (students.length === 0) {
+                        container.innerHTML = '<p>Henüz öğrenci yok</p>';
                         return;
                     }
                     
@@ -380,8 +465,7 @@
                                     <th>ID</th>
                                     <th>Ad Soyad</th>
                                     <th>Email</th>
-                                    <th>Tip</th>
-                                    <th>Tanımlayıcı</th>
+                                    <th>Öğrenci No</th>
                                     <th>Kayıt Tarihi</th>
                                     <th>İşlemler</th>
                                 </tr>
@@ -389,21 +473,17 @@
                             <tbody>
                     `;
                     
-                    data.users.forEach(user => {
+                    students.forEach(student => {
                         html += `
                             <tr>
-                                <td>${user.id}</td>
-                                <td>${user.first_name} ${user.last_name}</td>
-                                <td>${user.email}</td>
-                                <td><span class="badge badge-${user.user_type}">${user.user_type}</span></td>
-                                <td>${user.identifier || '-'}</td>
-                                <td>${new Date(user.created_at).toLocaleDateString('tr-TR')}</td>
+                                <td>${student.id}</td>
+                                <td>${student.first_name} ${student.last_name}</td>
+                                <td>${student.email}</td>
+                                <td><span class="badge badge-info">${student.identifier || '-'}</span></td>
+                                <td>${new Date(student.created_at).toLocaleDateString('tr-TR')}</td>
                                 <td>
-                                    ${user.id !== currentUser.id ? 
-                                        `<button onclick="editUser(${user.id}, '${user.first_name}', '${user.last_name}', '${user.email}', '${user.identifier || ''}', '${user.user_type}')" class="edit-btn">Düzenle</button>
-                                         <button onclick="deleteUser(${user.id})" class="delete-btn">Sil</button>` : 
-                                        '<span class="text-muted">Kendi hesabınız</span>'
-                                    }
+                                    <button onclick="editStudent(${student.id}, '${student.first_name}', '${student.last_name}', '${student.email}', '${student.identifier || ''}')" class="edit-btn">Düzenle</button>
+                                    <button onclick="deleteUser(${student.id}, 'student')" class="delete-btn">Sil</button>
                                 </td>
                             </tr>
                         `;
@@ -412,10 +492,10 @@
                     html += `</tbody></table>`;
                     container.innerHTML = html;
                 } else {
-                    container.innerHTML = '<p class="error">Kullanıcılar yüklenirken bir hata oluştu</p>';
+                    container.innerHTML = '<p class="error">Öğrenciler yüklenirken bir hata oluştu</p>';
                 }
             } catch (error) {
-                console.error('Kullanıcı yükleme hatası:', error);
+                console.error('Öğrenci yükleme hatası:', error);
                 container.innerHTML = '<p class="error">Sunucuya bağlanılamadı</p>';
             }
         }
@@ -546,45 +626,32 @@
             }
         }
 
-        function editUser(id, firstName, lastName, email, identifier, userType) {
-            document.getElementById('editUserId').value = id;
-            document.getElementById('editUserType').value = userType;
-            document.getElementById('editFirstName').value = firstName;
-            document.getElementById('editLastName').value = lastName;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editIdentifier').value = identifier;
-            
-            // Label değiştir
-            const label = document.getElementById('identifierLabel');
-            if (userType === 'student') {
-                label.textContent = 'Öğrenci Numarası';
-            } else if (userType === 'academician') {
-                label.textContent = 'Kullanıcı Adı';
-            } else {
-                label.textContent = 'Tanımlayıcı';
-            }
-            
-            document.getElementById('editUserModal').style.display = 'flex';
+        // Student edit functions
+        function editStudent(id, firstName, lastName, email, studentNumber) {
+            document.getElementById('editStudentUserId').value = id;
+            document.getElementById('editStudentFirstName').value = firstName;
+            document.getElementById('editStudentLastName').value = lastName;
+            document.getElementById('editStudentEmail').value = email;
+            document.getElementById('editStudentNumber').value = studentNumber;
+            document.getElementById('editStudentModal').style.display = 'flex';
         }
 
-        function closeEditUserModal() {
-            document.getElementById('editUserModal').style.display = 'none';
-            document.getElementById('editUserMessage').textContent = '';
-            document.getElementById('editUserMessage').className = 'form-message';
+        function closeEditStudentModal() {
+            document.getElementById('editStudentModal').style.display = 'none';
+            document.getElementById('editStudentMessage').textContent = '';
+            document.getElementById('editStudentMessage').className = 'form-message';
         }
 
-        async function updateUser(event) {
+        async function updateStudent(event) {
             event.preventDefault();
-            
-            const userId = document.getElementById('editUserId').value;
+            const userId = document.getElementById('editStudentUserId').value;
             const formData = {
-                firstName: document.getElementById('editFirstName').value.trim(),
-                lastName: document.getElementById('editLastName').value.trim(),
-                email: document.getElementById('editEmail').value.trim(),
-                identifier: document.getElementById('editIdentifier').value.trim() || null
+                firstName: document.getElementById('editStudentFirstName').value.trim(),
+                lastName: document.getElementById('editStudentLastName').value.trim(),
+                email: document.getElementById('editStudentEmail').value.trim()
             };
 
-            const messageDiv = document.getElementById('editUserMessage');
+            const messageDiv = document.getElementById('editStudentMessage');
             
             try {
                 const response = await fetch(`${API_URL}/admin/users/${userId}`, {
@@ -599,25 +666,140 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    messageDiv.textContent = 'Kullanıcı başarıyla güncellendi!';
+                    messageDiv.textContent = 'Öğrenci başarıyla güncellendi!';
                     messageDiv.className = 'form-message success';
                     setTimeout(() => {
-                        closeEditUserModal();
-                        loadUsers();
+                        closeEditStudentModal();
+                        loadStudents();
                     }, 1500);
                 } else {
-                    messageDiv.textContent = data.message || 'Kullanıcı güncellenirken bir hata oluştu';
+                    messageDiv.textContent = data.message || 'Güncelleme sırasında hata oluştu';
                     messageDiv.className = 'form-message error';
                 }
             } catch (error) {
-                console.error('Kullanıcı güncelleme hatası:', error);
+                console.error('Öğrenci güncelleme hatası:', error);
                 messageDiv.textContent = 'Sunucuya bağlanılamadı';
                 messageDiv.className = 'form-message error';
             }
         }
 
-        async function deleteUser(userId) {
-            if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')) {
+        // Academician edit functions
+        function editAcademician(id, firstName, lastName, email, username) {
+            document.getElementById('editAcademicianUserId').value = id;
+            document.getElementById('editAcademicianFirstName').value = firstName;
+            document.getElementById('editAcademicianLastName').value = lastName;
+            document.getElementById('editAcademicianEmail').value = email;
+            document.getElementById('editAcademicianUsername').value = username;
+            document.getElementById('editAcademicianModal').style.display = 'flex';
+        }
+
+        function closeEditAcademicianModal() {
+            document.getElementById('editAcademicianModal').style.display = 'none';
+            document.getElementById('editAcademicianMessage').textContent = '';
+            document.getElementById('editAcademicianMessage').className = 'form-message';
+        }
+
+        async function updateAcademician(event) {
+            event.preventDefault();
+            const userId = document.getElementById('editAcademicianUserId').value;
+            const formData = {
+                firstName: document.getElementById('editAcademicianFirstName').value.trim(),
+                lastName: document.getElementById('editAcademicianLastName').value.trim(),
+                email: document.getElementById('editAcademicianEmail').value.trim()
+            };
+
+            const messageDiv = document.getElementById('editAcademicianMessage');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Akademisyen başarıyla güncellendi!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeEditAcademicianModal();
+                        loadAcademicians();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Güncelleme sırasında hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Akademisyen güncelleme hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
+        }
+
+        // Admin edit functions
+        function editAdmin(id, firstName, lastName, email, adminCode) {
+            document.getElementById('editAdminUserId').value = id;
+            document.getElementById('editAdminFirstName').value = firstName;
+            document.getElementById('editAdminLastName').value = lastName;
+            document.getElementById('editAdminEmail').value = email;
+            document.getElementById('editAdminCode').value = adminCode;
+            document.getElementById('editAdminModal').style.display = 'flex';
+        }
+
+        function closeEditAdminModal() {
+            document.getElementById('editAdminModal').style.display = 'none';
+            document.getElementById('editAdminMessage').textContent = '';
+            document.getElementById('editAdminMessage').className = 'form-message';
+        }
+
+        async function updateAdmin(event) {
+            event.preventDefault();
+            const userId = document.getElementById('editAdminUserId').value;
+            const formData = {
+                firstName: document.getElementById('editAdminFirstName').value.trim(),
+                lastName: document.getElementById('editAdminLastName').value.trim(),
+                email: document.getElementById('editAdminEmail').value.trim()
+            };
+
+            const messageDiv = document.getElementById('editAdminMessage');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Admin başarıyla güncellendi!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeEditAdminModal();
+                        loadAdmins();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Güncelleme sırasında hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Admin güncelleme hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
+        }
+
+        async function deleteUser(userId, userType) {
+            const typeText = userType === 'student' ? 'öğrenciyi' : userType === 'academician' ? 'akademisyeni' : 'admini';
+            if (!confirm(`Bu ${typeText} silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
                 return;
             }
 
@@ -631,7 +813,10 @@
 
                 if (response.ok && data.success) {
                     alert('Kullanıcı başarıyla silindi');
-                    loadUsers();
+                    // İlgili listeyi yenile
+                    if (userType === 'student') loadStudents();
+                    else if (userType === 'academician') loadAcademicians();
+                    else if (userType === 'admin') loadAdmins();
                     loadStatistics();
                 } else {
                     alert(data.message || 'Kullanıcı silinirken bir hata oluştu');
@@ -825,7 +1010,7 @@
                                 <td>${academician.user_id}</td>
                                 <td>${academician.first_name} ${academician.last_name}</td>
                                 <td>${academician.email}</td>
-                                <td>${academician.username}</td>
+                                <td><span class="badge badge-info">${academician.username}</span></td>
                                 <td>
                                     ${academician.university_name 
                                         ? `<span class="badge badge-success">${academician.university_name}</span>` 
@@ -833,7 +1018,9 @@
                                 </td>
                                 <td>${new Date(academician.created_at).toLocaleDateString('tr-TR')}</td>
                                 <td>
-                                    <button onclick="openAssignUniversityModal(${academician.user_id}, '${academician.first_name} ${academician.last_name}', ${academician.university_id || 'null'})" class="edit-btn">Üniversite Ata</button>
+                                    <button onclick="editAcademician(${academician.user_id}, '${academician.first_name}', '${academician.last_name}', '${academician.email}', '${academician.username}')" class="edit-btn">Düzenle</button>
+                                    <button onclick="openAssignUniversityModal(${academician.user_id}, '${academician.first_name} ${academician.last_name}', ${academician.university_id || 'null'})" class="edit-btn">Üniversite</button>
+                                    <button onclick="deleteUser(${academician.user_id}, 'academician')" class="delete-btn">Sil</button>
                                 </td>
                             </tr>
                         `;
@@ -846,6 +1033,71 @@
                 }
             } catch (error) {
                 console.error('Akademisyen yükleme hatası:', error);
+                container.innerHTML = '<p class="error">Sunucuya bağlanılamadı</p>';
+            }
+        }
+
+        async function loadAdmins() {
+            const container = document.getElementById('adminsList');
+            container.innerHTML = '<div class="loading">Yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Sadece adminleri filtrele
+                    const admins = data.users.filter(user => user.user_type === 'admin');
+                    
+                    if (admins.length === 0) {
+                        container.innerHTML = '<p>Henüz admin yok</p>';
+                        return;
+                    }
+                    
+                    let html = `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad Soyad</th>
+                                    <th>Email</th>
+                                    <th>Admin Kodu</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    admins.forEach(admin => {
+                        const isCurrentUser = admin.id === currentUser.id;
+                        html += `
+                            <tr>
+                                <td>${admin.id}</td>
+                                <td>${admin.first_name} ${admin.last_name}</td>
+                                <td>${admin.email}</td>
+                                <td><span class="badge badge-danger">${admin.identifier || '-'}</span></td>
+                                <td>${new Date(admin.created_at).toLocaleDateString('tr-TR')}</td>
+                                <td>
+                                    ${!isCurrentUser ? 
+                                        `<button onclick="editAdmin(${admin.id}, '${admin.first_name}', '${admin.last_name}', '${admin.email}', '${admin.identifier || ''}')" class="edit-btn">Düzenle</button>
+                                         <button onclick="deleteUser(${admin.id}, 'admin')" class="delete-btn">Sil</button>` : 
+                                        '<span class="text-muted">Kendi hesabınız</span>'
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `</tbody></table>`;
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p class="error">Adminler yüklenirken bir hata oluştu</p>';
+                }
+            } catch (error) {
+                console.error('Admin yükleme hatası:', error);
                 container.innerHTML = '<p class="error">Sunucuya bağlanılamadı</p>';
             }
         }
