@@ -1510,3 +1510,119 @@ footer {
     width: 100%;
   }
 }
+
+/* Favorite Courses Section */
+.favorite-courses-section {
+  padding: 80px 0;
+  background: #f8f9fa;
+}
+
+.favorite-courses-section .section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.favorite-courses-section .section-header h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.favorite-courses-section .section-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.favorite-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.favorite-course-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.favorite-course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.favorite-course-card .course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.favorite-course-card .course-header h3 {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin: 0;
+  flex: 1;
+  padding-right: 10px;
+}
+
+.favorite-course-card .remove-favorite-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.favorite-course-card .remove-favorite-btn:hover {
+  background: #fee;
+  transform: scale(1.1);
+}
+
+.favorite-course-card .course-info {
+  margin-bottom: 15px;
+}
+
+.favorite-course-card .course-info p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.favorite-course-card .course-info strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.favorite-course-card .course-meta {
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.favorite-course-card .added-date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .favorite-courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .favorite-courses-section {
+    padding: 50px 0;
+  }
+
+  .favorite-courses-section .section-header h2 {
+    font-size: 2rem;
+  }
+}

@@ -102,19 +102,11 @@
       <div class="container">
         <div class="search-container">
           <h2 class="search-title">İdeal Yaz Dersini Bul</h2>
-          <form class="search-form">
+          <form class="search-form" id="searchForm">
             <div class="form-group">
               <label for="university">Üniversite</label>
               <select id="university">
                 <option value="">Üniversite Seçin</option>
-                <option value="hasan-kalyoncu">
-                  Hasan Kalyoncu Üniversitesi
-                </option>
-                <option value="metu">ODTÜ</option>
-                <option value="bogazici">Boğaziçi Üniversitesi</option>
-                <option value="ankara">Ankara Üniversitesi</option>
-                <option value="istanbul">İstanbul Üniversitesi</option>
-                <option value="itu">İTÜ</option>
               </select>
             </div>
 
@@ -122,12 +114,6 @@
               <label for="faculty">Fakülte</label>
               <select id="faculty">
                 <option value="">Fakülte Seçin</option>
-                <option value="engineering">Mühendislik</option>
-                <option value="medicine">Tıp</option>
-                <option value="law">Hukuk</option>
-                <option value="business">İşletme</option>
-                <option value="arts">Fen Edebiyat</option>
-                <option value="education">Eğitim</option>
               </select>
             </div>
 
@@ -135,8 +121,12 @@
               <label for="language">Ders Dili</label>
               <select id="language">
                 <option value="">Dil Seçin</option>
-                <option value="turkish">Türkçe</option>
-                <option value="english">İngilizce</option>
+                <option value="Matematik">Matematik</option>
+                <option value="Kimya">Kimya</option>
+                <option value="Bilgisayar Programlama">Bilgisayar Programlama</option>
+                <option value="Fizik">Fizik</option>
+                <option value="İngilizce">İngilizce</option>
+                <option value="İstatistik">İstatistik</option>
               </select>
             </div>
 
@@ -151,6 +141,19 @@
 
             <button type="submit" class="search-button">🔍 Ders Ara</button>
           </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favori Dersler Section -->
+    <section class="favorite-courses-section" id="favoriteCourses" style="display: none;">
+      <div class="container">
+        <div class="section-header">
+          <h2>⭐ Favori Derslerim</h2>
+          <p>Seçtiğiniz yaz okulu dersleri</p>
+        </div>
+        <div class="favorite-courses-grid" id="favoriteCoursesGrid">
+          <!-- Favori dersler dinamik olarak yüklenecek -->
         </div>
       </div>
     </section>
@@ -249,6 +252,10 @@
     </div>
 
     <script>
+      const API_URL = `${window.location.origin}/api`;
+      let currentUser = null;
+      let currentToken = null;
+
       // Kullanıcı bilgilerini yükle
       function loadUserProfile() {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -259,6 +266,9 @@
           window.location.href = "../öğrenci-giriş/öğrenci-giriş.html";
           return;
         }
+
+        currentUser = user;
+        currentToken = token;
 
         // Profil bilgilerini doldur
         const initials =
@@ -275,7 +285,151 @@
           user.userType === "student" ? "Öğrenci" : "Akademisyen";
         document.getElementById("profileStudentNumber").textContent =
           user.studentNumber || user.username || "-";
+        
+        // Favori dersleri yükle (sadece öğrenciler için)
+        if (user.userType === "student") {
+          loadFavoriteCourses();
+        }
       }
+
+      // Üniversiteleri yükle
+      async function loadUniversities() {
+        try {
+          const response = await fetch(`${API_URL}/universities`);
+          const data = await response.json();
+          
+          if (data.success && data.universities) {
+            const select = document.getElementById("university");
+            select.innerHTML = '<option value="">Üniversite Seçin</option>';
+            
+            data.universities.forEach(uni => {
+              const option = document.createElement("option");
+              option.value = uni.id;
+              option.textContent = uni.name;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error("Üniversiteler yüklenirken hata:", error);
+        }
+      }
+
+      // Fakülteleri yükle
+      async function loadFaculties() {
+        try {
+          const response = await fetch(`${API_URL}/faculties`);
+          const data = await response.json();
+          
+          if (data.success && data.faculties) {
+            const select = document.getElementById("faculty");
+            select.innerHTML = '<option value="">Fakülte Seçin</option>';
+            
+            data.faculties.forEach(faculty => {
+              const option = document.createElement("option");
+              option.value = faculty.id;
+              option.textContent = faculty.name;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error("Fakülteler yüklenirken hata:", error);
+        }
+      }
+
+      // Favori dersleri yükle
+      async function loadFavoriteCourses() {
+        try {
+          const response = await fetch(`${API_URL}/favorites`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          const data = await response.json();
+          
+          if (data.success && data.favorites && data.favorites.length > 0) {
+            document.getElementById("favoriteCourses").style.display = "block";
+            displayFavoriteCourses(data.favorites);
+          }
+        } catch (error) {
+          console.error("Favori dersler yüklenirken hata:", error);
+        }
+      }
+
+      // Favori dersleri göster
+      function displayFavoriteCourses(favorites) {
+        const grid = document.getElementById("favoriteCoursesGrid");
+        grid.innerHTML = "";
+
+        favorites.forEach(favorite => {
+          const card = document.createElement("div");
+          card.className = "favorite-course-card";
+          card.innerHTML = `
+            <div class="course-header">
+              <h3>${favorite.course_name}</h3>
+              <button class="remove-favorite-btn" onclick="removeFavorite(${favorite.id})" title="Favorilerden Kaldır">
+                ❌
+              </button>
+            </div>
+            <div class="course-info">
+              <p><strong>Ders Kodu:</strong> ${favorite.course_code || '-'}</p>
+              <p><strong>Kategori:</strong> ${favorite.category || '-'}</p>
+              <p><strong>Akademisyen:</strong> ${favorite.academician_name || 'Belirtilmemiş'}</p>
+            </div>
+            <div class="course-meta">
+              <span class="added-date">📅 Eklenme: ${new Date(favorite.favorited_at || favorite.created_at).toLocaleDateString('tr-TR')}</span>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      // Favoriden kaldır
+      async function removeFavorite(courseId) {
+        if (!confirm("Bu dersi favorilerden kaldırmak istediğinize emin misiniz?")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/favorites/${courseId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            alert("Ders favorilerden kaldırıldı!");
+            loadFavoriteCourses();
+          } else {
+            alert(data.message || "Bir hata oluştu");
+          }
+        } catch (error) {
+          console.error("Favori kaldırma hatası:", error);
+          alert("Bir hata oluştu");
+        }
+      }
+
+      // Arama formu submit
+      document.getElementById("searchForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const university = document.getElementById("university").value;
+        const faculty = document.getElementById("faculty").value;
+        const category = document.getElementById("language").value;
+        
+        // Dersler sayfasına yönlendir (query parametreleriyle)
+        let url = "../Dersler/dersler.html?";
+        const params = [];
+        
+        if (university) params.push(`university=${university}`);
+        if (faculty) params.push(`faculty=${faculty}`);
+        if (category) params.push(`category=${encodeURIComponent(category)}`);
+        
+        url += params.join("&");
+        window.location.href = url;
+      });
 
       // Profil dropdown toggle
       document
@@ -453,8 +607,12 @@
         }
       });
 
-      // Sayfa yüklendiğinde profili yükle
-      document.addEventListener("DOMContentLoaded", loadUserProfile);
+      // Sayfa yüklendiğinde profili ve diğer verileri yükle
+      document.addEventListener("DOMContentLoaded", function() {
+        loadUserProfile();
+        loadUniversities();
+        loadFaculties();
+      });
     </script>
 
     <footer>
