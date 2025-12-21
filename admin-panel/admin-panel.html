@@ -252,8 +252,10 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Akademisyen ID (Opsiyonel)</label>
-                                <input type="number" id="academicianId" placeholder="Boş bırakılabilir">
+                                <label>Akademisyen (Opsiyonel)</label>
+                                <select id="academicianId">
+                                    <option value="">Boş bırakılabilir</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -266,6 +268,55 @@
                         </div>
                         <div id="courseFormMessage" class="form-message"></div>
                     </form>
+                </div>
+                
+                <!-- Edit Course Modal -->
+                <div id="editCourseModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Ders Düzenle</h3>
+                            <button onclick="closeEditCourseModal()" class="close-btn">&times;</button>
+                        </div>
+                        <form id="editCourseForm" onsubmit="updateCourse(event)">
+                            <input type="hidden" id="editCourseId">
+                            <div class="form-group">
+                                <label>Ders Adı *</label>
+                                <input type="text" id="editCourseName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ders Kodu</label>
+                                <input type="text" id="editCourseCode">
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select id="editCategory">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Matematik">Matematik</option>
+                                    <option value="Kimya">Kimya</option>
+                                    <option value="Bilgisayar Programlama">Bilgisayar Programlama</option>
+                                    <option value="Fizik">Fizik</option>
+                                    <option value="İngilizce">İngilizce</option>
+                                    <option value="İstatistik">İstatistik</option>
+                                    <option value="Diğer">Diğer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Akademisyen (Opsiyonel)</label>
+                                <select id="editAcademicianId">
+                                    <option value="">Boş bırakılabilir</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Açıklama</label>
+                                <textarea id="editDescription" rows="3"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Güncelle</button>
+                                <button type="button" onclick="closeEditCourseModal()" class="cancel-btn">İptal</button>
+                            </div>
+                            <div id="editCourseMessage" class="form-message"></div>
+                        </form>
+                    </div>
                 </div>
 
                 <div id="coursesList" class="table-container">
@@ -299,6 +350,14 @@
                                 <label>Website</label>
                                 <input type="url" id="universityWebsite" placeholder="https://...">
                             </div>
+                            <div class="form-group">
+                                <label>Tür *</label>
+                                <select id="universityType" required>
+                                    <option value="">Seçiniz</option>
+                                    <option value="Devlet">Devlet</option>
+                                    <option value="Özel">Özel</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Açıklama</label>
@@ -310,6 +369,48 @@
                         </div>
                         <div id="universityFormMessage" class="form-message"></div>
                     </form>
+                </div>
+                
+                <!-- Edit University Modal -->
+                <div id="editUniversityModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Üniversite Düzenle</h3>
+                            <button onclick="closeEditUniversityModal()" class="close-btn">&times;</button>
+                        </div>
+                        <form id="editUniversityForm" onsubmit="updateUniversity(event)">
+                            <input type="hidden" id="editUniversityId">
+                            <div class="form-group">
+                                <label>Üniversite Adı *</label>
+                                <input type="text" id="editUniversityName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Şehir</label>
+                                <input type="text" id="editUniversityCity">
+                            </div>
+                            <div class="form-group">
+                                <label>Website</label>
+                                <input type="url" id="editUniversityWebsite" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Tür *</label>
+                                <select id="editUniversityType" required>
+                                    <option value="">Seçiniz</option>
+                                    <option value="Devlet">Devlet</option>
+                                    <option value="Özel">Özel</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Açıklama</label>
+                                <textarea id="editUniversityDescription" rows="3"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Güncelle</button>
+                                <button type="button" onclick="closeEditUniversityModal()" class="cancel-btn">İptal</button>
+                            </div>
+                            <div id="editUniversityMessage" class="form-message"></div>
+                        </form>
+                    </div>
                 </div>
 
                 <div id="universitiesList" class="table-container">
@@ -536,6 +637,10 @@
                     `;
                     
                     data.courses.forEach(course => {
+                        const courseName = (course.course_name || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        const courseCode = (course.course_code || '').replace(/'/g, "\\'");
+                        const category = (course.category || '').replace(/'/g, "\\'");
+                        const description = (course.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
                         html += `
                             <tr>
                                 <td>${course.id}</td>
@@ -545,6 +650,7 @@
                                 <td>${course.academician_name || 'Sistem'}</td>
                                 <td>${course.student_count || 0}</td>
                                 <td>
+                                    <button onclick='editCourse(${course.id}, "${courseName}", "${courseCode}", "${category}", ${course.academician_id || 'null'}, "${description}")' class="edit-btn">Düzenle</button>
                                     <button onclick="deleteCourse(${course.id})" class="delete-btn">Sil</button>
                                 </td>
                             </tr>
@@ -830,7 +936,8 @@
             }
         }
 
-        function showAddCourseForm() {
+        async function showAddCourseForm() {
+            await loadAcademiciansForDropdown('academicianId');
             document.getElementById('addCourseForm').style.display = 'block';
         }
 
@@ -838,6 +945,99 @@
             document.getElementById('addCourseForm').style.display = 'none';
             document.getElementById('courseFormMessage').textContent = '';
             document.getElementById('courseFormMessage').className = 'form-message';
+        }
+
+        async function loadAcademiciansForDropdown(selectId) {
+            try {
+                const response = await fetch(`${API_URL}/admin/academicians`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const select = document.getElementById(selectId);
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Boş bırakılabilir</option>';
+                    
+                    data.academicians.forEach(academician => {
+                        const option = document.createElement('option');
+                        option.value = academician.user_id;
+                        option.textContent = `${academician.first_name} ${academician.last_name}${academician.university_name ? ' - ' + academician.university_name : ''}`;
+                        if (academician.user_id == currentValue) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Akademisyen yükleme hatası:', error);
+            }
+        }
+
+        async function editCourse(id, name, code, category, academicianId, description) {
+            document.getElementById('editCourseId').value = id;
+            document.getElementById('editCourseName').value = name;
+            document.getElementById('editCourseCode').value = code;
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editDescription').value = description;
+            
+            // Akademisyenleri yükle ve seçili olanı ayarla
+            await loadAcademiciansForDropdown('editAcademicianId');
+            if (academicianId) {
+                document.getElementById('editAcademicianId').value = academicianId;
+            }
+            
+            document.getElementById('editCourseModal').style.display = 'flex';
+        }
+
+        function closeEditCourseModal() {
+            document.getElementById('editCourseModal').style.display = 'none';
+            document.getElementById('editCourseMessage').textContent = '';
+            document.getElementById('editCourseMessage').className = 'form-message';
+        }
+
+        async function updateCourse(event) {
+            event.preventDefault();
+            const courseId = document.getElementById('editCourseId').value;
+            const formData = {
+                courseName: document.getElementById('editCourseName').value.trim(),
+                courseCode: document.getElementById('editCourseCode').value.trim() || null,
+                category: document.getElementById('editCategory').value || null,
+                description: document.getElementById('editDescription').value.trim() || null,
+                academicianId: document.getElementById('editAcademicianId').value || null
+            };
+
+            const messageDiv = document.getElementById('editCourseMessage');
+            
+            try {
+                const response = await fetch(`${API_URL}/courses/${courseId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Ders başarıyla güncellendi!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeEditCourseModal();
+                        loadCourses();
+                        loadStatistics();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Güncelleme sırasında hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Ders güncelleme hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
         }
 
         async function loadUniversities() {
@@ -863,6 +1063,7 @@
                                     <th>ID</th>
                                     <th>Üniversite Adı</th>
                                     <th>Şehir</th>
+                                    <th>Tür</th>
                                     <th>Website</th>
                                     <th>İletişim</th>
                                     <th>İşlemler</th>
@@ -872,14 +1073,17 @@
                     `;
                     
                     data.universities.forEach(uni => {
+                        const typeClass = uni.type === 'Devlet' ? 'badge-success' : uni.type === 'Özel' ? 'badge-info' : 'badge-secondary';
                         html += `
                             <tr>
                                 <td>${uni.id}</td>
                                 <td>${uni.name}</td>
                                 <td>${uni.city || '-'}</td>
+                                <td><span class="badge ${typeClass}">${uni.type || '-'}</span></td>
                                 <td>${uni.website ? `<a href="${uni.website}" target="_blank">Link</a>` : '-'}</td>
                                 <td>${uni.contact_email || uni.contact_phone || '-'}</td>
                                 <td>
+                                    <button onclick="editUniversity(${uni.id}, '${(uni.name || '').replace(/'/g, "\\'")}', '${uni.city || ''}', '${uni.website || ''}', '${uni.type || ''}', '${(uni.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')" class="edit-btn">Düzenle</button>
                                     <button onclick="deleteUniversity(${uni.id})" class="delete-btn">Sil</button>
                                 </td>
                             </tr>
@@ -904,6 +1108,7 @@
                 name: document.getElementById('universityName').value.trim(),
                 city: document.getElementById('universityCity').value.trim() || null,
                 website: document.getElementById('universityWebsite').value.trim() || null,
+                type: document.getElementById('universityType').value || null,
                 description: document.getElementById('universityDescription').value.trim() || null
             };
 
@@ -973,6 +1178,66 @@
             document.getElementById('addUniversityForm').style.display = 'none';
             document.getElementById('universityFormMessage').textContent = '';
             document.getElementById('universityFormMessage').className = 'form-message';
+        }
+
+        function editUniversity(id, name, city, website, type, description) {
+            document.getElementById('editUniversityId').value = id;
+            document.getElementById('editUniversityName').value = name;
+            document.getElementById('editUniversityCity').value = city;
+            document.getElementById('editUniversityWebsite').value = website;
+            document.getElementById('editUniversityType').value = type;
+            document.getElementById('editUniversityDescription').value = description;
+            document.getElementById('editUniversityModal').style.display = 'flex';
+        }
+
+        function closeEditUniversityModal() {
+            document.getElementById('editUniversityModal').style.display = 'none';
+            document.getElementById('editUniversityMessage').textContent = '';
+            document.getElementById('editUniversityMessage').className = 'form-message';
+        }
+
+        async function updateUniversity(event) {
+            event.preventDefault();
+            const universityId = document.getElementById('editUniversityId').value;
+            const formData = {
+                name: document.getElementById('editUniversityName').value.trim(),
+                city: document.getElementById('editUniversityCity').value.trim() || null,
+                website: document.getElementById('editUniversityWebsite').value.trim() || null,
+                type: document.getElementById('editUniversityType').value || null,
+                description: document.getElementById('editUniversityDescription').value.trim() || null
+            };
+
+            const messageDiv = document.getElementById('editUniversityMessage');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/universities/${universityId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = 'Üniversite başarıyla güncellendi!';
+                    messageDiv.className = 'form-message success';
+                    setTimeout(() => {
+                        closeEditUniversityModal();
+                        loadUniversities();
+                        loadStatistics();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message || 'Güncelleme sırasında hata oluştu';
+                    messageDiv.className = 'form-message error';
+                }
+            } catch (error) {
+                console.error('Üniversite güncelleme hatası:', error);
+                messageDiv.textContent = 'Sunucuya bağlanılamadı';
+                messageDiv.className = 'form-message error';
+            }
         }
 
         async function loadAcademicians() {
