@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fakülteler - Campus Summer</title>
     <link rel="stylesheet" href="fakülteler.css">
+    <link rel="stylesheet" href="fakülteler_profile.css">
 </head>
 <body>
     
     <header class="header">
-        <div class="container">
+        <div class="header-container">
             <div class="logo">
                 <img src="2.3.logo.png" alt="Campus Summer Logo">
                 <span>Campus Summer</span> 
@@ -35,6 +36,37 @@
                     <a href="../İletişim/iletisim.html" class="nav-link">İletişim</a>
                 </div>
             </nav>
+
+            <!-- Profil Bölümü -->
+            <div class="profile-section" id="profileSection" style="display: none;">
+                <div class="profile-avatar" id="profileToggle">
+                    <span id="avatarInitials">?</span>
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-header">
+                        <div class="profile-avatar-large">
+                            <span id="avatarInitialsLarge">?</span>
+                        </div>
+                        <div class="profile-info">
+                            <h4 id="profileName">Kullanıcı</h4>
+                            <p id="profileEmail">email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-detail-item">
+                            <span class="detail-label">Kullanıcı Tipi:</span>
+                            <span class="detail-value" id="profileType">-</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="detail-label">Okul Numarası:</span>
+                            <span class="detail-value" id="profileStudentNumber">-</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -162,6 +194,9 @@
             if (userStr && userToken) {
                 currentUser = JSON.parse(userStr);
                 console.log('✅ Kullanıcı girişi tespit edildi:', currentUser.userType);
+                loadUserProfile();
+                document.getElementById('profileSection').style.display = 'block';
+                setupProfileEvents();
                 initializePage();
             } else {
                 // Giriş yapılmamışsa, tüm fakülteleri göster
@@ -169,6 +204,52 @@
                 loadFaculties();
             }
         });
+
+        // Profil bilgilerini yükle
+        function loadUserProfile() {
+            if (!currentUser) return;
+            const initials = (currentUser.firstName?.charAt(0) || "") + (currentUser.lastName?.charAt(0) || "");
+            document.getElementById("avatarInitials").textContent = initials.toUpperCase() || "?";
+            document.getElementById("avatarInitialsLarge").textContent = initials.toUpperCase() || "?";
+            document.getElementById("profileName").textContent = `${currentUser.firstName || ""} ${currentUser.lastName || ""}`;
+            document.getElementById("profileEmail").textContent = currentUser.email || "";
+            document.getElementById("profileType").textContent = 
+                currentUser.userType === "student" ? "Öğrenci" : 
+                currentUser.userType === "academician" ? "Akademisyen" : "Admin";
+            document.getElementById("profileStudentNumber").textContent = 
+                currentUser.studentNumber || currentUser.username || currentUser.adminCode || "-";
+        }
+
+        // Profil event'lerini kur
+        function setupProfileEvents() {
+            const profileToggle = document.getElementById("profileToggle");
+            const profileDropdown = document.getElementById("profileDropdown");
+            const logoutBtn = document.getElementById("logoutBtn");
+
+            if (profileToggle) {
+                profileToggle.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle("active");
+                });
+            }
+
+            // Dropdown dışına tıklanınca kapat
+            document.addEventListener("click", function (e) {
+                const profileSection = document.querySelector(".profile-section");
+                if (profileSection && !profileSection.contains(e.target)) {
+                    profileDropdown?.classList.remove("active");
+                }
+            });
+
+            // Çıkış yap
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", function () {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    window.location.href = "../website-giriş-sayfası/website-giriş-sayfası.html";
+                });
+            }
+        }
 
         async function initializePage() {
             if (currentUser.userType === 'academician') {

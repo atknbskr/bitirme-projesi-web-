@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Üniversiteler - Campus Summer</title>
-    <link rel="stylesheet" href="anasayfa.css">
     <link rel="stylesheet" href="üniversiteler.css">
 </head>
 <body>
     
     <header class="header">
-        <div class="container">
+        <div class="header-container">
             <div class="logo">
                 <img src="2.3.logo.png" alt="Campus Summer Logo">
                 <span>Campus Summer</span> 
@@ -37,7 +36,38 @@
                 </div>
             </nav>
 
-            
+            <!-- Profil Bölümü -->
+            <div class="profile-section" id="profileSection" style="display: none;">
+                <div class="profile-avatar" id="profileToggle">
+                    <span id="avatarInitials">?</span>
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-header">
+                        <div class="profile-avatar-large">
+                            <span id="avatarInitialsLarge">?</span>
+                        </div>
+                        <div class="profile-info">
+                            <h4 id="profileName">Kullanıcı</h4>
+                            <p id="profileEmail">email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-detail-item">
+                            <span class="detail-label">Kullanıcı Tipi:</span>
+                            <span class="detail-value" id="profileType">-</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="detail-label">Okul Numarası:</span>
+                            <span class="detail-value" id="profileStudentNumber">-</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
     </header>
 
     <!-- Hero Section -->
@@ -159,6 +189,7 @@
     <script>
         const API_URL = 'http://localhost:5500/api';
         let allUniversities = [];
+        let displayedUniversities = [];
         let isAdmin = false;
         let currentUser = null;
 
@@ -177,12 +208,67 @@
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             currentUser = user;
             
+            // Giriş yapmış kullanıcı varsa profil bölümünü göster
+            if (token && user.userType) {
+                loadUserProfile();
+                document.getElementById('profileSection').style.display = 'block';
+            }
+            
             // Admin kontrolü ve üniversite ekle butonu göster
             if (token && user.userType === 'admin') {
                 isAdmin = true;
                 document.getElementById('addUniversityBtnTop').style.display = 'inline-flex';
             }
         }
+
+        // Kullanıcı profilini yükle
+        function loadUserProfile() {
+            const user = currentUser;
+            if (!user) return;
+
+            // Profil bilgilerini doldur
+            const initials = (user.firstName?.charAt(0) || "") + (user.lastName?.charAt(0) || "");
+            document.getElementById("avatarInitials").textContent = initials.toUpperCase() || "?";
+            document.getElementById("avatarInitialsLarge").textContent = initials.toUpperCase() || "?";
+            document.getElementById("profileName").textContent = `${user.firstName || ""} ${user.lastName || ""}`;
+            document.getElementById("profileEmail").textContent = user.email || "";
+            document.getElementById("profileType").textContent = 
+                user.userType === "student" ? "Öğrenci" : 
+                user.userType === "academician" ? "Akademisyen" : "Admin";
+            document.getElementById("profileStudentNumber").textContent = 
+                user.studentNumber || user.username || user.adminCode || "-";
+        }
+
+        // Profil dropdown toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileToggle = document.getElementById("profileToggle");
+            const profileDropdown = document.getElementById("profileDropdown");
+            const logoutBtn = document.getElementById("logoutBtn");
+
+            if (profileToggle) {
+                profileToggle.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle("active");
+                });
+            }
+
+            // Dropdown dışına tıklanınca kapat
+            document.addEventListener("click", function (e) {
+                const profileSection = document.querySelector(".profile-section");
+                if (profileSection && !profileSection.contains(e.target)) {
+                    profileDropdown?.classList.remove("active");
+                }
+            });
+
+            // Çıkış yap
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", function () {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    window.location.href = "../website-giriş-sayfası/website-giriş-sayfası.html";
+                });
+            }
+        });
 
         // Üniversiteleri yükle
         async function loadUniversities() {
@@ -192,40 +278,56 @@
                 
                 if (data.success) {
                     allUniversities = data.universities;
+                    displayedUniversities = [...allUniversities]; // Tüm üniversitelerin kopyası
+                    
+                    // İstatistikleri TÜM üniversitelere göre güncelle (filtrelenmeden önce)
+                    updateStats(allUniversities);
                     
                     // Akademisyen ise sadece kendi üniversitesini göster
                     if (currentUser && currentUser.userType === 'academician' && currentUser.universityId) {
-                        allUniversities = allUniversities.filter(uni => uni.id === currentUser.universityId);
+                        displayedUniversities = allUniversities.filter(uni => uni.id === currentUser.universityId);
                         
                         // Subtitle'ı güncelle
-                        if (allUniversities.length > 0) {
+                        if (displayedUniversities.length > 0) {
                             document.getElementById('sectionSubtitle').textContent = 
-                                `${allUniversities[0].name} - Akademisyen ve Öğrenci Sayıları`;
+                                `${displayedUniversities[0].name} - Akademisyen ve Öğrenci Sayıları`;
                         }
                     }
                     
-                    displayUniversities(allUniversities);
-                    updateStats();
+                    displayUniversities(displayedUniversities);
                 } else {
                     displayUniversities([]);
+                    updateStats([]);
                 }
             } catch (error) {
                 console.error('Üniversiteler yüklenirken hata:', error);
                 displayUniversities([]);
+                updateStats([]);
             }
         }
 
-        // İstatistikleri güncelle
-        function updateStats() {
-            document.getElementById('universityCount').textContent = allUniversities.length;
+        // İstatistikleri güncelle - TÜM veritabanındaki verilere göre
+        function updateStats(universities) {
+            // Toplam üniversite sayısı
+            const universityCount = universities.length;
+            document.getElementById('universityCount').textContent = universityCount;
             
             // Toplam akademisyen ve öğrenci sayısını hesapla
             let totalAcademicians = 0;
             let totalStudents = 0;
             
-            allUniversities.forEach(uni => {
-                totalAcademicians += uni.academician_count || 0;
-                totalStudents += uni.student_count || 0;
+            universities.forEach(uni => {
+                const acadCount = parseInt(uni.academician_count) || 0;
+                const studCount = parseInt(uni.student_count) || 0;
+                totalAcademicians += acadCount;
+                totalStudents += studCount;
+            });
+            
+            // Debug için konsola yazdır
+            console.log('İstatistikler:', {
+                universiteler: universityCount,
+                akademisyenler: totalAcademicians,
+                ogrenciler: totalStudents
             });
             
             document.getElementById('totalAcademicians').textContent = totalAcademicians;
