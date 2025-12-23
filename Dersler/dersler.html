@@ -233,6 +233,20 @@
         </div>
     </div>
 
+    <!-- Başvurular Modal -->
+    <div id="applicationsModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeApplicationsModal()"></div>
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeApplicationsModal()">×</button>
+            <div class="modal-body">
+                <h2 style="margin-bottom: 20px;">📋 Ders Başvuruları</h2>
+                <div id="applicationsList" class="applications-list">
+                    <div class="loading-message">Yükleniyor...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ders Düzenleme Modal -->
     <div id="editCourseModal" class="modal" style="display: none;">
         <div class="modal-overlay"></div>
@@ -1143,10 +1157,18 @@
                             <button class="favorite-btn" id="fav-${course.id}" onclick="toggleFavorite(${course.id})" style="flex: 1; min-width: 150px;">
                                 <span class="fav-icon">♡</span> Favoriye Ekle
                             </button>
+                            <button class="apply-btn" onclick="applyToCourse(${course.id})" style="background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; min-width: 120px;">
+                                📝 Başvur
+                            </button>
                         ` : ''}
                         ${isStudent && isExpired ? `
                             <button class="favorite-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1; min-width: 150px;">
                                 ⏰ Başvuru Süresi Doldu
+                            </button>
+                        ` : ''}
+                        ${isMyCourse ? `
+                            <button class="applications-btn" onclick="showCourseApplications(${course.id})" style="background: #ffc107; color: #212529; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; min-width: 120px;">
+                                📋 Başvurular
                             </button>
                         ` : ''}
                         <button class="detail-btn" onclick="showCourseDetail(${course.id})" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; flex: 1; min-width: 120px;">
@@ -1720,6 +1742,7 @@
         window.onclick = function(event) {
             const editModal = document.getElementById('editCourseModal');
             const detailModal = document.getElementById('courseDetailModal');
+            const applicationsModal = document.getElementById('applicationsModal');
             
             if (event.target === editModal) {
                 closeEditCourseModal();
@@ -1727,14 +1750,237 @@
             if (event.target === detailModal) {
                 closeCourseDetail();
             }
+            if (event.target === applicationsModal) {
+                closeApplicationsModal();
+            }
         }
 
         // ESC tuşu ile modal'ı kapat
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeCourseDetail();
+                closeApplicationsModal();
             }
         });
+        
+        // Öğrenci: Derse başvur
+        async function applyToCourse(courseId) {
+            if (!userToken) {
+                alert('Lütfen önce giriş yapın');
+                return;
+            }
+            
+            if (!confirm('Bu derse başvurmak istediğinize emin misiniz?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/summer-registrations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        offeringId: courseId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert('✅ Başvurunuz başarıyla alındı! Akademisyen onayı bekleniyor.');
+                    // Dersleri yenile
+                    loadCourses();
+                } else {
+                    alert('❌ Hata: ' + (data.message || 'Başvuru yapılamadı'));
+                }
+            } catch (error) {
+                console.error('Başvuru hatası:', error);
+                alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+            }
+        }
+        
+        // Akademisyen: Ders başvurularını göster
+        async function showCourseApplications(courseId) {
+            console.log('showCourseApplications çağrıldı, courseId:', courseId);
+            
+            if (!userToken) {
+                alert('Lütfen önce giriş yapın');
+                return;
+            }
+            
+            const modal = document.getElementById('applicationsModal');
+            const applicationsList = document.getElementById('applicationsList');
+            
+            if (!modal || !applicationsList) {
+                console.error('Modal elementleri bulunamadı');
+                alert('Modal elementleri bulunamadı');
+                return;
+            }
+            
+            modal.style.display = 'flex';
+            modal.dataset.courseId = courseId;
+            applicationsList.innerHTML = '<div class="loading-message">Yükleniyor...</div>';
+            
+            try {
+                console.log('Başvurular yükleniyor, courseId:', courseId, 'URL:', `${API_URL}/summer-registrations/offering/${courseId}`);
+                const response = await fetch(`${API_URL}/summer-registrations/offering/${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API hatası:', errorData);
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Başvurular verisi:', data);
+                console.log('Başvurular verisi:', data);
+                
+                if (data.success) {
+                    const registrations = data.data || [];
+                    console.log('Başvuru sayısı:', registrations.length);
+                    
+                    if (registrations.length === 0) {
+                        applicationsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Henüz başvuru yapılmamış.</p>';
+                    } else {
+                        applicationsList.innerHTML = registrations.map(reg => {
+                            const formatDate = (dateStr) => {
+                                if (!dateStr) return 'Belirtilmemiş';
+                                const date = new Date(dateStr);
+                                return date.toLocaleDateString('tr-TR', { 
+                                    day: 'numeric', 
+                                    month: 'long', 
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            };
+                            
+                            const studentName = `${reg.first_name || ''} ${reg.last_name || ''}`.trim() || 'Öğrenci';
+                            const studentEmail = reg.email || 'E-posta bulunamadı';
+                            
+                            const statusBadge = {
+                                'pending': '<span style="background: #ffc107; color: #212529; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">⏳ Beklemede</span>',
+                                'approved': '<span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">✅ Onaylandı</span>',
+                                'rejected': '<span style="background: #dc3545; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">❌ Reddedildi</span>'
+                            };
+                            
+                            return `
+                                <div class="application-item" style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid ${reg.status === 'approved' ? '#28a745' : reg.status === 'rejected' ? '#dc3545' : '#ffc107'};">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                        <div>
+                                            <h3 style="margin: 0 0 5px 0; color: #212529;">${studentName}</h3>
+                                            <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📧 ${studentEmail}</p>
+                                            ${reg.student_number ? `<p style="margin: 5px 0; color: #666; font-size: 0.9em;">🎓 Öğrenci No: ${reg.student_number}</p>` : ''}
+                                            <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📅 Başvuru Tarihi: ${formatDate(reg.application_date)}</p>
+                                            ${reg.status_updated_at ? `<p style="margin: 5px 0; color: #666; font-size: 0.9em;">🔄 Durum Güncelleme: ${formatDate(reg.status_updated_at)}</p>` : ''}
+                                        </div>
+                                        <div>
+                                            ${statusBadge[reg.status] || statusBadge.pending}
+                                        </div>
+                                    </div>
+                                    ${reg.application_note ? `
+                                        <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                                            <strong>📝 Başvuru Notu:</strong>
+                                            <p style="margin: 5px 0 0 0; color: #495057;">${reg.application_note}</p>
+                                        </div>
+                                    ` : ''}
+                                    ${reg.rejection_reason ? `
+                                        <div style="background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid #dc3545;">
+                                            <strong>❌ Red Nedeni:</strong>
+                                            <p style="margin: 5px 0 0 0; color: #721c24;">${reg.rejection_reason}</p>
+                                        </div>
+                                    ` : ''}
+                                    ${reg.status === 'pending' ? `
+                                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                            <button onclick="updateApplicationStatus(${reg.id}, 'approved', ${courseId})" style="background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                                                ✅ Onayla
+                                            </button>
+                                            <button onclick="updateApplicationStatus(${reg.id}, 'rejected', ${courseId})" style="background: #dc3545; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                                                ❌ Reddet
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    applicationsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #dc3545;">Başvurular yüklenirken bir hata oluştu: ' + (data.message || 'Bilinmeyen hata') + '</p>';
+                }
+            } catch (error) {
+                console.error('Başvurular yükleme hatası:', error);
+                applicationsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #dc3545;">Sunucuya bağlanılamadı: ' + error.message + '</p>';
+            }
+        }
+        
+        // Akademisyen: Başvuru durumunu güncelle
+        async function updateApplicationStatus(registrationId, status, courseId) {
+            if (!userToken) {
+                alert('Lütfen önce giriş yapın');
+                return;
+            }
+            
+            const action = status === 'approved' ? 'onaylamak' : 'reddetmek';
+            if (!confirm(`Bu başvuruyu ${action} istediğinize emin misiniz?`)) {
+                return;
+            }
+            
+            let rejectionReason = null;
+            if (status === 'rejected') {
+                rejectionReason = prompt('Red nedeni (isteğe bağlı):');
+                if (rejectionReason === null) {
+                    return; // Kullanıcı iptal etti
+                }
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/summer-registrations/${registrationId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify({
+                        status: status,
+                        rejectionReason: rejectionReason || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert(`✅ Başvuru ${status === 'approved' ? 'onaylandı' : 'reddedildi'}!`);
+                    // Başvuruları yenile - modal'dan courseId'yi al
+                    const modal = document.getElementById('applicationsModal');
+                    const currentCourseId = modal.dataset.courseId || courseId;
+                    if (currentCourseId) {
+                        await showCourseApplications(parseInt(currentCourseId));
+                    }
+                    // Dersleri yenile
+                    loadCourses();
+                } else {
+                    alert('❌ Hata: ' + (data.message || 'Başvuru durumu güncellenemedi'));
+                }
+            } catch (error) {
+                console.error('Başvuru durumu güncelleme hatası:', error);
+                alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+            }
+        }
+        
+        // Başvurular modal'ını kapat
+        function closeApplicationsModal() {
+            const modal = document.getElementById('applicationsModal');
+            modal.style.display = 'none';
+            delete modal.dataset.courseId;
+        }
     </script>
 
 </body>
