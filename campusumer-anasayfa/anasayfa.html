@@ -84,7 +84,7 @@
                 <span class="detail-value" id="profileType">-</span>
               </div>
               <div class="profile-detail-item">
-                <span class="detail-label">Okul Numarası:</span>
+                <span class="detail-label" id="profileDetailLabel">Okul Numarası:</span>
                 <span class="detail-value" id="profileStudentNumber">-</span>
               </div>
             </div>
@@ -130,6 +130,47 @@
         </div>
         <div class="enrolled-courses-grid" id="enrolledCoursesGrid">
           <!-- Kayıtlı dersler buraya yüklenecek -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Akademisyen: İstatistikler ve Hızlı Erişim -->
+    <section class="academician-dashboard-section" id="academicianDashboardSection" style="display: none;">
+      <div class="container">
+        <div class="section-header">
+          <h2>📊 Akademisyen Paneli</h2>
+          <p>Derslerinizi yönetin ve başvuruları takip edin</p>
+        </div>
+        
+        <!-- İstatistikler -->
+        <div class="academician-stats-grid" id="academicianStatsGrid">
+          <!-- İstatistikler buraya eklenecek -->
+        </div>
+        
+        <!-- Hızlı Erişim Butonları -->
+        <div class="quick-actions">
+          <a href="../Dersler/dersler.html" class="quick-action-btn" id="addCourseBtn">
+            ➕ Yeni Ders Ekle
+          </a>
+          <button class="quick-action-btn" id="viewMyCoursesBtn" onclick="scrollToMyCourses()">
+            📚 Derslerimi Görüntüle
+          </button>
+          <button class="quick-action-btn" id="pendingApplicationsBtn" onclick="showPendingApplicationsModal()">
+            📋 Bekleyen Başvurular
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Akademisyen: Benim Derslerim -->
+    <section class="my-courses-section" id="myCoursesSection" style="display: none;">
+      <div class="container">
+        <div class="section-header">
+          <h2>📚 Benim Derslerim</h2>
+          <p>Eklediğiniz tüm dersler</p>
+        </div>
+        <div class="my-courses-grid" id="myCoursesGrid">
+          <!-- Akademisyenin dersleri buraya yüklenecek -->
         </div>
       </div>
     </section>
@@ -216,6 +257,19 @@
       </div>
     </section>
 
+    <!-- Bekleyen Başvurular Modalı -->
+    <div class="modal-overlay" id="pendingApplicationsModal" style="display: none;">
+      <div class="modal-container" style="max-width: 800px;">
+        <div class="modal-header">
+          <h2>📋 Bekleyen Başvurular</h2>
+          <button class="modal-close" onclick="closePendingApplicationsModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="pendingApplicationsModalBody">
+          <!-- Bekleyen başvurular buraya yüklenecek -->
+        </div>
+      </div>
+    </div>
+
     <!-- Profil Düzenleme Modalı -->
     <div class="modal-overlay" id="editProfileModal" style="display: none;">
       <div class="modal-container">
@@ -250,15 +304,15 @@
             <input type="email" id="editEmail" name="email" required />
           </div>
 
-          <div class="form-group">
-            <label for="editStudentNumber">Okul Numarası / Kullanıcı Adı</label>
+          <div class="form-group" id="identifierGroup">
+            <label for="editIdentifier" id="identifierLabel">Okul Numarası / Kullanıcı Adı</label>
             <input
               type="text"
-              id="editStudentNumber"
-              name="studentNumber"
+              id="editIdentifier"
+              name="identifier"
               readonly
             />
-            <small style="color: #666;">Bu alan değiştirilemez</small>
+            <small style="color: #666;" id="identifierHelp">Bu alan değiştirilemez</small>
           </div>
 
           <div class="password-section">
@@ -341,8 +395,21 @@
         document.getElementById("profileEmail").textContent = user.email || "";
         document.getElementById("profileType").textContent =
           user.userType === "student" ? "Öğrenci" : "Akademisyen";
-        document.getElementById("profileStudentNumber").textContent =
-          user.studentNumber || user.username || "-";
+        
+        // Kullanıcı tipine göre label ve değeri ayarla
+        const profileDetailLabel = document.getElementById("profileDetailLabel");
+        const profileStudentNumber = document.getElementById("profileStudentNumber");
+        
+        if (user.userType === "academician") {
+          profileDetailLabel.textContent = "Kullanıcı Adı:";
+          profileStudentNumber.textContent = user.username || "-";
+        } else if (user.userType === "student") {
+          profileDetailLabel.textContent = "Okul Numarası:";
+          profileStudentNumber.textContent = user.studentNumber || "-";
+        } else {
+          profileDetailLabel.textContent = "Kullanıcı Adı:";
+          profileStudentNumber.textContent = user.username || "-";
+        }
         
         // Öğrenci için özel işlemler
         if (user.userType === "student") {
@@ -351,6 +418,14 @@
           loadCoursePlanning();
           document.getElementById("enrolledCoursesSection").style.display = "block";
           document.getElementById("coursePlanningSection").style.display = "block";
+        }
+        
+        // Akademisyen için özel işlemler
+        if (user.userType === "academician") {
+          loadAcademicianDashboard();
+          loadMyCourses();
+          document.getElementById("academicianDashboardSection").style.display = "block";
+          document.getElementById("myCoursesSection").style.display = "block";
         }
         
         // Bildirim merkezini göster ve yükle
@@ -411,6 +486,7 @@
             </div>
             <div class="course-info">
               ${course.university_name ? `<p><strong>🏛️ Üniversite:</strong> ${course.university_name}</p>` : ''}
+              ${course.academician_name ? `<p><strong>👨‍🏫 Akademisyen:</strong> ${course.academician_name}</p>` : ''}
               ${course.start_date ? `<p><strong>🎯 Başlangıç:</strong> ${formatDate(course.start_date)}</p>` : ''}
               ${course.end_date ? `<p><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
               ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
@@ -426,6 +502,11 @@
                   Ders linki henüz eklenmedi
                 </p>
               `}
+              ${course.status === 'active' ? `
+                <button onclick="withdrawFromCourse(${course.id})" class="btn-withdraw-course" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: all 0.3s ease;">
+                  ❌ Dersi İptal Et
+                </button>
+              ` : ''}
             </div>
           `;
           grid.appendChild(card);
@@ -1321,8 +1402,31 @@
           document.getElementById("editFirstName").value = user.firstName || "";
           document.getElementById("editLastName").value = user.lastName || "";
           document.getElementById("editEmail").value = user.email || "";
-          document.getElementById("editStudentNumber").value = 
-            user.studentNumber || user.username || "";
+          
+          // Kullanıcı tipine göre identifier alanını ayarla
+          const identifierInput = document.getElementById("editIdentifier");
+          const identifierLabel = document.getElementById("identifierLabel");
+          const identifierHelp = document.getElementById("identifierHelp");
+          
+          if (user.userType === "academician") {
+            identifierLabel.textContent = "Kullanıcı Adı";
+            identifierInput.value = user.username || "";
+            identifierInput.removeAttribute("readonly");
+            identifierHelp.textContent = "Kullanıcı adınızı değiştirebilirsiniz";
+            identifierHelp.style.color = "#667eea";
+          } else if (user.userType === "student") {
+            identifierLabel.textContent = "Okul Numarası";
+            identifierInput.value = user.studentNumber || "";
+            identifierInput.setAttribute("readonly", "readonly");
+            identifierHelp.textContent = "Bu alan değiştirilemez";
+            identifierHelp.style.color = "#666";
+          } else {
+            identifierLabel.textContent = "Kullanıcı Adı";
+            identifierInput.value = user.username || "";
+            identifierInput.setAttribute("readonly", "readonly");
+            identifierHelp.textContent = "Bu alan değiştirilemez";
+            identifierHelp.style.color = "#666";
+          }
           
           // Şifre alanlarını temizle
           document.getElementById("editCurrentPassword").value = "";
@@ -1376,6 +1480,7 @@
         const firstName = document.getElementById("editFirstName").value.trim();
         const lastName = document.getElementById("editLastName").value.trim();
         const email = document.getElementById("editEmail").value.trim();
+        const identifier = document.getElementById("editIdentifier").value.trim();
         const currentPassword = document.getElementById("editCurrentPassword").value;
         const newPassword = document.getElementById("editNewPassword").value;
         const confirmPassword = document.getElementById("editConfirmPassword").value;
@@ -1399,12 +1504,31 @@
           }
         }
 
+        // Akademisyen için kullanıcı adı kontrolü
+        if (user.userType === "academician" && identifier) {
+          if (identifier.length < 3) {
+            errorDiv.textContent = "Kullanıcı adı en az 3 karakter olmalıdır.";
+            errorDiv.style.display = "block";
+            return;
+          }
+          if (!/^[a-zA-Z0-9_]+$/.test(identifier)) {
+            errorDiv.textContent = "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir.";
+            errorDiv.style.display = "block";
+            return;
+          }
+        }
+
         // API isteği için veri hazırla
         const updateData = {
           firstName,
           lastName,
           email,
         };
+
+        // Akademisyen için kullanıcı adını ekle
+        if (user.userType === "academician" && identifier) {
+          updateData.username = identifier;
+        }
 
         if (newPassword) {
           updateData.currentPassword = currentPassword;
@@ -1430,8 +1554,8 @@
             successDiv.textContent = "Profil başarıyla güncellendi!";
             successDiv.style.display = "block";
 
-            // LocalStorage'ı güncelle
-            const updatedUser = { ...user, ...updateData };
+            // LocalStorage'ı güncelle - Backend'den dönen güncel kullanıcı bilgilerini kullan
+            const updatedUser = data.user || { ...user, ...updateData };
             delete updatedUser.currentPassword;
             delete updatedUser.newPassword;
             localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -1449,6 +1573,420 @@
           console.error("Profil güncelleme hatası:", error);
           errorDiv.textContent = "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.";
           errorDiv.style.display = "block";
+        }
+      });
+
+      // Dersten çıkış yap (İptal Et)
+      async function withdrawFromCourse(courseId) {
+        if (!confirm('⚠️ Bu dersten çıkış yapmak istediğinize emin misiniz?\n\nBu işlem geri alınamaz ve ders kaydınız iptal edilecektir.')) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`${API_URL}/student-courses/${courseId}/withdraw`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.success) {
+            alert('✅ Dersten başarıyla çıkış yaptınız!');
+            // Kayıtlı dersleri yenile
+            loadEnrolledCourses();
+            // Ders planlamasını da yenile
+            loadCoursePlanning();
+          } else {
+            alert('❌ Hata: ' + (data.message || 'Dersten çıkış yapılamadı'));
+          }
+        } catch (error) {
+          console.error('Dersten çıkış hatası:', error);
+          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+        }
+      }
+
+      // Akademisyen: Dashboard yükle
+      async function loadAcademicianDashboard() {
+        try {
+          const response = await fetch(`${API_URL}/summer-offerings/my/offerings`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          const courses = data.data || [];
+          
+          // İstatistikleri hesapla
+          let totalCourses = courses.length;
+          let totalStudents = 0;
+          let pendingApplications = 0;
+          let activeCourses = 0;
+          
+          courses.forEach(course => {
+            totalStudents += parseInt(course.current_registrations || 0);
+            if (course.is_active) activeCourses++;
+          });
+          
+          // Bekleyen başvuruları say
+          for (const course of courses) {
+            try {
+              const appResponse = await fetch(`${API_URL}/summer-registrations/offering/${course.id}`, {
+                headers: {
+                  'Authorization': `Bearer ${currentToken}`
+                }
+              });
+              const appData = await appResponse.json();
+              if (appData.success && appData.data) {
+                pendingApplications += appData.data.filter(reg => reg.status === 'pending').length;
+              }
+            } catch (error) {
+              console.error('Başvuru sayısı alınırken hata:', error);
+            }
+          }
+          
+          // İstatistikleri göster
+          displayAcademicianStats({
+            totalCourses,
+            totalStudents,
+            pendingApplications,
+            activeCourses
+          });
+        } catch (error) {
+          console.error("Akademisyen dashboard yüklenirken hata:", error);
+          displayAcademicianStats({
+            totalCourses: 0,
+            totalStudents: 0,
+            pendingApplications: 0,
+            activeCourses: 0
+          });
+        }
+      }
+      
+      // Akademisyen istatistiklerini göster
+      function displayAcademicianStats(stats) {
+        const statsGrid = document.getElementById("academicianStatsGrid");
+        statsGrid.innerHTML = `
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value">${stats.totalCourses}</div>
+            <div class="stat-label">Toplam Ders</div>
+          </div>
+          <div class="stat-card stat-active">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">${stats.activeCourses}</div>
+            <div class="stat-label">Aktif Ders</div>
+          </div>
+          <div class="stat-card stat-upcoming">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">${stats.totalStudents}</div>
+            <div class="stat-label">Toplam Öğrenci</div>
+          </div>
+          <div class="stat-card stat-past">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-value">${stats.pendingApplications}</div>
+            <div class="stat-label">Bekleyen Başvuru</div>
+          </div>
+        `;
+      }
+      
+      // Akademisyen: Kendi derslerini yükle
+      async function loadMyCourses() {
+        try {
+          const response = await fetch(`${API_URL}/summer-offerings/my/offerings`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          const courses = data.data || [];
+          
+          if (courses.length > 0) {
+            displayMyCourses(courses);
+          } else {
+            document.getElementById("myCoursesGrid").innerHTML = 
+              '<p style="text-align: center; padding: 2rem; color: #666; grid-column: 1/-1;">Henüz ders eklememişsiniz. <a href="../Dersler/dersler.html" style="color: #667eea;">Yeni ders ekleyin</a></p>';
+          }
+        } catch (error) {
+          console.error("Dersler yüklenirken hata:", error);
+          document.getElementById("myCoursesGrid").innerHTML = 
+            '<p style="text-align: center; padding: 2rem; color: #dc3545; grid-column: 1/-1;">Dersler yüklenirken bir hata oluştu.</p>';
+        }
+      }
+      
+      // Akademisyen derslerini göster
+      function displayMyCourses(courses) {
+        const grid = document.getElementById("myCoursesGrid");
+        grid.innerHTML = "";
+        
+        courses.forEach(course => {
+          const formatDate = (dateStr) => {
+            if (!dateStr) return 'Belirtilmemiş';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('tr-TR', { 
+              day: 'numeric', 
+              month: 'long', 
+              year: 'numeric' 
+            });
+          };
+          
+          const card = document.createElement("div");
+          card.className = "enrolled-course-card";
+          card.innerHTML = `
+            <div class="course-header">
+              <h3>${course.course_name || 'Ders Adı'}</h3>
+              ${course.course_code ? `<span class="course-code">${course.course_code}</span>` : ''}
+            </div>
+            <div class="course-info">
+              ${course.university_name ? `<p><strong>🏛️ Üniversite:</strong> ${course.university_name}</p>` : ''}
+              ${course.start_date ? `<p><strong>🎯 Başlangıç:</strong> ${formatDate(course.start_date)}</p>` : ''}
+              ${course.end_date ? `<p><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
+              ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
+              <p><strong>👥 Kayıtlı Öğrenci:</strong> ${course.current_registrations || 0} / ${course.quota || 0}</p>
+              <p><strong>📊 Durum:</strong> <span class="status-badge status-${course.is_active ? 'active' : 'past'}">${course.is_active ? '✅ Aktif' : '❌ Pasif'}</span></p>
+            </div>
+            <div class="course-actions">
+              <a href="../Dersler/dersler.html" class="btn-course-link" style="display: block; text-align: center; margin-bottom: 10px;">
+                📋 Dersi Yönet
+              </a>
+              <button onclick="viewCourseApplications(${course.id})" class="btn-withdraw-course" style="background: #ffc107; color: #212529;">
+                📝 Başvuruları Görüntüle
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+      
+      // Bekleyen başvuruları yükle ve modal göster
+      async function showPendingApplicationsModal() {
+        const modal = document.getElementById('pendingApplicationsModal');
+        const modalBody = document.getElementById('pendingApplicationsModalBody');
+        
+        modal.style.display = 'flex';
+        modalBody.innerHTML = '<div class="loading-message" style="text-align: center; padding: 40px;">Yükleniyor...</div>';
+        
+        try {
+          const response = await fetch(`${API_URL}/summer-offerings/my/offerings`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          const courses = data.data || [];
+          
+          let allPendingApplications = [];
+          
+          for (const course of courses) {
+            try {
+              const appResponse = await fetch(`${API_URL}/summer-registrations/offering/${course.id}`, {
+                headers: {
+                  'Authorization': `Bearer ${currentToken}`
+                }
+              });
+              const appData = await appResponse.json();
+              if (appData.success && appData.data) {
+                const pending = appData.data.filter(reg => reg.status === 'pending');
+                pending.forEach(reg => {
+                  allPendingApplications.push({
+                    ...reg,
+                    course_name: course.course_name,
+                    course_code: course.course_code,
+                    course_id: course.id
+                  });
+                });
+              }
+            } catch (error) {
+              console.error('Başvuru yüklenirken hata:', error);
+            }
+          }
+          
+          if (allPendingApplications.length > 0) {
+            displayPendingApplications(allPendingApplications);
+          } else {
+            modalBody.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><p style="font-size: 1.2rem; margin-bottom: 1rem;">✅ Bekleyen başvuru bulunmuyor</p><p>Tüm başvurularınız işleme alınmış.</p></div>';
+          }
+        } catch (error) {
+          console.error("Bekleyen başvurular yüklenirken hata:", error);
+          modalBody.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;">Başvurular yüklenirken bir hata oluştu.</div>';
+        }
+      }
+      
+      // Bekleyen başvuruları göster
+      function displayPendingApplications(applications) {
+        const modalBody = document.getElementById('pendingApplicationsModalBody');
+        
+        const formatDate = (dateStr) => {
+          if (!dateStr) return 'Belirtilmemiş';
+          const date = new Date(dateStr);
+          return date.toLocaleDateString('tr-TR', { 
+            day: 'numeric', 
+            month: 'long', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        };
+        
+        let html = `
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: #212529; margin-bottom: 10px;">Bekleyen Başvurular (${applications.length})</h3>
+            <p style="color: #666; font-size: 0.9rem;">Aşağıdaki başvuruları onaylamanız veya reddetmeniz gerekiyor.</p>
+          </div>
+          <div style="max-height: 500px; overflow-y: auto;">
+        `;
+        
+        applications.forEach((app, index) => {
+          const studentName = `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Öğrenci';
+          const studentEmail = app.email || 'E-posta bulunamadı';
+          
+          html += `
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                  <h4 style="margin: 0 0 5px 0; color: #212529;">${studentName}</h4>
+                  <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📧 ${studentEmail}</p>
+                  ${app.student_number ? `<p style="margin: 5px 0; color: #666; font-size: 0.9em;">🎓 Öğrenci No: ${app.student_number}</p>` : ''}
+                </div>
+                <span style="background: #ffc107; color: #212529; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">⏳ Beklemede</span>
+              </div>
+              <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                <p style="margin: 0 0 5px 0; font-weight: 600; color: #212529;">📚 Ders: ${app.course_name || app.course_code || 'Ders'}</p>
+                <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📅 Başvuru Tarihi: ${formatDate(app.application_date)}</p>
+              </div>
+              ${app.application_note ? `
+                <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                  <strong>📝 Başvuru Notu:</strong>
+                  <p style="margin: 5px 0 0 0; color: #495057;">${app.application_note}</p>
+                </div>
+              ` : ''}
+              <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="approveApplication(${app.id}, ${app.course_id})" style="background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                  ✅ Onayla
+                </button>
+                <button onclick="rejectApplication(${app.id}, ${app.course_id})" style="background: #dc3545; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                  ❌ Reddet
+                </button>
+                <a href="../Dersler/dersler.html" style="background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; flex: 1;">
+                  📋 Tüm Başvurular
+                </a>
+              </div>
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+        modalBody.innerHTML = html;
+      }
+      
+      // Başvuruyu onayla
+      async function approveApplication(registrationId, courseId) {
+        if (!confirm('Bu başvuruyu onaylamak istediğinize emin misiniz?')) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`${API_URL}/summer-registrations/${registrationId}/status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${currentToken}`
+            },
+            body: JSON.stringify({
+              status: 'approved'
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.success) {
+            alert('✅ Başvuru başarıyla onaylandı!');
+            // Modal'ı yenile
+            showPendingApplicationsModal();
+            // İstatistikleri yenile
+            loadAcademicianDashboard();
+            // Dersleri yenile
+            loadMyCourses();
+          } else {
+            alert('❌ Hata: ' + (data.message || 'Başvuru onaylanamadı'));
+          }
+        } catch (error) {
+          console.error('Başvuru onaylama hatası:', error);
+          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+        }
+      }
+      
+      // Başvuruyu reddet
+      async function rejectApplication(registrationId, courseId) {
+        const rejectionReason = prompt('Red nedeni (isteğe bağlı):');
+        if (rejectionReason === null) {
+          return; // Kullanıcı iptal etti
+        }
+        
+        try {
+          const response = await fetch(`${API_URL}/summer-registrations/${registrationId}/status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${currentToken}`
+            },
+            body: JSON.stringify({
+              status: 'rejected',
+              rejectionReason: rejectionReason || undefined
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.success) {
+            alert('✅ Başvuru reddedildi!');
+            // Modal'ı yenile
+            showPendingApplicationsModal();
+            // İstatistikleri yenile
+            loadAcademicianDashboard();
+            // Dersleri yenile
+            loadMyCourses();
+          } else {
+            alert('❌ Hata: ' + (data.message || 'Başvuru reddedilemedi'));
+          }
+        } catch (error) {
+          console.error('Başvuru reddetme hatası:', error);
+          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+        }
+      }
+      
+      // Derslerime scroll et
+      function scrollToMyCourses() {
+        const myCoursesSection = document.getElementById("myCoursesSection");
+        if (myCoursesSection) {
+          // Dersleri yenile
+          loadMyCourses();
+          // Scroll et
+          setTimeout(() => {
+            myCoursesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 300);
+        }
+      }
+      
+      // Ders başvurularını görüntüle
+      function viewCourseApplications(courseId) {
+        window.location.href = `../Dersler/dersler.html?courseId=${courseId}`;
+      }
+      
+      // Bekleyen başvurular modalını kapat
+      function closePendingApplicationsModal() {
+        document.getElementById('pendingApplicationsModal').style.display = 'none';
+      }
+      
+      // Modal dışına tıklandığında kapat
+      document.addEventListener('click', function(e) {
+        const pendingModal = document.getElementById('pendingApplicationsModal');
+        if (e.target === pendingModal) {
+          closePendingApplicationsModal();
         }
       });
 

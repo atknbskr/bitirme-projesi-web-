@@ -1546,41 +1546,22 @@
 
             // Akademisyen bilgileri
             let academicianHTML = '';
-            if (course.academician) {
-                const acad = course.academician;
+            // Backend'den academician_name ve academician_email geliyor
+            if (course.academician_name || course.academician_email) {
                 academicianHTML = `
                     <div class="detail-section">
                         <h3>👨‍🏫 Dersi Veren Akademisyen</h3>
                         <div class="academician-card">
                             <div class="academician-name">
-                                ${acad.title || ''} ${acad.full_name || 'Belirtilmemiş'}
+                                ${course.academician_name || 'Belirtilmemiş'}
                             </div>
-                            ${acad.department ? `<p style="color: #666; margin: 5px 0;">📚 ${acad.department}</p>` : ''}
                             <div class="academician-info">
-                                ${acad.email ? `
+                                ${course.academician_email ? `
                                     <div class="academician-info-item">
                                         <span>📧</span>
                                         <div>
                                             <strong>E-posta:</strong><br>
-                                            <a href="mailto:${acad.email}" style="color: #667eea;">${acad.email}</a>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                                ${acad.office ? `
-                                    <div class="academician-info-item">
-                                        <span>🏢</span>
-                                        <div>
-                                            <strong>Ofis:</strong><br>
-                                            ${acad.office}
-                                        </div>
-                                    </div>
-                                ` : ''}
-                                ${acad.office_hours ? `
-                                    <div class="academician-info-item">
-                                        <span>🕐</span>
-                                        <div>
-                                            <strong>Ofis Saatleri:</strong><br>
-                                            ${acad.office_hours}
+                                            <a href="mailto:${course.academician_email}" style="color: #667eea; text-decoration: none; font-weight: 600;">${course.academician_email}</a>
                                         </div>
                                     </div>
                                 ` : ''}

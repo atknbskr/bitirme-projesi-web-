@@ -392,25 +392,37 @@
             }
         }
 
-        // İstatistikleri güncelle - TÜM PLATFORM verilerine göre (her zaman tüm üniversiteler)
-        function updateStats(universities) {
-            // Toplam üniversite sayısı (tüm platform)
-            const universityCount = universities.length;
-            document.getElementById('universityCount').textContent = universityCount;
-            
-            // Toplam akademisyen ve öğrenci sayısını hesapla (tüm platform)
-            let totalAcademicians = 0;
-            let totalStudents = 0;
-            
-            universities.forEach(uni => {
-                const acadCount = parseInt(uni.academician_count) || 0;
-                const studCount = parseInt(uni.student_count) || 0;
-                totalAcademicians += acadCount;
-                totalStudents += studCount;
-            });
-            
-            document.getElementById('totalAcademicians').textContent = totalAcademicians;
-            document.getElementById('totalStudents').textContent = totalStudents;
+        // İstatistikleri güncelle - Web sitesine kayıt olan TÜM kullanıcılar
+        async function updateStats(universities) {
+            try {
+                // Backend'den tüm platform istatistiklerini al
+                const response = await fetch(`${API_URL}/universities/statistics`);
+                const data = await response.json();
+                
+                if (data.success && data.statistics) {
+                    // Web sitesine kayıt olan TÜM öğrenciler
+                    document.getElementById('totalStudents').textContent = data.statistics.students || 0;
+                    
+                    // Web sitesine kayıt olan TÜM akademisyenler
+                    document.getElementById('totalAcademicians').textContent = data.statistics.academicians || 0;
+                    
+                    // Web sitesine kayıtlı TÜM üniversiteler
+                    document.getElementById('universityCount').textContent = data.statistics.universities || 0;
+                } else {
+                    // Fallback: Eğer API çalışmazsa, üniversiteler listesinden say
+                    const universityCount = universities.length;
+                    document.getElementById('universityCount').textContent = universityCount;
+                    document.getElementById('totalAcademicians').textContent = 0;
+                    document.getElementById('totalStudents').textContent = 0;
+                }
+            } catch (error) {
+                console.error('İstatistikler yüklenirken hata:', error);
+                // Fallback: Eğer API çalışmazsa, üniversiteler listesinden say
+                const universityCount = universities.length;
+                document.getElementById('universityCount').textContent = universityCount;
+                document.getElementById('totalAcademicians').textContent = 0;
+                document.getElementById('totalStudents').textContent = 0;
+            }
         }
 
         // Üniversiteleri göster
