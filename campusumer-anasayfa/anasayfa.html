@@ -121,49 +121,84 @@
       </div>
     </section>
 
-    <section class="search-section" id="search">
+    <!-- Öğrenci: Kayıtlı Dersler ve Ders Planlama -->
+    <section class="enrolled-courses-section" id="enrolledCoursesSection" style="display: none;">
       <div class="container">
-        <div class="search-container">
-          <h2 class="search-title">İdeal Yaz Dersini Bul</h2>
-          <form class="search-form" id="searchForm">
-            <div class="form-group">
-              <label for="university">Üniversite</label>
-              <select id="university">
-                <option value="">Üniversite Seçin</option>
-              </select>
-            </div>
+        <div class="section-header">
+          <h2>📚 Kayıtlı Olduğum Dersler</h2>
+          <p>Onaylanmış ve aktif dersleriniz</p>
+        </div>
+        <div class="enrolled-courses-grid" id="enrolledCoursesGrid">
+          <!-- Kayıtlı dersler buraya yüklenecek -->
+        </div>
+      </div>
+    </section>
 
-            <div class="form-group">
-              <label for="faculty">Fakülte</label>
-              <select id="faculty">
-                <option value="">Fakülte Seçin</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="language">Ders Dili</label>
-              <select id="language">
-                <option value="">Dil Seçin</option>
-                <option value="Matematik">Matematik</option>
-                <option value="Kimya">Kimya</option>
-                <option value="Bilgisayar Programlama">Bilgisayar Programlama</option>
-                <option value="Fizik">Fizik</option>
-                <option value="İngilizce">İngilizce</option>
-                <option value="İstatistik">İstatistik</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="semester">Dönem</label>
-              <select id="semester">
-                <option value="">Dönem Seçin</option>
-                <option value="summer-2025">Yaz 2025</option>
-                <option value="fall-2025">Güz 2025</option>
-              </select>
-            </div>
-
-            <button type="submit" class="search-button">🔍 Ders Ara</button>
-          </form>
+    <!-- Öğrenci: Ders Planlama -->
+    <section class="course-planning-section" id="coursePlanningSection" style="display: none;">
+      <div class="container">
+        <div class="section-header">
+          <h2>📅 Ders Planlama</h2>
+          <p>Kayıtlı olduğunuz derslerin takvimi ve planlaması</p>
+        </div>
+        
+        <!-- İstatistikler -->
+        <div class="planning-stats" id="planningStats">
+          <!-- İstatistikler buraya eklenecek -->
+        </div>
+        
+        <!-- Görünüm Seçenekleri -->
+        <div class="view-controls">
+          <div class="view-tabs">
+            <button class="view-tab active" data-view="calendar" onclick="switchView('calendar')">
+              📅 Takvim
+            </button>
+            <button class="view-tab" data-view="timeline" onclick="switchView('timeline')">
+              📊 Zaman Çizelgesi
+            </button>
+            <button class="view-tab" data-view="weekly" onclick="switchView('weekly')">
+              📆 Haftalık
+            </button>
+            <button class="view-tab" data-view="list" onclick="switchView('list')">
+              📋 Liste
+            </button>
+          </div>
+          <div class="filter-controls">
+            <select id="statusFilter" onchange="applyStatusFilter()">
+              <option value="all">Tüm Durumlar</option>
+              <option value="upcoming">Yaklaşan</option>
+              <option value="active">Devam Eden</option>
+              <option value="past">Tamamlanan</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Takvim Görünümü -->
+        <div class="view-container" id="calendarViewContainer">
+          <div class="calendar-view" id="calendarView">
+            <!-- Takvim görünümü buraya eklenecek -->
+          </div>
+        </div>
+        
+        <!-- Zaman Çizelgesi Görünümü -->
+        <div class="view-container" id="timelineViewContainer" style="display: none;">
+          <div class="course-timeline" id="courseTimeline">
+            <!-- Ders zaman çizelgesi buraya eklenecek -->
+          </div>
+        </div>
+        
+        <!-- Haftalık Görünüm -->
+        <div class="view-container" id="weeklyViewContainer" style="display: none;">
+          <div class="weekly-view" id="weeklyView">
+            <!-- Haftalık görünüm buraya eklenecek -->
+          </div>
+        </div>
+        
+        <!-- Liste Görünümü -->
+        <div class="view-container" id="listViewContainer" style="display: none;">
+          <div class="list-view" id="listView">
+            <!-- Liste görünümü buraya eklenecek -->
+          </div>
         </div>
       </div>
     </section>
@@ -309,15 +344,605 @@
         document.getElementById("profileStudentNumber").textContent =
           user.studentNumber || user.username || "-";
         
-        // Favori dersleri yükle (sadece öğrenciler için)
+        // Öğrenci için özel işlemler
         if (user.userType === "student") {
           loadFavoriteCourses();
+          loadEnrolledCourses();
+          loadCoursePlanning();
+          document.getElementById("enrolledCoursesSection").style.display = "block";
+          document.getElementById("coursePlanningSection").style.display = "block";
         }
         
         // Bildirim merkezini göster ve yükle
         document.getElementById("notificationSection").style.display = "block";
         loadNotifications();
         startNotificationPolling();
+      }
+      
+      // Öğrencinin kayıtlı olduğu dersleri yükle
+      async function loadEnrolledCourses() {
+        try {
+          const response = await fetch(`${API_URL}/student-courses/my-courses`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          
+          // Backend'den data veya courses dönebilir
+          const courses = data.data || data.courses || [];
+          
+          if (data.success && courses.length > 0) {
+            displayEnrolledCourses(courses);
+          } else {
+            document.getElementById("enrolledCoursesGrid").innerHTML = 
+              '<p style="text-align: center; padding: 2rem; color: #666;">Henüz kayıtlı olduğunuz ders bulunmuyor. <a href="../Dersler/dersler.html" style="color: #667eea;">Derslere göz atın</a></p>';
+          }
+        } catch (error) {
+          console.error("Kayıtlı dersler yüklenirken hata:", error);
+          document.getElementById("enrolledCoursesGrid").innerHTML = 
+            '<p style="text-align: center; padding: 2rem; color: #dc3545;">Dersler yüklenirken bir hata oluştu.</p>';
+        }
+      }
+      
+      // Kayıtlı dersleri göster
+      function displayEnrolledCourses(courses) {
+        const grid = document.getElementById("enrolledCoursesGrid");
+        grid.innerHTML = "";
+        
+        courses.forEach(course => {
+          const formatDate = (dateStr) => {
+            if (!dateStr) return 'Belirtilmemiş';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('tr-TR', { 
+              day: 'numeric', 
+              month: 'long', 
+              year: 'numeric' 
+            });
+          };
+          
+          const card = document.createElement("div");
+          card.className = "enrolled-course-card";
+          card.innerHTML = `
+            <div class="course-header">
+              <h3>${course.course_name || 'Ders Adı'}</h3>
+              ${course.course_code ? `<span class="course-code">${course.course_code}</span>` : ''}
+            </div>
+            <div class="course-info">
+              ${course.university_name ? `<p><strong>🏛️ Üniversite:</strong> ${course.university_name}</p>` : ''}
+              ${course.start_date ? `<p><strong>🎯 Başlangıç:</strong> ${formatDate(course.start_date)}</p>` : ''}
+              ${course.end_date ? `<p><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
+              ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
+              ${course.status ? `<p><strong>📊 Durum:</strong> <span class="status-badge status-${course.status}">${course.status === 'active' ? '✅ Aktif' : course.status}</span></p>` : ''}
+            </div>
+            <div class="course-actions">
+              <a href="../Dersler/dersler.html" class="btn-view-course">📋 Detay Gör</a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+      
+      // Ders planlamasını yükle
+      async function loadCoursePlanning() {
+        try {
+          const response = await fetch(`${API_URL}/student-courses/my-courses`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          
+          // Backend'den data veya courses dönebilir
+          const courses = data.data || data.courses || [];
+          
+          if (data.success && courses.length > 0) {
+            displayCoursePlanning(courses);
+          } else {
+            document.getElementById("courseTimeline").innerHTML = 
+              '<p style="text-align: center; padding: 2rem; color: #666;">Planlanacak ders bulunmuyor.</p>';
+          }
+        } catch (error) {
+          console.error("Ders planlama yüklenirken hata:", error);
+          document.getElementById("courseTimeline").innerHTML = 
+            '<p style="text-align: center; padding: 2rem; color: #dc3545;">Planlama yüklenirken bir hata oluştu.</p>';
+        }
+      }
+      
+      // Global değişkenler
+      let allCoursesData = [];
+      let currentCalendarMonth = new Date().getMonth();
+      let currentCalendarYear = new Date().getFullYear();
+      let currentView = 'calendar';
+      let currentStatusFilter = 'all';
+      let currentWeekStart = new Date();
+      currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1); // Pazartesi
+      
+      // Ders planlamasını göster
+      function displayCoursePlanning(courses) {
+        allCoursesData = courses;
+        
+        // İstatistikleri göster
+        displayPlanningStats(courses);
+        
+        // İlk görünümü göster (takvim)
+        if (currentView === 'calendar') {
+          switchView('calendar');
+        } else {
+          switchView('timeline');
+        }
+      }
+      
+      // İstatistikleri göster
+      function displayPlanningStats(courses) {
+        const now = new Date();
+        let upcoming = 0, active = 0, past = 0;
+        let totalCredits = 0;
+        
+        courses.forEach(course => {
+          if (course.start_date) {
+            const startDate = new Date(course.start_date);
+            const endDate = course.end_date ? new Date(course.end_date) : null;
+            
+            if (startDate > now) {
+              upcoming++;
+            } else if (startDate <= now && (!endDate || endDate >= now)) {
+              active++;
+            } else if (endDate && endDate < now) {
+              past++;
+            }
+          }
+          if (course.credits) {
+            totalCredits += parseInt(course.credits) || 0;
+          }
+        });
+        
+        const statsHTML = `
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📚</div>
+              <div class="stat-value">${courses.length}</div>
+              <div class="stat-label">Toplam Ders</div>
+            </div>
+            <div class="stat-card stat-upcoming">
+              <div class="stat-icon">⏰</div>
+              <div class="stat-value">${upcoming}</div>
+              <div class="stat-label">Yaklaşan</div>
+            </div>
+            <div class="stat-card stat-active">
+              <div class="stat-icon">✅</div>
+              <div class="stat-value">${active}</div>
+              <div class="stat-label">Devam Eden</div>
+            </div>
+            <div class="stat-card stat-past">
+              <div class="stat-icon">🎓</div>
+              <div class="stat-value">${past}</div>
+              <div class="stat-label">Tamamlanan</div>
+            </div>
+            <div class="stat-card stat-credits">
+              <div class="stat-icon">📊</div>
+              <div class="stat-value">${totalCredits}</div>
+              <div class="stat-label">Toplam Kredi</div>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById("planningStats").innerHTML = statsHTML;
+      }
+      
+      // Durum filtresini uygula
+      function applyStatusFilter() {
+        currentStatusFilter = document.getElementById("statusFilter").value;
+        const filteredCourses = getFilteredCourses();
+        
+        // Mevcut görünüme göre göster
+        switch(currentView) {
+          case 'calendar':
+            displayCalendarView(filteredCourses);
+            break;
+          case 'timeline':
+            displayTimelineView(filteredCourses);
+            break;
+          case 'weekly':
+            displayWeeklyView(filteredCourses);
+            break;
+          case 'list':
+            displayListView(filteredCourses);
+            break;
+        }
+      }
+      
+      // Filtrelenmiş dersleri al
+      function getFilteredCourses() {
+        const now = new Date();
+        let filtered = allCoursesData.filter(c => c.start_date);
+        
+        if (currentStatusFilter === 'all') {
+          return filtered;
+        }
+        
+        return filtered.filter(course => {
+          const startDate = new Date(course.start_date);
+          const endDate = course.end_date ? new Date(course.end_date) : null;
+          
+          if (currentStatusFilter === 'upcoming') {
+            return startDate > now;
+          } else if (currentStatusFilter === 'active') {
+            return startDate <= now && (!endDate || endDate >= now);
+          } else if (currentStatusFilter === 'past') {
+            return endDate && endDate < now;
+          }
+          return true;
+        });
+      }
+      
+      // Görünüm değiştir
+      function switchView(view) {
+        currentView = view;
+        
+        // Tüm görünümleri gizle
+        document.querySelectorAll('.view-container').forEach(container => {
+          container.style.display = 'none';
+        });
+        
+        // Tüm tab'ları pasif yap
+        document.querySelectorAll('.view-tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        
+        // Seçili görünümü göster
+        document.getElementById(`${view}ViewContainer`).style.display = 'block';
+        document.querySelector(`[data-view="${view}"]`).classList.add('active');
+        
+        // Görünümü oluştur
+        const filteredCourses = getFilteredCourses();
+        switch(view) {
+          case 'calendar':
+            displayCalendarView(filteredCourses);
+            break;
+          case 'timeline':
+            displayTimelineView(filteredCourses);
+            break;
+          case 'weekly':
+            displayWeeklyView(filteredCourses);
+            break;
+          case 'list':
+            displayListView(filteredCourses);
+            break;
+        }
+      }
+      
+      // Zaman çizelgesi görünümü
+      function displayTimelineView(courses) {
+        const timeline = document.getElementById("courseTimeline");
+        
+        const sortedCourses = courses.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+        
+        if (sortedCourses.length === 0) {
+          timeline.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Filtre kriterlerinize uygun ders bulunmuyor.</p>';
+          return;
+        }
+        
+        let timelineHTML = '<div class="timeline-container">';
+        
+        sortedCourses.forEach((course, index) => {
+          const startDate = new Date(course.start_date);
+          const endDate = course.end_date ? new Date(course.end_date) : null;
+          const now = new Date();
+          
+          const isUpcoming = startDate > now;
+          const isActive = startDate <= now && (!endDate || endDate >= now);
+          const isPast = endDate && endDate < now;
+          
+          let statusClass = 'upcoming';
+          let statusText = 'Yaklaşan';
+          if (isActive) {
+            statusClass = 'active';
+            statusText = 'Devam Ediyor';
+          } else if (isPast) {
+            statusClass = 'past';
+            statusText = 'Tamamlandı';
+          }
+          
+          const daysUntil = isUpcoming ? Math.ceil((startDate - now) / (1000 * 60 * 60 * 24)) : null;
+          
+          // İlerleme yüzdesi
+          let progressPercent = 0;
+          if (endDate && startDate) {
+            const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            const passedDays = Math.ceil((now - startDate) / (1000 * 60 * 60 * 24));
+            progressPercent = Math.max(0, Math.min(100, (passedDays / totalDays) * 100));
+          }
+          
+          timelineHTML += `
+            <div class="timeline-item ${statusClass}">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <h4>${course.course_name || 'Ders'}</h4>
+                  <span class="timeline-status status-${statusClass}">${statusText}</span>
+                </div>
+                ${course.course_code ? `<p class="course-code-small">${course.course_code}</p>` : ''}
+                <div class="timeline-dates">
+                  <p><strong>🎯 Başlangıç:</strong> ${startDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  ${endDate ? `<p><strong>🏁 Bitiş:</strong> ${endDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+                  ${daysUntil !== null && daysUntil > 0 ? `<p class="days-until"><strong>⏰ Kalan Süre:</strong> ${daysUntil} gün</p>` : ''}
+                  ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
+                </div>
+                ${isActive && endDate ? `
+                  <div class="progress-bar-container">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <span class="progress-text">%${Math.round(progressPercent)} tamamlandı</span>
+                  </div>
+                ` : ''}
+                ${course.university_name ? `<p class="university-name">🏛️ ${course.university_name}</p>` : ''}
+              </div>
+            </div>
+          `;
+        });
+        
+        timelineHTML += '</div>';
+        timeline.innerHTML = timelineHTML;
+      }
+      
+      // Takvim görünümü
+      function displayCalendarView(courses) {
+        const calendar = document.getElementById("calendarView");
+        
+        // Ay isimleri
+        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                           'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        
+        // Hafta günleri
+        const dayNames = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+        
+        // Ayın ilk günü ve gün sayısı
+        const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
+        const daysInMonth = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
+        const now = new Date();
+        
+        // Dersleri tarihe göre grupla (tüm tarih aralığı)
+        const coursesByDate = {};
+        courses.forEach(course => {
+          if (course.start_date) {
+            const startDate = new Date(course.start_date);
+            const endDate = course.end_date ? new Date(course.end_date) : startDate;
+            
+            // Ders süresince her günü işaretle
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+              if (d.getMonth() === currentCalendarMonth && d.getFullYear() === currentCalendarYear) {
+                const dateKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+                if (!coursesByDate[dateKey]) {
+                  coursesByDate[dateKey] = [];
+                }
+                if (!coursesByDate[dateKey].find(c => c.id === course.id)) {
+                  coursesByDate[dateKey].push(course);
+                }
+              }
+            }
+          }
+        });
+        
+        let calendarHTML = `
+          <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="changeMonth(-1)">← Önceki</button>
+            <h3>${monthNames[currentCalendarMonth]} ${currentCalendarYear}</h3>
+            <button class="calendar-nav-btn" onclick="changeMonth(1)">Sonraki →</button>
+          </div>
+          <div class="calendar-grid">
+            <div class="calendar-weekdays">
+              ${dayNames.map(day => `<div class="calendar-weekday">${day}</div>`).join('')}
+            </div>
+            <div class="calendar-days">
+        `;
+        
+        // Boş günler (Pazartesi başlangıcı için düzeltme)
+        const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+        for (let i = 0; i < adjustedFirstDay; i++) {
+          calendarHTML += '<div class="calendar-day empty"></div>';
+        }
+        
+        // Ayın günleri
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateKey = `${currentCalendarYear}-${currentCalendarMonth}-${day}`;
+          const dayCourses = coursesByDate[dateKey] || [];
+          const isToday = day === now.getDate() && currentCalendarMonth === now.getMonth() && currentCalendarYear === now.getFullYear();
+          
+          calendarHTML += `
+            <div class="calendar-day ${isToday ? 'today' : ''} ${dayCourses.length > 0 ? 'has-courses' : ''}" onclick="showDayDetails(${day}, ${currentCalendarMonth}, ${currentCalendarYear})">
+              <div class="day-number">${day}</div>
+              ${dayCourses.length > 0 ? `
+                <div class="day-courses">
+                  ${dayCourses.slice(0, 2).map(course => `
+                    <div class="day-course-item" style="background: ${getCourseColor(course)}" title="${course.course_name}">
+                      ${course.course_code || course.course_name.substring(0, 3)}
+                    </div>
+                  `).join('')}
+                  ${dayCourses.length > 2 ? `<div class="day-course-more">+${dayCourses.length - 2}</div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+        
+        calendarHTML += `
+            </div>
+          </div>
+        `;
+        
+        calendar.innerHTML = calendarHTML;
+      }
+      
+      // Ay değiştir
+      function changeMonth(direction) {
+        currentCalendarMonth += direction;
+        if (currentCalendarMonth < 0) {
+          currentCalendarMonth = 11;
+          currentCalendarYear--;
+        } else if (currentCalendarMonth > 11) {
+          currentCalendarMonth = 0;
+          currentCalendarYear++;
+        }
+        displayCalendarView(getFilteredCourses());
+      }
+      
+      // Ders rengi al
+      function getCourseColor(course) {
+        const now = new Date();
+        const startDate = new Date(course.start_date);
+        const endDate = course.end_date ? new Date(course.end_date) : null;
+        
+        if (startDate > now) return '#ffc107'; // Yaklaşan - sarı
+        if (startDate <= now && (!endDate || endDate >= now)) return '#28a745'; // Aktif - yeşil
+        return '#6c757d'; // Tamamlanan - gri
+      }
+      
+      // Gün detaylarını göster
+      function showDayDetails(day, month, year) {
+        const date = new Date(year, month, day);
+        const dateKey = `${year}-${month}-${day}`;
+        const coursesByDate = {};
+        
+        getFilteredCourses().forEach(course => {
+          if (course.start_date) {
+            const startDate = new Date(course.start_date);
+            const endDate = course.end_date ? new Date(course.end_date) : startDate;
+            
+            if (date >= startDate && date <= endDate) {
+              if (!coursesByDate[dateKey]) {
+                coursesByDate[dateKey] = [];
+              }
+              coursesByDate[dateKey].push(course);
+            }
+          }
+        });
+        
+        const dayCourses = coursesByDate[dateKey] || [];
+        if (dayCourses.length > 0) {
+          const courseList = dayCourses.map(c => `• ${c.course_name}${c.course_code ? ` (${c.course_code})` : ''}`).join('\\n');
+          alert(`${date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}\\n\\nBu günkü dersler:\\n${courseList}`);
+        }
+      }
+      
+      // Haftalık görünüm
+      function displayWeeklyView(courses) {
+        const weeklyView = document.getElementById("weeklyView");
+        const now = new Date();
+        
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+          const day = new Date(currentWeekStart);
+          day.setDate(currentWeekStart.getDate() + i);
+          weekDays.push(day);
+        }
+        
+        let weeklyHTML = `
+          <div class="weekly-header">
+            <button class="calendar-nav-btn" onclick="changeWeek(-1)">← Önceki Hafta</button>
+            <h3>${weekDays[0].toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} - ${weekDays[6].toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</h3>
+            <button class="calendar-nav-btn" onclick="changeWeek(1)">Sonraki Hafta →</button>
+          </div>
+          <div class="weekly-grid">
+        `;
+        
+        weekDays.forEach(day => {
+          const dayCourses = courses.filter(course => {
+            if (!course.start_date) return false;
+            const startDate = new Date(course.start_date);
+            const endDate = course.end_date ? new Date(course.end_date) : startDate;
+            return day >= startDate && day <= endDate;
+          });
+          
+          const isToday = day.toDateString() === now.toDateString();
+          
+          weeklyHTML += `
+            <div class="weekly-day ${isToday ? 'today' : ''}">
+              <div class="weekly-day-header">
+                <div class="weekly-day-name">${day.toLocaleDateString('tr-TR', { weekday: 'long' })}</div>
+                <div class="weekly-day-date">${day.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</div>
+              </div>
+              <div class="weekly-day-courses">
+                ${dayCourses.length > 0 ? dayCourses.map(course => `
+                  <div class="weekly-course-item" style="border-left: 4px solid ${getCourseColor(course)}">
+                    <div class="weekly-course-name">${course.course_name}</div>
+                    ${course.course_code ? `<div class="weekly-course-code">${course.course_code}</div>` : ''}
+                  </div>
+                `).join('') : '<div class="no-courses">Ders yok</div>'}
+              </div>
+            </div>
+          `;
+        });
+        
+        weeklyHTML += '</div>';
+        weeklyView.innerHTML = weeklyHTML;
+      }
+      
+      // Hafta değiştir
+      function changeWeek(direction) {
+        currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+        displayWeeklyView(getFilteredCourses());
+      }
+      
+      // Liste görünümü
+      function displayListView(courses) {
+        const listView = document.getElementById("listView");
+        
+        const sortedCourses = courses.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+        
+        if (sortedCourses.length === 0) {
+          listView.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Filtre kriterlerinize uygun ders bulunmuyor.</p>';
+          return;
+        }
+        
+        let listHTML = '<div class="list-container">';
+        
+        sortedCourses.forEach(course => {
+          const startDate = new Date(course.start_date);
+          const endDate = course.end_date ? new Date(course.end_date) : null;
+          const now = new Date();
+          
+          const isUpcoming = startDate > now;
+          const isActive = startDate <= now && (!endDate || endDate >= now);
+          const isPast = endDate && endDate < now;
+          
+          let statusClass = 'upcoming';
+          let statusText = 'Yaklaşan';
+          if (isActive) {
+            statusClass = 'active';
+            statusText = 'Devam Ediyor';
+          } else if (isPast) {
+            statusClass = 'past';
+            statusText = 'Tamamlandı';
+          }
+          
+          const duration = endDate ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) : null;
+          
+          listHTML += `
+            <div class="list-item ${statusClass}">
+              <div class="list-item-header">
+                <h4>${course.course_name || 'Ders'}</h4>
+                <span class="list-status status-${statusClass}">${statusText}</span>
+              </div>
+              <div class="list-item-content">
+                <div class="list-item-info">
+                  ${course.course_code ? `<p><strong>Kod:</strong> ${course.course_code}</p>` : ''}
+                  ${course.university_name ? `<p><strong>Üniversite:</strong> ${course.university_name}</p>` : ''}
+                  <p><strong>Başlangıç:</strong> ${startDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  ${endDate ? `<p><strong>Bitiş:</strong> ${endDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+                  ${duration ? `<p><strong>Süre:</strong> ${duration} gün</p>` : ''}
+                  ${course.credits ? `<p><strong>Kredi:</strong> ${course.credits}</p>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        listHTML += '</div>';
+        listView.innerHTML = listHTML;
       }
       
       // Bildirimleri yükle
@@ -614,25 +1239,6 @@
         }
       }
 
-      // Arama formu submit
-      document.getElementById("searchForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        const university = document.getElementById("university").value;
-        const faculty = document.getElementById("faculty").value;
-        const category = document.getElementById("language").value;
-        
-        // Dersler sayfasına yönlendir (query parametreleriyle)
-        let url = "../Dersler/dersler.html?";
-        const params = [];
-        
-        if (university) params.push(`university=${university}`);
-        if (faculty) params.push(`faculty=${faculty}`);
-        if (category) params.push(`category=${encodeURIComponent(category)}`);
-        
-        url += params.join("&");
-        window.location.href = url;
-      });
 
       // Bildirim dropdown toggle
       document
@@ -841,8 +1447,9 @@
       // Sayfa yüklendiğinde profili ve diğer verileri yükle
       document.addEventListener("DOMContentLoaded", function() {
         loadUserProfile();
-        loadUniversities();
-        loadFaculties();
+        // Öğrenci değilse üniversite ve fakülte yükleme (artık gerekli değil)
+        // loadUniversities();
+        // loadFaculties();
       });
     </script>
 
