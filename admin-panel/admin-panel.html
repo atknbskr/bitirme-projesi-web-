@@ -307,6 +307,12 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label>Üniversite *</label>
+                                <select id="editUniversityId" required>
+                                    <option value="">Üniversite Seçin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label>Açıklama</label>
                                 <textarea id="editDescription" rows="3"></textarea>
                             </div>
@@ -637,6 +643,7 @@
                                     <th>Ders Adı</th>
                                     <th>Ders Kodu</th>
                                     <th>Kategori</th>
+                                    <th>Üniversite</th>
                                     <th>Akademisyen</th>
                                     <th>Öğrenci Sayısı</th>
                                     <th>İşlemler</th>
@@ -656,10 +663,11 @@
                                 <td>${course.course_name}</td>
                                 <td>${course.course_code || '-'}</td>
                                 <td>${course.category || '-'}</td>
+                                <td>${course.university_name || '-'}${course.university_city ? ' (' + course.university_city + ')' : ''}</td>
                                 <td>${course.academician_name || 'Sistem'}</td>
                                 <td>${course.student_count || 0}</td>
                                 <td>
-                                    <button onclick='editCourse(${course.id}, "${courseName}", "${courseCode}", "${category}", ${course.academician_id || 'null'}, "${description}")' class="edit-btn">Düzenle</button>
+                                    <button onclick='editCourse(${course.id}, "${courseName}", "${courseCode}", "${category}", ${course.academician_id || 'null'}, "${description}", ${course.university_id || 'null'})' class="edit-btn">Düzenle</button>
                                     <button onclick="deleteCourse(${course.id})" class="delete-btn">Sil</button>
                                 </td>
                             </tr>
@@ -983,7 +991,7 @@
             }
         }
 
-        async function editCourse(id, name, code, category, academicianId, description) {
+        async function editCourse(id, name, code, category, academicianId, description, universityId) {
             document.getElementById('editCourseId').value = id;
             document.getElementById('editCourseName').value = name;
             document.getElementById('editCourseCode').value = code;
@@ -996,7 +1004,36 @@
                 document.getElementById('editAcademicianId').value = academicianId;
             }
             
+            // Üniversiteleri yükle ve seçili olanı ayarla
+            await loadUniversitiesForDropdown('editUniversityId');
+            if (universityId) {
+                document.getElementById('editUniversityId').value = universityId;
+            }
+            
             document.getElementById('editCourseModal').style.display = 'flex';
+        }
+        
+        async function loadUniversitiesForDropdown(selectId) {
+            try {
+                const response = await fetch(`${API_URL}/admin/universities`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+                const data = await response.json();
+                
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Üniversite Seçin</option>';
+                
+                if (data.success && data.universities) {
+                    data.universities.forEach(uni => {
+                        const option = document.createElement('option');
+                        option.value = uni.id;
+                        option.textContent = `${uni.name}${uni.city ? ' - ' + uni.city : ''}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Üniversite yükleme hatası:', error);
+            }
         }
 
         function closeEditCourseModal() {
@@ -1013,7 +1050,8 @@
                 courseCode: document.getElementById('editCourseCode').value.trim() || null,
                 category: document.getElementById('editCategory').value || null,
                 description: document.getElementById('editDescription').value.trim() || null,
-                academicianId: document.getElementById('editAcademicianId').value || null
+                academicianId: document.getElementById('editAcademicianId').value || null,
+                universityId: document.getElementById('editUniversityId').value || null
             };
 
             const messageDiv = document.getElementById('editCourseMessage');

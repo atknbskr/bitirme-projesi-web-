@@ -851,8 +851,12 @@
                             ${course.end_date ? `<p style="margin: 5px 0;"><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
                         </div>
                     ` : ''}
+                    ${course.university_name ? `
+                        <div style="background: #e3f2fd; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9em;">
+                            <strong style="color: #1976d2;">🏛️ ${course.university_name}${course.university_city ? ' - ' + course.university_city : ''}</strong>
+                        </div>
+                    ` : ''}
                     <div class="ders-stats">
-                        <span class="stat-item">🏫 ${course.university_count || 0} Üniversite</span>
                         <span class="stat-item">👥 ${course.student_count || course.current_registrations || 0} Öğrenci</span>
                     </div>
                     <div class="course-info" style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9em; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
