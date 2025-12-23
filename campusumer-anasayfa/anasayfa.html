@@ -417,7 +417,15 @@
               ${course.status ? `<p><strong>📊 Durum:</strong> <span class="status-badge status-${course.status}">${course.status === 'active' ? '✅ Aktif' : course.status}</span></p>` : ''}
             </div>
             <div class="course-actions">
-              <a href="../Dersler/dersler.html" class="btn-view-course">📋 Detay Gör</a>
+              ${course.udemy_link ? `
+                <a href="${course.udemy_link}" target="_blank" class="btn-course-link">
+                  🔗 Ders Linkine Git
+                </a>
+              ` : `
+                <p style="color: #999; font-style: italic; text-align: center; padding: 10px;">
+                  Ders linki henüz eklenmedi
+                </p>
+              `}
             </div>
           `;
           grid.appendChild(card);

@@ -311,6 +311,11 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="editCourseLink">🔗 Ders Linki (Udemy, YouTube, vb.)</label>
+                        <input type="url" id="editCourseLink" name="editCourseLink" placeholder="https://www.udemy.com/course/...">
+                        <small style="color: #666; font-size: 0.85rem;">Öğrenciler bu linke tıklayarak ders içeriğine erişebilir</small>
+                    </div>
                     <div class="form-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
                         <button type="submit" class="submit-btn" style="flex: 1;">Kaydet</button>
                         <button type="button" class="btn-secondary" onclick="closeEditCourseModal()" style="flex: 1; background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">İptal</button>
@@ -1226,6 +1231,7 @@
                 document.getElementById('editPrice').value = course.price || 0;
                 document.getElementById('editQuota').value = course.quota || 30;
                 document.getElementById('editLanguage').value = course.language || 'turkish';
+                document.getElementById('editCourseLink').value = course.udemy_link || '';
                 
                 // Modal'ı göster
                 document.getElementById('editCourseModal').style.display = 'flex';
@@ -1260,7 +1266,8 @@
                     endDate: document.getElementById('editEndDate').value || null,
                     price: document.getElementById('editPrice').value ? parseFloat(document.getElementById('editPrice').value) : null,
                     quota: document.getElementById('editQuota').value ? parseInt(document.getElementById('editQuota').value) : null,
-                    language: document.getElementById('editLanguage').value || null
+                    language: document.getElementById('editLanguage').value || null,
+                    udemyLink: document.getElementById('editCourseLink').value.trim() || null
                 };
 
                 console.log('Ders güncelleniyor:', formData);
@@ -1275,7 +1282,8 @@
                     applicationDeadline: formData.applicationDeadline,
                     price: formData.price,
                     quota: formData.quota,
-                    language: formData.language
+                    language: formData.language,
+                    udemyLink: formData.udemyLink
                 };
 
                 const response = await fetch(`${API_URL}/summer-offerings/${courseId}`, {
