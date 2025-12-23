@@ -196,11 +196,38 @@
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
-            loadUniversities();
+            testApiConnection().then(() => {
+                loadUniversities();
+            });
             
             // "Üniversite Ekle" butonuna event listener ekle
             document.getElementById('addUniversityBtnTop')?.addEventListener('click', openAddUniversityModal);
         });
+
+        // API bağlantısını test et
+        async function testApiConnection() {
+            try {
+                const healthResponse = await fetch(`${API_URL}/health`);
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    console.log('API bağlantısı başarılı:', healthData);
+                } else {
+                    console.warn('API health check başarısız:', healthResponse.status);
+                }
+            } catch (error) {
+                console.error('API bağlantı hatası:', error);
+                const grid = document.getElementById('universitiesGrid');
+                if (grid) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                            <p style="font-size: 1.2rem; color: #d32f2f; margin-bottom: 1rem;">⚠️ Backend sunucusuna bağlanılamıyor</p>
+                            <p style="color: #666; margin-bottom: 0.5rem;">Lütfen backend sunucusunun çalıştığından emin olun.</p>
+                            <p style="color: #999; font-size: 0.9rem;">API URL: ${API_URL}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
 
         // Kullanıcı kimlik doğrulamasını kontrol et
         function checkAuth() {
@@ -273,12 +300,27 @@
         // Üniversiteleri yükle
         async function loadUniversities() {
             try {
+                console.log('Üniversiteler yükleniyor...', `${API_URL}/universities`);
                 const response = await fetch(`${API_URL}/universities`);
-                const data = await response.json();
                 
-                if (data.success) {
+                // Response durumunu kontrol et
+                if (!response.ok) {
+                    console.error('API yanıt hatası:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('Hata detayı:', errorText);
+                    displayUniversities([]);
+                    updateStats([]);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('API yanıtı:', data);
+                
+                if (data.success && Array.isArray(data.universities)) {
                     allUniversities = data.universities;
                     displayedUniversities = [...allUniversities]; // Tüm üniversitelerin kopyası
+                    
+                    console.log('Yüklenen üniversite sayısı:', allUniversities.length);
                     
                     // İstatistikleri TÜM üniversitelere göre güncelle (filtrelenmeden önce)
                     updateStats(allUniversities);
@@ -296,11 +338,13 @@
                     
                     displayUniversities(displayedUniversities);
                 } else {
+                    console.warn('API yanıtı başarısız veya geçersiz format:', data);
                     displayUniversities([]);
                     updateStats([]);
                 }
             } catch (error) {
                 console.error('Üniversiteler yüklenirken hata:', error);
+                console.error('Hata detayı:', error.message, error.stack);
                 displayUniversities([]);
                 updateStats([]);
             }

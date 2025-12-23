@@ -376,14 +376,39 @@
 
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('=== SAYFA YÜKLENİYOR ===');
+            
             // LocalStorage'dan kullanıcı bilgilerini al
             const userStr = localStorage.getItem('user');
             userToken = localStorage.getItem('token');
             
+            console.log('LocalStorage user:', userStr);
+            console.log('LocalStorage token:', userToken ? 'Var' : 'Yok');
+            
             if (userStr && userToken) {
-                currentUser = JSON.parse(userStr);
-                console.log('✅ Kullanıcı girişi tespit edildi:', currentUser.userType);
-                initializePage();
+                try {
+                    currentUser = JSON.parse(userStr);
+                    console.log('✅ Kullanıcı girişi tespit edildi');
+                    console.log('Kullanıcı objesi:', currentUser);
+                    console.log('User Type:', currentUser.userType);
+                    console.log('User Type (alternatif):', currentUser.user_type);
+                    
+                    // Eğer userType yoksa user_type'ı kontrol et
+                    if (!currentUser.userType && currentUser.user_type) {
+                        currentUser.userType = currentUser.user_type;
+                        console.log('user_type kullanıldı, userType güncellendi:', currentUser.userType);
+                    }
+                    
+                    initializePage();
+                } catch (error) {
+                    console.error('❌ Kullanıcı bilgisi parse edilemedi:', error);
+                    console.log('Raw user string:', userStr);
+                    // Giriş yapılmamış gibi davran
+                    console.log('👤 Ziyaretçi modu - Parse hatası nedeniyle');
+                    document.getElementById('sectionTitle').textContent = 'Tüm Dersler';
+                    document.getElementById('sectionSubtitle').textContent = 'Mevcut yaz dersleri';
+                    loadCourses();
+                }
             } else {
                 // Giriş yapılmamışsa, ziyaretçi olarak tüm dersleri göster
                 console.log('👤 Ziyaretçi modu - Tüm dersler gösteriliyor');
@@ -394,13 +419,26 @@
         });
 
         async function initializePage() {
+            console.log('=== SAYFA BAŞLATILIYOR ===');
+            console.log('Current User:', currentUser);
+            console.log('User Type:', currentUser ? currentUser.userType : 'null');
+            
+            if (!currentUser) {
+                console.error('❌ currentUser null!');
+                alert('Kullanıcı bilgisi bulunamadı. Lütfen tekrar giriş yapın.');
+                return;
+            }
+
             // Önce veritabanı bağlantısını test et
             try {
+                console.log('Veritabanı bağlantısı test ediliyor...');
                 const healthCheck = await fetch(`${API_URL}/test/db`);
                 const healthData = await healthCheck.json();
                 if (!healthCheck.ok) {
                     console.error('Veritabanı bağlantı hatası:', healthData);
                     alert('Veritabanı bağlantı hatası! Lütfen backend sunucusunun çalıştığından ve veritabanı ayarlarının doğru olduğundan emin olun.');
+                } else {
+                    console.log('✅ Veritabanı bağlantısı başarılı');
                 }
             } catch (error) {
                 console.error('Backend bağlantı hatası:', error);
@@ -409,17 +447,22 @@
 
             if (currentUser.userType === 'academician') {
                 // Akademisyen arayüzü - SADECE KENDİ DERSLERİNİ GÖSTER
+                console.log('🎓 Akademisyen modu aktif');
                 document.getElementById('academicianSection').style.display = 'block';
                 document.getElementById('sectionTitle').textContent = 'Benim Derslerim';
                 document.getElementById('sectionSubtitle').textContent = 'Sadece sizin eklediğiniz dersler gösterilmektedir';
                 setupAcademicianFeatures();
             } else if (currentUser.userType === 'student') {
                 // Öğrenci arayüzü - TÜM DERSLERİ GÖSTER
+                console.log('👨‍🎓 Öğrenci modu aktif');
                 document.getElementById('sectionTitle').textContent = 'Tüm Dersler';
                 document.getElementById('sectionSubtitle').textContent = 'Favorilerinize ekleyebileceğiniz dersler';
                 setupStudentFeatures();
+            } else {
+                console.warn('⚠️ Bilinmeyen kullanıcı tipi:', currentUser.userType);
             }
             
+            console.log('Dersler yükleniyor...');
             loadCourses();
         }
 
@@ -513,8 +556,11 @@
             const loadingDiv = document.getElementById('loadingMessage');
             const gridDiv = document.getElementById('derslerGrid');
             
-            console.log('Dersler yükleniyor...');
+            console.log('=== DERSLER YÜKLENİYOR ===');
             console.log('Current User:', currentUser);
+            console.log('User Type:', currentUser ? currentUser.userType : 'null');
+            console.log('User Token:', userToken ? 'Var' : 'Yok');
+            console.log('API URL:', API_URL);
             
             loadingDiv.style.display = 'block';
             gridDiv.innerHTML = '';
@@ -529,46 +575,88 @@
                     headers['Authorization'] = `Bearer ${userToken}`;
                     console.log('🎓 AKADEMİSYEN: Sadece kendi dersleriniz yükleniyor:', url);
                 } else if (currentUser && currentUser.userType === 'student') {
+                    // Öğrenci için normal /courses endpoint'i kullan (tüm aktif dersler)
                     console.log('👨‍🎓 ÖĞRENCİ: Tüm dersler yükleniyor');
+                    console.log('URL:', url);
                 } else {
                     console.log('👤 ZİYARETÇİ: Tüm dersler yükleniyor');
+                    console.log('URL:', url);
                 }
 
                 console.log('Fetching from:', url);
+                console.log('Headers:', headers);
+                
                 const response = await fetch(url, { headers });
                 
                 console.log('Response status:', response.status);
                 console.log('Response ok:', response.ok);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    let errorMessage = `API hatası: ${response.status} - ${response.statusText}`;
+                    let errorDetail = '';
+                    
+                    try {
+                        const errorData = await response.json();
+                        console.error('API yanıt hatası (JSON):', errorData);
+                        if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                        if (errorData.error) {
+                            errorDetail = typeof errorData.error === 'string' 
+                                ? errorData.error 
+                                : JSON.stringify(errorData.error);
+                        }
+                    } catch (parseError) {
+                        const errorText = await response.text();
+                        console.error('API yanıt hatası (Text):', errorText);
+                        errorDetail = errorText.substring(0, 200); // İlk 200 karakter
+                    }
+                    
+                    console.error('Hata detayı:', errorDetail);
+                    
+                    // 500 hatası için özel mesaj
+                    if (response.status === 500) {
+                        throw new Error(`Backend sunucu hatası (500). Lütfen backend konsolunu kontrol edin. ${errorDetail ? '\nDetay: ' + errorDetail : ''}`);
+                    } else {
+                        throw new Error(errorMessage + (errorDetail ? '\n' + errorDetail : ''));
+                    }
+                }
                 
                 const data = await response.json();
                 console.log('Raw API Response:', data);
                 console.log('data.success:', data.success);
                 console.log('data.courses type:', typeof data.courses);
                 console.log('data.courses:', data.courses);
+                console.log('data.courses length:', data.courses ? data.courses.length : 'null');
 
-                if (response.ok && data.success) {
+                if (data.success) {
                     if (data.courses && Array.isArray(data.courses)) {
-                        console.log('Toplam ders sayısı:', data.courses.length);
+                        console.log('✅ Toplam ders sayısı:', data.courses.length);
                         if (data.courses.length === 0) {
-                            console.warn('Hiç ders bulunamadı!');
+                            console.warn('⚠️ Hiç ders bulunamadı!');
                             const emptyMessage = currentUser && currentUser.userType === 'academician' 
                                 ? '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklememişsiniz. Yukarıdaki formdan ders ekleyebilirsiniz.</p>'
-                                : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş.</p>';
+                                : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş veya aktif ders bulunmuyor.</p>';
                             gridDiv.innerHTML = emptyMessage;
                         } else {
+                            console.log('✅ Dersler gösteriliyor...');
                             displayCourses(data.courses);
                         }
                     } else {
-                        console.error('data.courses bir array değil:', data.courses);
-                        gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Ders verisi hatalı formatta</p>';
+                        console.error('❌ data.courses bir array değil:', data.courses);
+                        console.error('data.courses type:', typeof data.courses);
+                        gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Ders verisi hatalı formatta. Konsolu kontrol edin.</p>';
                     }
                 } else {
-                    console.error('Ders yükleme hatası:', data);
+                    console.error('❌ Ders yükleme hatası:', data);
                     gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Dersler yüklenirken bir hata oluştu: ' + (data.message || 'Bilinmeyen hata') + '</p>';
                 }
             } catch (error) {
-                console.error('Ders yükleme hatası:', error);
-                gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Sunucuya bağlanılamadı: ' + error.message + '</p>';
+                console.error('❌ Ders yükleme hatası:', error);
+                console.error('Hata detayı:', error.message);
+                console.error('Stack trace:', error.stack);
+                gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Sunucuya bağlanılamadı: ' + error.message + '<br><small>Lütfen backend sunucusunun çalıştığından emin olun.</small></p>';
             } finally {
                 loadingDiv.style.display = 'none';
             }
