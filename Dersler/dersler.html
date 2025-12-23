@@ -130,6 +130,99 @@
                 <p id="sectionSubtitle">En çok tercih edilen yaz dersleri</p>
             </div>
             
+            <!-- Filtreleme Paneli (Sadece öğrenci ve ziyaretçi için) -->
+            <div id="filterPanel" class="filter-panel" style="display: none;">
+                <div class="filter-header">
+                    <h3>🔍 Filtrele</h3>
+                    <button onclick="toggleFilterPanel()" class="filter-toggle-btn">
+                        <span id="filterToggleIcon">▼</span>
+                    </button>
+                </div>
+                <div id="filterContent" class="filter-content">
+                    <div class="filter-grid">
+                        <!-- Ders Adı Arama -->
+                        <div class="filter-group">
+                            <label for="filterCourseName">📚 Ders Adı</label>
+                            <input type="text" id="filterCourseName" placeholder="Ders adı ara..." oninput="applyFilters()">
+                        </div>
+                        
+                        <!-- Üniversite Seçimi -->
+                        <div class="filter-group">
+                            <label for="filterUniversity">🏛️ Üniversite</label>
+                            <select id="filterUniversity" onchange="applyFilters()">
+                                <option value="">Tüm Üniversiteler</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Şehir Seçimi -->
+                        <div class="filter-group">
+                            <label for="filterCity">📍 Şehir</label>
+                            <select id="filterCity" onchange="applyFilters()">
+                                <option value="">Tüm Şehirler</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dil Seçimi -->
+                        <div class="filter-group">
+                            <label for="filterLanguage">🌐 Ders Dili</label>
+                            <select id="filterLanguage" onchange="applyFilters()">
+                                <option value="">Tüm Diller</option>
+                                <option value="turkish">Türkçe</option>
+                                <option value="english">İngilizce</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Min Ücret -->
+                        <div class="filter-group">
+                            <label for="filterMinPrice">💰 Min Ücret (₺)</label>
+                            <input type="number" id="filterMinPrice" min="0" step="100" placeholder="0" oninput="applyFilters()">
+                        </div>
+                        
+                        <!-- Max Ücret -->
+                        <div class="filter-group">
+                            <label for="filterMaxPrice">💰 Max Ücret (₺)</label>
+                            <input type="number" id="filterMaxPrice" min="0" step="100" placeholder="Sınırsız" oninput="applyFilters()">
+                        </div>
+                        
+                        <!-- Başvuru Başlangıç Tarihi -->
+                        <div class="filter-group">
+                            <label for="filterApplicationStartDate">📅 Başvuru Başlangıç</label>
+                            <input type="date" id="filterApplicationStartDate" onchange="applyFilters()">
+                        </div>
+                        
+                        <!-- Başvuru Bitiş Tarihi -->
+                        <div class="filter-group">
+                            <label for="filterApplicationEndDate">📅 Başvuru Bitiş</label>
+                            <input type="date" id="filterApplicationEndDate" onchange="applyFilters()">
+                        </div>
+                        
+                        <!-- Ders Başlangıç Tarihi -->
+                        <div class="filter-group">
+                            <label for="filterStartDate">🎯 Ders Başlangıç</label>
+                            <input type="date" id="filterStartDate" onchange="applyFilters()">
+                        </div>
+                        
+                        <!-- Ders Bitiş Tarihi -->
+                        <div class="filter-group">
+                            <label for="filterEndDate">🏁 Ders Bitiş</label>
+                            <input type="date" id="filterEndDate" onchange="applyFilters()">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="filterHasAvailability" onchange="applyFilters()">
+                            <span>Sadece kontenjanı olan dersler</span>
+                        </label>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button onclick="clearFilters()" class="btn-clear-filters">🗑️ Filtreleri Temizle</button>
+                        <span id="filterResultCount" class="filter-result-count"></span>
+                    </div>
+                </div>
+            </div>
+            
             <div id="loadingMessage" class="loading-message">Yükleniyor...</div>
             <div id="derslerGrid" class="dersler-grid">
                 <!-- Dersler buraya dinamik olarak eklenecek -->
@@ -498,6 +591,14 @@
                     console.log('👤 Ziyaretçi modu - Parse hatası nedeniyle');
                     document.getElementById('sectionTitle').textContent = 'Tüm Dersler';
                     document.getElementById('sectionSubtitle').textContent = 'Mevcut yaz dersleri';
+                    document.getElementById('filterPanel').style.display = 'block';
+                    // Filtre içeriğini açık tut
+                    const filterContent = document.getElementById('filterContent');
+                    if (filterContent) {
+                        filterContent.style.display = 'block';
+                        document.getElementById('filterToggleIcon').textContent = '▲';
+                    }
+                    loadFilterOptions();
                     loadCourses();
                 }
             } else {
@@ -505,6 +606,14 @@
                 console.log('👤 Ziyaretçi modu - Tüm dersler gösteriliyor');
                 document.getElementById('sectionTitle').textContent = 'Tüm Dersler';
                 document.getElementById('sectionSubtitle').textContent = 'Mevcut yaz dersleri';
+                document.getElementById('filterPanel').style.display = 'block';
+                // Filtre içeriğini açık tut
+                const filterContent = document.getElementById('filterContent');
+                if (filterContent) {
+                    filterContent.style.display = 'block';
+                    document.getElementById('filterToggleIcon').textContent = '▲';
+                }
+                loadFilterOptions();
                 loadCourses();
             }
         });
@@ -548,6 +657,16 @@
                 console.log('👨‍🎓 Öğrenci modu aktif');
                 document.getElementById('sectionTitle').textContent = 'Tüm Dersler';
                 document.getElementById('sectionSubtitle').textContent = 'Favorilerinize ekleyebileceğiniz dersler';
+                document.getElementById('filterPanel').style.display = 'block';
+                // Filtre içeriğini açık tut
+                const filterContent = document.getElementById('filterContent');
+                if (filterContent) {
+                    filterContent.style.display = 'block';
+                    const filterToggleIcon = document.getElementById('filterToggleIcon');
+                    if (filterToggleIcon) {
+                        filterToggleIcon.textContent = '▲';
+                    }
+                }
                 setupStudentFeatures();
             } else {
                 console.warn('⚠️ Bilinmeyen kullanıcı tipi:', currentUser.userType);
@@ -666,6 +785,127 @@
 
         function setupStudentFeatures() {
             // Öğrenci için özel bir şey yapmaya gerek yok, favori butonları loadCourses içinde eklenecek
+            loadFilterOptions();
+        }
+        
+        // Filtreleme seçeneklerini yükle (üniversiteler, şehirler)
+        async function loadFilterOptions() {
+            try {
+                // Üniversiteleri yükle
+                const uniResponse = await fetch(`${API_URL}/admin/universities`);
+                const uniData = await uniResponse.json();
+                
+                const universitySelect = document.getElementById('filterUniversity');
+                const citySelect = document.getElementById('filterCity');
+                
+                if (uniData.success && uniData.universities) {
+                    const cities = new Set();
+                    
+                    uniData.universities.forEach(uni => {
+                        // Üniversite ekle
+                        const option = document.createElement('option');
+                        option.value = uni.id;
+                        option.textContent = `${uni.name}${uni.city ? ' - ' + uni.city : ''}`;
+                        universitySelect.appendChild(option);
+                        
+                        // Şehir ekle (tekrar etmemek için Set kullan)
+                        if (uni.city) {
+                            cities.add(uni.city);
+                        }
+                    });
+                    
+                    // Şehirleri ekle
+                    Array.from(cities).sort().forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Filtre seçenekleri yükleme hatası:', error);
+            }
+        }
+        
+        // Filtre panelini aç/kapat
+        function toggleFilterPanel() {
+            const filterContent = document.getElementById('filterContent');
+            const filterToggleIcon = document.getElementById('filterToggleIcon');
+            
+            if (filterContent.style.display === 'none' || !filterContent.style.display) {
+                filterContent.style.display = 'block';
+                filterToggleIcon.textContent = '▲';
+            } else {
+                filterContent.style.display = 'none';
+                filterToggleIcon.textContent = '▼';
+            }
+        }
+        
+        // Filtreleri uygula
+        function applyFilters() {
+            loadCourses();
+        }
+        
+        // Filtreleri temizle
+        function clearFilters() {
+            document.getElementById('filterCourseName').value = '';
+            document.getElementById('filterUniversity').value = '';
+            document.getElementById('filterCity').value = '';
+            document.getElementById('filterLanguage').value = '';
+            document.getElementById('filterMinPrice').value = '';
+            document.getElementById('filterMaxPrice').value = '';
+            document.getElementById('filterApplicationStartDate').value = '';
+            document.getElementById('filterApplicationEndDate').value = '';
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            document.getElementById('filterHasAvailability').checked = false;
+            loadCourses();
+        }
+        
+        // URL'e filtre parametrelerini ekle
+        function addFiltersToUrl(baseUrl) {
+            const params = new URLSearchParams();
+            
+            const courseName = document.getElementById('filterCourseName')?.value.trim();
+            const universityId = document.getElementById('filterUniversity')?.value;
+            const city = document.getElementById('filterCity')?.value;
+            const language = document.getElementById('filterLanguage')?.value;
+            const minPrice = document.getElementById('filterMinPrice')?.value;
+            const maxPrice = document.getElementById('filterMaxPrice')?.value;
+            const applicationStartDate = document.getElementById('filterApplicationStartDate')?.value;
+            const applicationEndDate = document.getElementById('filterApplicationEndDate')?.value;
+            const startDate = document.getElementById('filterStartDate')?.value;
+            const endDate = document.getElementById('filterEndDate')?.value;
+            const hasAvailability = document.getElementById('filterHasAvailability')?.checked;
+            
+            if (courseName) params.append('search', courseName);
+            if (universityId) params.append('universityId', universityId);
+            if (city) params.append('city', city);
+            if (language) params.append('language', language);
+            if (minPrice) params.append('minPrice', minPrice);
+            if (maxPrice) params.append('maxPrice', maxPrice);
+            if (applicationStartDate) params.append('applicationStartDate', applicationStartDate);
+            if (applicationEndDate) params.append('applicationEndDate', applicationEndDate);
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
+            if (hasAvailability) params.append('hasAvailability', 'true');
+            
+            const queryString = params.toString();
+            return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+        }
+        
+        // Filtre sonuç sayısını güncelle
+        function updateFilterResultCount(count) {
+            const resultCount = document.getElementById('filterResultCount');
+            if (resultCount) {
+                if (count > 0) {
+                    resultCount.textContent = `📊 ${count} ders bulundu`;
+                    resultCount.style.display = 'inline-block';
+                } else {
+                    resultCount.textContent = '';
+                    resultCount.style.display = 'none';
+                }
+            }
         }
 
         async function loadCourses() {
@@ -691,12 +931,14 @@
                     headers['Authorization'] = `Bearer ${userToken}`;
                     console.log('🎓 AKADEMİSYEN: Sadece kendi dersleriniz yükleniyor:', url);
                 } else if (currentUser && currentUser.userType === 'student') {
-                    // Öğrenci için summer-offerings endpoint'i kullan (tüm aktif dersler)
+                    // Öğrenci için summer-offerings endpoint'i kullan (tüm aktif dersler + filtreler)
                     url = `${API_URL}/summer-offerings`;
+                    url = addFiltersToUrl(url);
                     console.log('👨‍🎓 ÖĞRENCİ: Tüm dersler yükleniyor');
                     console.log('URL:', url);
                 } else {
                     url = `${API_URL}/summer-offerings`;
+                    url = addFiltersToUrl(url);
                     console.log('👤 ZİYARETÇİ: Tüm dersler yükleniyor');
                     console.log('URL:', url);
                 }
@@ -763,11 +1005,13 @@
 
                 if (data.success && courses && Array.isArray(courses)) {
                     console.log('✅ Toplam ders sayısı:', courses.length);
+                    // Filtre sonuç sayısını güncelle
+                    updateFilterResultCount(courses.length);
                     if (courses.length === 0) {
                         console.warn('⚠️ Hiç ders bulunamadı!');
                         const emptyMessage = currentUser && currentUser.userType === 'academician' 
                             ? '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklememişsiniz. Yukarıdaki formdan ders ekleyebilirsiniz.</p>'
-                            : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş veya aktif ders bulunmuyor.</p>';
+                            : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Filtre kriterlerinize uygun ders bulunamadı. Lütfen filtreleri değiştirip tekrar deneyin.</p>';
                         gridDiv.innerHTML = emptyMessage;
                     } else {
                         console.log('✅ Dersler gösteriliyor...');
