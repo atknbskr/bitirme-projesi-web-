@@ -41,8 +41,30 @@
           </div>
         </nav>
 
-        <!-- Profil Bölümü -->
-        <div class="profile-section">
+        <!-- Sağ Taraf: Bildirim ve Profil -->
+        <div class="header-right">
+          <!-- Bildirim Merkezi -->
+          <div class="notification-section" id="notificationSection" style="display: none;">
+            <div class="notification-icon" id="notificationToggle">
+              <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+              🔔
+            </div>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-header">
+                <h3>🔔 Bildirimler</h3>
+                <button class="btn-mark-all-read" id="markAllReadBtn" style="display: none;">Tümünü Okundu İşaretle</button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="loading-message">Yükleniyor...</div>
+              </div>
+              <div class="notification-footer">
+                <a href="#" id="viewAllNotifications">Tümünü Gör</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profil Bölümü -->
+          <div class="profile-section">
           <div class="profile-avatar" id="profileToggle">
             <span id="avatarInitials">?</span>
           </div>
@@ -71,6 +93,7 @@
               <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </header>
@@ -290,6 +313,186 @@
         if (user.userType === "student") {
           loadFavoriteCourses();
         }
+        
+        // Bildirim merkezini göster ve yükle
+        document.getElementById("notificationSection").style.display = "block";
+        loadNotifications();
+        startNotificationPolling();
+      }
+      
+      // Bildirimleri yükle
+      async function loadNotifications() {
+        try {
+          if (!currentToken) {
+            console.log('Token yok, bildirimler yüklenemiyor');
+            return;
+          }
+          
+          console.log('Bildirimler yükleniyor...');
+          const response = await fetch(`${API_URL}/notifications?unreadOnly=true`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          if (!response.ok) {
+            console.error('Bildirimler yükleme hatası:', response.status, response.statusText);
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Hata detayı:', errorData);
+            return;
+          }
+          
+          const data = await response.json();
+          console.log('Bildirimler verisi:', data);
+          
+          if (data.success) {
+            const unreadCount = data.unreadCount || 0;
+            console.log('Okunmamış bildirim sayısı:', unreadCount);
+            updateNotificationBadge(unreadCount);
+            displayNotifications(data.data || []);
+          } else {
+            console.error('Bildirimler yüklenemedi:', data.message);
+            updateNotificationBadge(0);
+            displayNotifications([]);
+          }
+        } catch (error) {
+          console.error("Bildirimler yüklenirken hata:", error);
+          updateNotificationBadge(0);
+          displayNotifications([]);
+        }
+      }
+      
+      // Tüm bildirimleri yükle (dropdown için)
+      async function loadAllNotifications() {
+        try {
+          const response = await fetch(`${API_URL}/notifications`, {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            updateNotificationBadge(data.unreadCount || 0);
+            displayNotifications(data.data || []);
+          }
+        } catch (error) {
+          console.error("Bildirimler yüklenirken hata:", error);
+        }
+      }
+      
+      // Bildirim rozetini güncelle
+      function updateNotificationBadge(count) {
+        const badge = document.getElementById("notificationBadge");
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : count;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+      
+      // Bildirimleri göster
+      function displayNotifications(notifications) {
+        const list = document.getElementById("notificationList");
+        
+        if (notifications.length === 0) {
+          list.innerHTML = '<div class="no-notifications">Henüz bildirim yok</div>';
+          document.getElementById("markAllReadBtn").style.display = 'none';
+          return;
+        }
+        
+        document.getElementById("markAllReadBtn").style.display = 'block';
+        
+        list.innerHTML = notifications.map(notif => {
+          const formatDate = (dateStr) => {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Az önce';
+            if (minutes < 60) return `${minutes} dakika önce`;
+            if (hours < 24) return `${hours} saat önce`;
+            if (days < 7) return `${days} gün önce`;
+            return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+          };
+          
+          const iconMap = {
+            'application_approved': '✅',
+            'application_rejected': '❌',
+            'new_application': '📝'
+          };
+          
+          return `
+            <div class="notification-item ${notif.is_read ? 'read' : 'unread'}" onclick="markNotificationAsRead(${notif.id})">
+              <div class="notification-icon-item">${iconMap[notif.type] || '🔔'}</div>
+              <div class="notification-content">
+                <div class="notification-title">${notif.title}</div>
+                <div class="notification-message">${notif.message}</div>
+                <div class="notification-time">${formatDate(notif.created_at)}</div>
+              </div>
+              ${!notif.is_read ? '<div class="notification-dot"></div>' : ''}
+            </div>
+          `;
+        }).join('');
+      }
+      
+      // Bildirimi okundu olarak işaretle
+      async function markNotificationAsRead(notificationId) {
+        try {
+          const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          if (response.ok) {
+            loadNotifications();
+          }
+        } catch (error) {
+          console.error("Bildirim güncelleme hatası:", error);
+        }
+      }
+      
+      // Tüm bildirimleri okundu olarak işaretle
+      async function markAllNotificationsAsRead() {
+        try {
+          const response = await fetch(`${API_URL}/notifications/read-all`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${currentToken}`
+            }
+          });
+          
+          if (response.ok) {
+            loadNotifications();
+          }
+        } catch (error) {
+          console.error("Bildirimler güncelleme hatası:", error);
+        }
+      }
+      
+      // Bildirim polling (her 30 saniyede bir kontrol et)
+      let notificationInterval;
+      function startNotificationPolling() {
+        if (notificationInterval) {
+          clearInterval(notificationInterval);
+        }
+        notificationInterval = setInterval(() => {
+          loadNotifications();
+        }, 30000); // 30 saniye
+      }
+      
+      function stopNotificationPolling() {
+        if (notificationInterval) {
+          clearInterval(notificationInterval);
+        }
       }
 
       // Üniversiteleri yükle
@@ -431,22 +634,50 @@
         window.location.href = url;
       });
 
+      // Bildirim dropdown toggle
+      document
+        .getElementById("notificationToggle")
+        .addEventListener("click", function (e) {
+          e.stopPropagation();
+          const dropdown = document.getElementById("notificationDropdown");
+          const profileDropdown = document.getElementById("profileDropdown");
+          profileDropdown.classList.remove("active");
+          dropdown.classList.toggle("active");
+          if (dropdown.classList.contains("active")) {
+            loadAllNotifications();
+          }
+        });
+      
       // Profil dropdown toggle
       document
         .getElementById("profileToggle")
         .addEventListener("click", function (e) {
           e.stopPropagation();
           const dropdown = document.getElementById("profileDropdown");
+          const notificationDropdown = document.getElementById("notificationDropdown");
+          notificationDropdown.classList.remove("active");
           dropdown.classList.toggle("active");
         });
 
       // Dropdown dışına tıklanınca kapat
       document.addEventListener("click", function (e) {
         const dropdown = document.getElementById("profileDropdown");
+        const notificationDropdown = document.getElementById("notificationDropdown");
         const profileSection = document.querySelector(".profile-section");
+        const notificationSection = document.querySelector(".notification-section");
+        
         if (!profileSection.contains(e.target)) {
           dropdown.classList.remove("active");
         }
+        if (!notificationSection.contains(e.target)) {
+          notificationDropdown.classList.remove("active");
+        }
+      });
+      
+      // Tümünü okundu işaretle butonu
+      document.getElementById("markAllReadBtn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        markAllNotificationsAsRead();
       });
 
       // Çıkış yap
