@@ -471,7 +471,60 @@
 
             <!-- Statistics Section -->
             <section id="statistics" class="content-section">
-                <h1>İstatistikler</h1>
+                <div class="section-header">
+                    <h1>📊 Detaylı İstatistikler</h1>
+                    <button onclick="refreshStatistics()" class="add-btn" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                        🔄 Yenile
+                    </button>
+                </div>
+                
+                <!-- Genel İstatistikler -->
+                <div class="stats-grid" id="generalStatsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">👥</div>
+                        <div class="stat-info">
+                            <h3>Toplam Öğrenci</h3>
+                            <p class="stat-number" id="statTotalStudents">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">👨‍🏫</div>
+                        <div class="stat-info">
+                            <h3>Toplam Akademisyen</h3>
+                            <p class="stat-number" id="statTotalAcademicians">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">📚</div>
+                        <div class="stat-info">
+                            <h3>Toplam Ders</h3>
+                            <p class="stat-number" id="statTotalCourses">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">⭐</div>
+                        <div class="stat-info">
+                            <h3>Toplam Favori</h3>
+                            <p class="stat-number" id="statTotalFavorites">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">🏛️</div>
+                        <div class="stat-info">
+                            <h3>Toplam Üniversite</h3>
+                            <p class="stat-number" id="statTotalUniversities">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #30cfd0, #330867);">🔐</div>
+                        <div class="stat-info">
+                            <h3>Toplam Admin</h3>
+                            <p class="stat-number" id="statTotalAdmins">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detaylı İstatistikler -->
                 <div id="statisticsContent" class="stats-content">
                     <div class="loading">Yükleniyor...</div>
                 </div>
@@ -528,6 +581,11 @@
             // Seçilen section'ı göster
             document.getElementById(sectionId).classList.add('active');
             document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            
+            // Eğer statistics section'ı açıldıysa detaylı istatistikleri yükle
+            if (sectionId === 'statistics') {
+                loadDetailedStatistics();
+            }
         }
 
         async function loadStatistics() {
@@ -538,15 +596,199 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
+                    // Dashboard istatistikleri
                     document.getElementById('statStudents').textContent = data.statistics.students;
                     document.getElementById('statAcademicians').textContent = data.statistics.academicians;
                     document.getElementById('statCourses').textContent = data.statistics.courses;
                     document.getElementById('statFavorites').textContent = data.statistics.favorites;
                     document.getElementById('statUniversities').textContent = data.statistics.universities || 0;
+                    
+                    // Statistics section istatistikleri
+                    document.getElementById('statTotalStudents').textContent = data.statistics.students;
+                    document.getElementById('statTotalAcademicians').textContent = data.statistics.academicians;
+                    document.getElementById('statTotalCourses').textContent = data.statistics.courses;
+                    document.getElementById('statTotalFavorites').textContent = data.statistics.favorites;
+                    document.getElementById('statTotalUniversities').textContent = data.statistics.universities || 0;
+                    document.getElementById('statTotalAdmins').textContent = data.statistics.admins || 0;
                 }
             } catch (error) {
                 console.error('İstatistik yükleme hatası:', error);
             }
+        }
+        
+        async function loadDetailedStatistics() {
+            const container = document.getElementById('statisticsContent');
+            container.innerHTML = '<div class="loading">Yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/statistics`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const stats = data.statistics;
+                    
+                    // Toplam hesaplamalar
+                    const totalUsers = (stats.students || 0) + (stats.academicians || 0) + (stats.admins || 0);
+                    const avgCoursesPerUniversity = stats.universities > 0 
+                        ? ((stats.courses || 0) / stats.universities).toFixed(1) 
+                        : 0;
+                    const avgFavoritesPerStudent = stats.students > 0 
+                        ? ((stats.favorites || 0) / stats.students).toFixed(1) 
+                        : 0;
+                    
+                    // Yüzde hesaplamaları
+                    const studentPercentage = totalUsers > 0 
+                        ? ((stats.students / totalUsers) * 100).toFixed(1) 
+                        : 0;
+                    const academicianPercentage = totalUsers > 0 
+                        ? ((stats.academicians / totalUsers) * 100).toFixed(1) 
+                        : 0;
+                    const adminPercentage = totalUsers > 0 
+                        ? ((stats.admins / totalUsers) * 100).toFixed(1) 
+                        : 0;
+                    
+                    container.innerHTML = `
+                        <div class="detailed-stats-container">
+                            <!-- Kullanıcı Dağılımı -->
+                            <div class="stats-section-card">
+                                <h2 style="margin-bottom: 1.5rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 2rem;">👥</span>
+                                    <span>Kullanıcı Dağılımı</span>
+                                </h2>
+                                <div class="distribution-grid">
+                                    <div class="distribution-item" style="border-left: 4px solid #667eea;">
+                                        <div class="distribution-header">
+                                            <span class="distribution-label">Öğrenciler</span>
+                                            <span class="distribution-percentage">${studentPercentage}%</span>
+                                        </div>
+                                        <div class="distribution-bar">
+                                            <div class="distribution-fill" style="width: ${studentPercentage}%; background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                                        </div>
+                                        <div class="distribution-value">${stats.students || 0} öğrenci</div>
+                                    </div>
+                                    <div class="distribution-item" style="border-left: 4px solid #f5576c;">
+                                        <div class="distribution-header">
+                                            <span class="distribution-label">Akademisyenler</span>
+                                            <span class="distribution-percentage">${academicianPercentage}%</span>
+                                        </div>
+                                        <div class="distribution-bar">
+                                            <div class="distribution-fill" style="width: ${academicianPercentage}%; background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                                        </div>
+                                        <div class="distribution-value">${stats.academicians || 0} akademisyen</div>
+                                    </div>
+                                    <div class="distribution-item" style="border-left: 4px solid #330867;">
+                                        <div class="distribution-header">
+                                            <span class="distribution-label">Adminler</span>
+                                            <span class="distribution-percentage">${adminPercentage}%</span>
+                                        </div>
+                                        <div class="distribution-bar">
+                                            <div class="distribution-fill" style="width: ${adminPercentage}%; background: linear-gradient(135deg, #30cfd0, #330867);"></div>
+                                        </div>
+                                        <div class="distribution-value">${stats.admins || 0} admin</div>
+                                    </div>
+                                </div>
+                                <div class="total-users" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #f0f0f0; text-align: center;">
+                                    <strong style="font-size: 1.2rem; color: #333;">Toplam Kullanıcı: ${totalUsers}</strong>
+                                </div>
+                            </div>
+                            
+                            <!-- Platform İstatistikleri -->
+                            <div class="stats-section-card">
+                                <h2 style="margin-bottom: 1.5rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 2rem;">📊</span>
+                                    <span>Platform İstatistikleri</span>
+                                </h2>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">📚</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Toplam Ders</div>
+                                            <div class="info-value">${stats.courses || 0}</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">⭐</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Toplam Favori</div>
+                                            <div class="info-value">${stats.favorites || 0}</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">🏛️</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Toplam Üniversite</div>
+                                            <div class="info-value">${stats.universities || 0}</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">📈</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Üniversite Başına Ortalama Ders</div>
+                                            <div class="info-value">${avgCoursesPerUniversity}</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">📊</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Öğrenci Başına Ortalama Favori</div>
+                                            <div class="info-value">${avgFavoritesPerStudent}</div>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon" style="background: linear-gradient(135deg, #30cfd0, #330867);">👥</div>
+                                        <div class="info-content">
+                                            <div class="info-label">Aktif Kullanıcı Oranı</div>
+                                            <div class="info-value">${stats.students > 0 ? '100%' : '0%'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hızlı Erişim -->
+                            <div class="stats-section-card">
+                                <h2 style="margin-bottom: 1.5rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 2rem;">⚡</span>
+                                    <span>Hızlı Erişim</span>
+                                </h2>
+                                <div class="quick-access-grid">
+                                    <button onclick="showSection('students')" class="quick-access-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👥</span>
+                                        <span style="font-weight: 600;">Öğrenciler</span>
+                                        <span style="font-size: 0.9rem; opacity: 0.9;">${stats.students || 0} kayıt</span>
+                                    </button>
+                                    <button onclick="showSection('academicians')" class="quick-access-btn" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👨‍🏫</span>
+                                        <span style="font-weight: 600;">Akademisyenler</span>
+                                        <span style="font-size: 0.9rem; opacity: 0.9;">${stats.academicians || 0} kayıt</span>
+                                    </button>
+                                    <button onclick="showSection('courses')" class="quick-access-btn" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📚</span>
+                                        <span style="font-weight: 600;">Dersler</span>
+                                        <span style="font-size: 0.9rem; opacity: 0.9;">${stats.courses || 0} ders</span>
+                                    </button>
+                                    <button onclick="showSection('universities')" class="quick-access-btn" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                                        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🏛️</span>
+                                        <span style="font-weight: 600;">Üniversiteler</span>
+                                        <span style="font-size: 0.9rem; opacity: 0.9;">${stats.universities || 0} üniversite</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="error">İstatistikler yüklenirken bir hata oluştu</p>';
+                }
+            } catch (error) {
+                console.error('Detaylı istatistik yükleme hatası:', error);
+                container.innerHTML = '<p class="error">Sunucuya bağlanılamadı</p>';
+            }
+        }
+        
+        function refreshStatistics() {
+            loadStatistics();
+            loadDetailedStatistics();
         }
 
         async function loadStudents() {
