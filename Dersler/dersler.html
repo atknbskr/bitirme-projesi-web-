@@ -154,14 +154,6 @@
                             </select>
                         </div>
                         
-                        <!-- Şehir Seçimi -->
-                        <div class="filter-group">
-                            <label for="filterCity">📍 Şehir</label>
-                            <select id="filterCity" onchange="applyFilters()">
-                                <option value="">Tüm Şehirler</option>
-                            </select>
-                        </div>
-                        
                         <!-- Dil Seçimi -->
                         <div class="filter-group">
                             <label for="filterLanguage">🌐 Ders Dili</label>
@@ -788,42 +780,57 @@
             loadFilterOptions();
         }
         
-        // Filtreleme seçeneklerini yükle (üniversiteler, şehirler)
+        // Filtreleme seçeneklerini yükle (üniversiteler)
         async function loadFilterOptions() {
             try {
-                // Üniversiteleri yükle
-                const uniResponse = await fetch(`${API_URL}/admin/universities`);
-                const uniData = await uniResponse.json();
-                
                 const universitySelect = document.getElementById('filterUniversity');
-                const citySelect = document.getElementById('filterCity');
                 
-                if (uniData.success && uniData.universities) {
-                    const cities = new Set();
+                // Eğer zaten yüklenmişse tekrar yükleme
+                if (universitySelect && universitySelect.options.length > 1) {
+                    console.log('Üniversiteler zaten yüklenmiş');
+                    return;
+                }
+                
+                // Üniversiteleri yükle (herkese açık endpoint)
+                console.log('Üniversiteler yükleniyor...');
+                const uniResponse = await fetch(`${API_URL}/universities`);
+                
+                if (!uniResponse.ok) {
+                    throw new Error(`HTTP ${uniResponse.status}: ${uniResponse.statusText}`);
+                }
+                
+                const uniData = await uniResponse.json();
+                console.log('Üniversite verisi:', uniData);
+                
+                if (universitySelect && uniData.success && uniData.universities && Array.isArray(uniData.universities)) {
+                    // Mevcut seçenekleri temizle (sadece "Tüm Üniversiteler" kalacak)
+                    while (universitySelect.options.length > 1) {
+                        universitySelect.remove(1);
+                    }
                     
+                    // Üniversiteleri ekle
                     uniData.universities.forEach(uni => {
-                        // Üniversite ekle
                         const option = document.createElement('option');
                         option.value = uni.id;
                         option.textContent = `${uni.name}${uni.city ? ' - ' + uni.city : ''}`;
                         universitySelect.appendChild(option);
-                        
-                        // Şehir ekle (tekrar etmemek için Set kullan)
-                        if (uni.city) {
-                            cities.add(uni.city);
-                        }
                     });
                     
-                    // Şehirleri ekle
-                    Array.from(cities).sort().forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        citySelect.appendChild(option);
-                    });
+                    console.log(`✅ ${uniData.universities.length} üniversite yüklendi`);
+                } else {
+                    console.warn('⚠️ Üniversite verisi beklenen formatta değil:', uniData);
                 }
             } catch (error) {
-                console.error('Filtre seçenekleri yükleme hatası:', error);
+                console.error('❌ Filtre seçenekleri yükleme hatası:', error);
+                // Hata durumunda kullanıcıya bilgi ver
+                const universitySelect = document.getElementById('filterUniversity');
+                if (universitySelect) {
+                    const errorOption = document.createElement('option');
+                    errorOption.value = '';
+                    errorOption.textContent = 'Üniversiteler yüklenemedi';
+                    errorOption.disabled = true;
+                    universitySelect.appendChild(errorOption);
+                }
             }
         }
         
@@ -841,16 +848,20 @@
             }
         }
         
-        // Filtreleri uygula
+        // Filtreleri uygula (debounce ile)
+        let filterTimeout;
         function applyFilters() {
-            loadCourses();
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                console.log('Filtreler uygulanıyor...');
+                loadCourses();
+            }, 300); // 300ms debounce
         }
         
         // Filtreleri temizle
         function clearFilters() {
             document.getElementById('filterCourseName').value = '';
             document.getElementById('filterUniversity').value = '';
-            document.getElementById('filterCity').value = '';
             document.getElementById('filterLanguage').value = '';
             document.getElementById('filterMinPrice').value = '';
             document.getElementById('filterMaxPrice').value = '';
@@ -868,7 +879,6 @@
             
             const courseName = document.getElementById('filterCourseName')?.value.trim();
             const universityId = document.getElementById('filterUniversity')?.value;
-            const city = document.getElementById('filterCity')?.value;
             const language = document.getElementById('filterLanguage')?.value;
             const minPrice = document.getElementById('filterMinPrice')?.value;
             const maxPrice = document.getElementById('filterMaxPrice')?.value;
@@ -880,7 +890,6 @@
             
             if (courseName) params.append('search', courseName);
             if (universityId) params.append('universityId', universityId);
-            if (city) params.append('city', city);
             if (language) params.append('language', language);
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice) params.append('maxPrice', maxPrice);
@@ -945,6 +954,7 @@
 
                 console.log('Fetching from:', url);
                 console.log('Headers:', headers);
+                console.log('Filtre parametreleri:', url.includes('?') ? url.split('?')[1] : 'Yok');
                 
                 const response = await fetch(url, { headers });
                 
