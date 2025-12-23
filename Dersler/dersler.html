@@ -98,7 +98,24 @@
                             <input type="date" id="endDate" name="endDate" value="2026-08-31">
                         </div>
                     </div>
-                    <button type="submit" class="submit-btn">Ders Ekle</button>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="price">💰 Ücret (₺)</label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="quota">👥 Kontenjan</label>
+                            <input type="number" id="quota" name="quota" min="1" placeholder="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="language">🌐 Ders Dili</label>
+                            <select id="language" name="language">
+                                <option value="turkish">Türkçe</option>
+                                <option value="english">İngilizce</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitCourseBtn">Ders Ekle</button>
                     <div id="courseFormMessage" class="form-message"></div>
                 </form>
             </div>
@@ -127,6 +144,80 @@
             <button class="modal-close" onclick="closeCourseDetail()">×</button>
             <div id="modalBody" class="modal-body">
                 <div class="loading-message">Yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ders Düzenleme Modal -->
+    <div id="editCourseModal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEditCourseModal()">×</button>
+            <div class="modal-body">
+                <h2 style="margin-bottom: 20px;">Ders Düzenle</h2>
+                <form id="editCourseForm" class="add-course-form">
+                    <div class="form-group">
+                        <label for="editCourseName">Ders Adı *</label>
+                        <input type="text" id="editCourseName" name="editCourseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCourseCode">Ders Kodu</label>
+                        <input type="text" id="editCourseCode" name="editCourseCode">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCategory">Kategori</label>
+                        <select id="editCategory" name="editCategory">
+                            <option value="">Kategori Seçin</option>
+                            <option value="Matematik">Matematik</option>
+                            <option value="Kimya">Kimya</option>
+                            <option value="Bilgisayar Programlama">Bilgisayar Programlama</option>
+                            <option value="Fizik">Fizik</option>
+                            <option value="İngilizce">İngilizce</option>
+                            <option value="İstatistik">İstatistik</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Açıklama</label>
+                        <textarea id="editDescription" name="editDescription" rows="4"></textarea>
+                    </div>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editApplicationDeadline">📅 Başvuru Son Tarihi</label>
+                            <input type="date" id="editApplicationDeadline" name="editApplicationDeadline">
+                        </div>
+                        <div class="form-group">
+                            <label for="editStartDate">🎯 Başlangıç Tarihi</label>
+                            <input type="date" id="editStartDate" name="editStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEndDate">🏁 Bitiş Tarihi</label>
+                            <input type="date" id="editEndDate" name="editEndDate">
+                        </div>
+                    </div>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editPrice">💰 Ücret (₺)</label>
+                            <input type="number" id="editPrice" name="editPrice" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="editQuota">👥 Kontenjan</label>
+                            <input type="number" id="editQuota" name="editQuota" min="1" placeholder="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLanguage">🌐 Ders Dili</label>
+                            <select id="editLanguage" name="editLanguage">
+                                <option value="turkish">Türkçe</option>
+                                <option value="english">İngilizce</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="submit-btn" style="flex: 1;">Kaydet</button>
+                        <button type="button" class="btn-secondary" onclick="closeEditCourseModal()" style="flex: 1; background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">İptal</button>
+                    </div>
+                    <div id="editCourseFormMessage" class="form-message"></div>
+                </form>
             </div>
         </div>
     </div>
@@ -482,19 +573,44 @@
                     description: document.getElementById('description').value.trim() || null,
                     applicationDeadline: document.getElementById('applicationDeadline').value || null,
                     startDate: document.getElementById('startDate').value || null,
-                    endDate: document.getElementById('endDate').value || null
+                    endDate: document.getElementById('endDate').value || null,
+                    price: document.getElementById('price').value ? parseFloat(document.getElementById('price').value) : 0,
+                    quota: document.getElementById('quota').value ? parseInt(document.getElementById('quota').value) : 30,
+                    language: document.getElementById('language').value || 'turkish'
                 };
 
                 console.log('Form Data:', formData);
 
                 try {
-                    const response = await fetch(`${API_URL}/courses`, {
+                    // Akademisyenin üniversite ID'sini al
+                    const userUniversityId = currentUser.universityId;
+                    if (!userUniversityId) {
+                        alert('Üniversite bilgisi bulunamadı. Lütfen profil ayarlarınızı kontrol edin.');
+                        return;
+                    }
+
+                    // summer_school_offerings endpoint'ine gönder
+                    const offeringData = {
+                        courseName: formData.courseName,
+                        courseCode: formData.courseCode || formData.courseName.substring(0, 6).toUpperCase(),
+                        description: formData.description,
+                        startDate: formData.startDate,
+                        endDate: formData.endDate,
+                        applicationDeadline: formData.applicationDeadline,
+                        applicationStartDate: formData.startDate,
+                        price: formData.price,
+                        quota: formData.quota,
+                        language: formData.language,
+                        universityId: userUniversityId
+                    };
+
+                    const response = await fetch(`${API_URL}/summer-offerings`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${userToken}`
                         },
-                        body: JSON.stringify(formData)
+                        body: JSON.stringify(offeringData)
                     });
 
                     const data = await response.json();
@@ -571,14 +687,16 @@
 
                 // Eğer akademisyen ise, SADECE kendi derslerini getir
                 if (currentUser && currentUser.userType === 'academician') {
-                    url = `${API_URL}/courses/my-courses`;
+                    url = `${API_URL}/summer-offerings/my/offerings`;
                     headers['Authorization'] = `Bearer ${userToken}`;
                     console.log('🎓 AKADEMİSYEN: Sadece kendi dersleriniz yükleniyor:', url);
                 } else if (currentUser && currentUser.userType === 'student') {
-                    // Öğrenci için normal /courses endpoint'i kullan (tüm aktif dersler)
+                    // Öğrenci için summer-offerings endpoint'i kullan (tüm aktif dersler)
+                    url = `${API_URL}/summer-offerings`;
                     console.log('👨‍🎓 ÖĞRENCİ: Tüm dersler yükleniyor');
                     console.log('URL:', url);
                 } else {
+                    url = `${API_URL}/summer-offerings`;
                     console.log('👤 ZİYARETÇİ: Tüm dersler yükleniyor');
                     console.log('URL:', url);
                 }
@@ -626,31 +744,38 @@
                 const data = await response.json();
                 console.log('Raw API Response:', data);
                 console.log('data.success:', data.success);
-                console.log('data.courses type:', typeof data.courses);
-                console.log('data.courses:', data.courses);
-                console.log('data.courses length:', data.courses ? data.courses.length : 'null');
-
+                
+                // Response formatını kontrol et (summer-offerings endpoint'i data veya courses döndürebilir)
+                let courses = null;
                 if (data.success) {
-                    if (data.courses && Array.isArray(data.courses)) {
-                        console.log('✅ Toplam ders sayısı:', data.courses.length);
-                        if (data.courses.length === 0) {
-                            console.warn('⚠️ Hiç ders bulunamadı!');
-                            const emptyMessage = currentUser && currentUser.userType === 'academician' 
-                                ? '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklememişsiniz. Yukarıdaki formdan ders ekleyebilirsiniz.</p>'
-                                : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş veya aktif ders bulunmuyor.</p>';
-                            gridDiv.innerHTML = emptyMessage;
-                        } else {
-                            console.log('✅ Dersler gösteriliyor...');
-                            displayCourses(data.courses);
-                        }
+                    if (data.data && Array.isArray(data.data)) {
+                        courses = data.data;
+                    } else if (data.courses && Array.isArray(data.courses)) {
+                        courses = data.courses;
+                    } else if (Array.isArray(data)) {
+                        courses = data;
+                    }
+                }
+                
+                console.log('courses type:', typeof courses);
+                console.log('courses:', courses);
+                console.log('courses length:', courses ? courses.length : 'null');
+
+                if (data.success && courses && Array.isArray(courses)) {
+                    console.log('✅ Toplam ders sayısı:', courses.length);
+                    if (courses.length === 0) {
+                        console.warn('⚠️ Hiç ders bulunamadı!');
+                        const emptyMessage = currentUser && currentUser.userType === 'academician' 
+                            ? '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklememişsiniz. Yukarıdaki formdan ders ekleyebilirsiniz.</p>'
+                            : '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">Henüz ders eklenmemiş veya aktif ders bulunmuyor.</p>';
+                        gridDiv.innerHTML = emptyMessage;
                     } else {
-                        console.error('❌ data.courses bir array değil:', data.courses);
-                        console.error('data.courses type:', typeof data.courses);
-                        gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Ders verisi hatalı formatta. Konsolu kontrol edin.</p>';
+                        console.log('✅ Dersler gösteriliyor...');
+                        displayCourses(courses);
                     }
                 } else {
-                    console.error('❌ Ders yükleme hatası:', data);
-                    gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Dersler yüklenirken bir hata oluştu: ' + (data.message || 'Bilinmeyen hata') + '</p>';
+                    console.error('❌ Ders verisi hatalı formatta:', data);
+                    gridDiv.innerHTML = '<p class="error-message" style="grid-column: 1/-1; text-align: center; color: #dc3545; padding: 2rem;">Ders verisi hatalı formatta. Konsolu kontrol edin.</p>';
                 }
             } catch (error) {
                 console.error('❌ Ders yükleme hatası:', error);
@@ -728,11 +853,32 @@
                     ` : ''}
                     <div class="ders-stats">
                         <span class="stat-item">🏫 ${course.university_count || 0} Üniversite</span>
-                        <span class="stat-item">👥 ${course.student_count || 0} Öğrenci</span>
+                        <span class="stat-item">👥 ${course.student_count || course.current_registrations || 0} Öğrenci</span>
+                    </div>
+                    <div class="course-info" style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9em; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+                        ${course.price !== undefined && course.price !== null ? `
+                            <div style="text-align: center;">
+                                <strong style="display: block; color: #28a745; font-size: 1.1em;">💰 ${parseFloat(course.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</strong>
+                                <span style="color: #666; font-size: 0.85em;">Ücret</span>
+                            </div>
+                        ` : ''}
+                        ${course.quota !== undefined && course.quota !== null ? `
+                            <div style="text-align: center;">
+                                <strong style="display: block; color: #667eea; font-size: 1.1em;">👥 ${course.quota}</strong>
+                                <span style="color: #666; font-size: 0.85em;">Kontenjan</span>
+                            </div>
+                        ` : ''}
+                        ${course.language ? `
+                            <div style="text-align: center;">
+                                <strong style="display: block; color: #764ba2; font-size: 1.1em;">🌐 ${course.language === 'turkish' ? 'Türkçe' : course.language === 'english' ? 'İngilizce' : course.language}</strong>
+                                <span style="color: #666; font-size: 0.85em;">Dil</span>
+                            </div>
+                        ` : ''}
                     </div>
                     ${!isMyCourse && course.academician_name ? `<p class="academician-name">Öğretmen: ${course.academician_name}</p>` : ''}
                     <div class="course-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                         ${isMyCourse ? `
+                            <button class="edit-btn" onclick="editCourse(${course.id})" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; min-width: 120px;">✏️ Düzenle</button>
                             <button class="delete-btn" onclick="deleteCourse(${course.id})" style="background: #dc3545; flex: 1; min-width: 120px;">🗑️ Dersi Sil</button>
                         ` : ''}
                         ${isStudent && !isExpired ? `
@@ -760,14 +906,172 @@
             }
         }
 
+        // Ders düzenleme modalını aç
+        async function editCourse(courseId) {
+            try {
+                console.log('Ders düzenleniyor, ID:', courseId);
+                
+                // Ders bilgilerini getir (summer_school_offerings endpoint'inden)
+                const response = await fetch(`${API_URL}/summer-offerings/${courseId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Ders bilgileri yüklenemedi');
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success || !data.data) {
+                    throw new Error('Ders bulunamadı');
+                }
+                
+                const course = data.data;
+                
+                // Form alanlarını doldur
+                document.getElementById('editCourseName').value = course.course_name || '';
+                document.getElementById('editCourseCode').value = course.course_code || '';
+                document.getElementById('editCategory').value = course.category || '';
+                document.getElementById('editDescription').value = course.description || '';
+                
+                // Tarihleri formatla (YYYY-MM-DD)
+                const formatDateForInput = (dateStr) => {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    return date.toISOString().split('T')[0];
+                };
+                
+                document.getElementById('editApplicationDeadline').value = formatDateForInput(course.application_deadline);
+                document.getElementById('editStartDate').value = formatDateForInput(course.start_date);
+                document.getElementById('editEndDate').value = formatDateForInput(course.end_date);
+                
+                document.getElementById('editPrice').value = course.price || 0;
+                document.getElementById('editQuota').value = course.quota || 30;
+                document.getElementById('editLanguage').value = course.language || 'turkish';
+                
+                // Modal'ı göster
+                document.getElementById('editCourseModal').style.display = 'flex';
+                
+                // Form submit handler'ı ekle (sadece bir kez)
+                const editForm = document.getElementById('editCourseForm');
+                const existingHandler = editForm.getAttribute('data-handler-attached');
+                if (!existingHandler) {
+                    editForm.setAttribute('data-handler-attached', 'true');
+                    editForm.onsubmit = async (e) => {
+                        e.preventDefault();
+                        await updateCourse(courseId);
+                    };
+                }
+                
+            } catch (error) {
+                console.error('Ders düzenleme hatası:', error);
+                alert('Ders bilgileri yüklenirken bir hata oluştu: ' + error.message);
+            }
+        }
+
+        // Ders güncelle
+        async function updateCourse(courseId) {
+            try {
+                const formData = {
+                    courseName: document.getElementById('editCourseName').value.trim(),
+                    courseCode: document.getElementById('editCourseCode').value.trim() || null,
+                    category: document.getElementById('editCategory').value || null,
+                    description: document.getElementById('editDescription').value.trim() || null,
+                    applicationDeadline: document.getElementById('editApplicationDeadline').value || null,
+                    startDate: document.getElementById('editStartDate').value || null,
+                    endDate: document.getElementById('editEndDate').value || null,
+                    price: document.getElementById('editPrice').value ? parseFloat(document.getElementById('editPrice').value) : null,
+                    quota: document.getElementById('editQuota').value ? parseInt(document.getElementById('editQuota').value) : null,
+                    language: document.getElementById('editLanguage').value || null
+                };
+
+                console.log('Ders güncelleniyor:', formData);
+
+                // summer_school_offerings endpoint'ine gönder
+                const offeringData = {
+                    courseName: formData.courseName,
+                    courseCode: formData.courseCode,
+                    description: formData.description,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    applicationDeadline: formData.applicationDeadline,
+                    price: formData.price,
+                    quota: formData.quota,
+                    language: formData.language
+                };
+
+                const response = await fetch(`${API_URL}/summer-offerings/${courseId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: JSON.stringify(offeringData)
+                });
+
+                const data = await response.json();
+                const messageDiv = document.getElementById('editCourseFormMessage');
+                
+                console.log('API Response:', { status: response.status, data });
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = '✅ Ders başarıyla güncellendi!';
+                    messageDiv.className = 'form-message success';
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.padding = '15px';
+                    messageDiv.style.marginTop = '15px';
+                    messageDiv.style.borderRadius = '8px';
+                    messageDiv.style.backgroundColor = '#d4edda';
+                    messageDiv.style.color = '#155724';
+                    messageDiv.style.border = '1px solid #c3e6cb';
+                    messageDiv.style.fontWeight = 'bold';
+                    
+                    setTimeout(() => {
+                        closeEditCourseModal();
+                        loadCourses(); // Listeyi yenile
+                    }, 1500);
+                } else {
+                    const errorMsg = data.message || `Hata: ${response.status} - ${response.statusText}`;
+                    messageDiv.textContent = errorMsg;
+                    messageDiv.className = 'form-message error';
+                    messageDiv.style.display = 'block';
+                    messageDiv.style.padding = '15px';
+                    messageDiv.style.marginTop = '15px';
+                    messageDiv.style.borderRadius = '8px';
+                    messageDiv.style.backgroundColor = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
+                    console.error('API Error:', data);
+                }
+            } catch (error) {
+                console.error('Ders güncelleme hatası:', error);
+                const messageDiv = document.getElementById('editCourseFormMessage');
+                messageDiv.textContent = `Sunucuya bağlanılamadı: ${error.message}`;
+                messageDiv.className = 'form-message error';
+                messageDiv.style.display = 'block';
+                messageDiv.style.padding = '15px';
+                messageDiv.style.marginTop = '15px';
+                messageDiv.style.borderRadius = '8px';
+                messageDiv.style.backgroundColor = '#f8d7da';
+                messageDiv.style.color = '#721c24';
+                messageDiv.style.border = '1px solid #f5c6cb';
+            }
+        }
+
+        // Düzenleme modalını kapat
+        function closeEditCourseModal() {
+            document.getElementById('editCourseModal').style.display = 'none';
+            document.getElementById('editCourseForm').reset();
+            document.getElementById('editCourseFormMessage').textContent = '';
+            document.getElementById('editCourseFormMessage').style.display = 'none';
+        }
+
         async function deleteCourse(courseId) {
             if (!confirm('⚠️ Bu dersi kalıcı olarak silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!')) {
                 return;
             }
 
-            try {
-                console.log('Ders siliniyor, ID:', courseId);
-                const response = await fetch(`${API_URL}/courses/${courseId}`, {
+                try {
+                    console.log('Ders siliniyor, ID:', courseId);
+                const response = await fetch(`${API_URL}/summer-offerings/${courseId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${userToken}`
@@ -912,17 +1216,22 @@
             
             try {
                 console.log('Ders detayı yükleniyor, ID:', courseId);
-                const response = await fetch(`${API_URL}/courses/${courseId}/details`);
+                // summer-offerings endpoint'ini kullan
+                const response = await fetch(`${API_URL}/summer-offerings/${courseId}`);
                 
                 if (!response.ok) {
-                    throw new Error('Ders detayları yüklenemedi');
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Ders detayları yüklenemedi');
                 }
                 
                 const data = await response.json();
                 console.log('Ders detayı:', data);
                 
-                if (data.success && data.course) {
-                    displayCourseDetail(data.course);
+                // Response formatını kontrol et (summer-offerings endpoint'i data döndürür)
+                const course = data.success && data.data ? data.data : (data.course || null);
+                
+                if (course) {
+                    displayCourseDetail(course);
                 } else {
                     modalBody.innerHTML = '<div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">Ders detayları yüklenemedi</div>';
                 }
@@ -1026,12 +1335,18 @@
                         </div>
                         <div class="detail-item">
                             <label>📊 Kayıtlı Öğrenci</label>
-                            <value style="color: #667eea; font-weight: bold;">${course.student_count || 0} Öğrenci</value>
+                            <value style="color: #667eea; font-weight: bold;">${course.student_count || course.current_registrations || 0} Öğrenci</value>
                         </div>
                         <div class="detail-item">
                             <label>📈 Doluluk Oranı</label>
-                            <value>${course.quota ? Math.round((course.student_count || 0) / course.quota * 100) : 0}%</value>
+                            <value>${course.quota ? Math.round((course.student_count || course.current_registrations || 0) / course.quota * 100) : 0}%</value>
                         </div>
+                        ${course.language ? `
+                        <div class="detail-item">
+                            <label>🌐 Ders Dili</label>
+                            <value style="color: #764ba2; font-weight: bold;">${course.language === 'turkish' ? 'Türkçe' : course.language === 'english' ? 'İngilizce' : course.language}</value>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -1141,6 +1456,19 @@
         function closeCourseDetail() {
             const modal = document.getElementById('courseDetailModal');
             modal.style.display = 'none';
+        }
+
+        // Modal dışına tıklanınca kapat
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editCourseModal');
+            const detailModal = document.getElementById('courseDetailModal');
+            
+            if (event.target === editModal) {
+                closeEditCourseModal();
+            }
+            if (event.target === detailModal) {
+                closeCourseDetail();
+            }
         }
 
         // ESC tuşu ile modal'ı kapat

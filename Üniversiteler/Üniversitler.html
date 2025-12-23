@@ -356,7 +356,10 @@
                     
                     console.log('Yüklenen üniversite sayısı:', allUniversities.length);
                     
-                    // Akademisyen ise sadece kendi üniversitesini göster
+                    // İstatistikleri HER ZAMAN tüm platform verilerine göre güncelle
+                    updateStats(allUniversities);
+                    
+                    // Akademisyen ise sadece kendi üniversitesini göster (liste için)
                     if (currentUser && currentUser.userType === 'academician' && currentUser.universityId) {
                         // universityId'yi integer'a çevir ve karşılaştır
                         const userUniversityId = parseInt(currentUser.universityId);
@@ -373,12 +376,6 @@
                             document.getElementById('sectionSubtitle').textContent = 
                                 'Üniversite bilgisi bulunamadı';
                         }
-                        
-                        // Akademisyen için sadece kendi üniversitesinin istatistiklerini göster
-                        updateStats(displayedUniversities);
-                    } else {
-                        // Diğer kullanıcılar için tüm üniversitelerin istatistiklerini göster
-                        updateStats(allUniversities);
                     }
                     
                     displayUniversities(displayedUniversities);
@@ -395,13 +392,13 @@
             }
         }
 
-        // İstatistikleri güncelle - TÜM veritabanındaki verilere göre
+        // İstatistikleri güncelle - TÜM PLATFORM verilerine göre (her zaman tüm üniversiteler)
         function updateStats(universities) {
-            // Toplam üniversite sayısı
+            // Toplam üniversite sayısı (tüm platform)
             const universityCount = universities.length;
             document.getElementById('universityCount').textContent = universityCount;
             
-            // Toplam akademisyen ve öğrenci sayısını hesapla
+            // Toplam akademisyen ve öğrenci sayısını hesapla (tüm platform)
             let totalAcademicians = 0;
             let totalStudents = 0;
             
@@ -410,13 +407,6 @@
                 const studCount = parseInt(uni.student_count) || 0;
                 totalAcademicians += acadCount;
                 totalStudents += studCount;
-            });
-            
-            // Debug için konsola yazdır
-            console.log('İstatistikler:', {
-                universiteler: universityCount,
-                akademisyenler: totalAcademicians,
-                ogrenciler: totalStudents
             });
             
             document.getElementById('totalAcademicians').textContent = totalAcademicians;
