@@ -102,18 +102,18 @@
       <div class="container">
         <div class="hero-content">
           <h1>Türkiye'nin En Kapsamlı Yaz Dersleri Platformu</h1>
-          <p>200+ üniversiteden binlerce yaz dersi seçeneği tek platformda.</p>
+          <p id="heroSubtitle">200+ üniversiteden binlerce yaz dersi seçeneği tek platformda.</p>
           <div class="hero-stats">
             <div class="stat">
-              <div class="stat-number">200+</div>
+              <div class="stat-number" id="heroUniversityCount">-</div>
               <div class="stat-label">Üniversite</div>
             </div>
             <div class="stat">
-              <div class="stat-number">500+</div>
+              <div class="stat-number" id="heroCourseCount">-</div>
               <div class="stat-label">Yaz Dersi</div>
             </div>
             <div class="stat">
-              <div class="stat-number">50K+</div>
+              <div class="stat-number" id="heroStudentCount">-</div>
               <div class="stat-label">Mutlu Öğrenci</div>
             </div>
           </div>
@@ -1990,9 +1990,68 @@
         }
       });
 
+      // Hero istatistiklerini yükle
+      async function loadHeroStatistics() {
+        try {
+          const response = await fetch(`${API_URL}/universities/statistics`);
+          const data = await response.json();
+          
+          if (data.success && data.statistics) {
+            const stats = data.statistics;
+            
+            // Üniversite sayısı
+            const universityCount = stats.universities || 0;
+            const universityElement = document.getElementById('heroUniversityCount');
+            if (universityElement) {
+              universityElement.textContent = universityCount > 0 ? `${universityCount}` : '0';
+            }
+            
+            // Ders sayısı
+            const courseCount = stats.courses || 0;
+            const courseElement = document.getElementById('heroCourseCount');
+            if (courseElement) {
+              courseElement.textContent = courseCount > 0 ? `${courseCount}` : '0';
+            }
+            
+            // Öğrenci sayısı
+            const studentCount = stats.students || 0;
+            const studentElement = document.getElementById('heroStudentCount');
+            if (studentElement) {
+              studentElement.textContent = studentCount > 0 ? `${studentCount}` : '0';
+            }
+            
+            // Alt başlığı güncelle
+            const subtitleElement = document.getElementById('heroSubtitle');
+            if (subtitleElement && universityCount > 0) {
+              subtitleElement.textContent = `${universityCount}+ üniversiteden binlerce yaz dersi seçeneği tek platformda.`;
+            }
+          } else {
+            console.error('İstatistikler yüklenemedi:', data.message);
+            // Varsayılan değerleri göster
+            setDefaultHeroStats();
+          }
+        } catch (error) {
+          console.error('İstatistikler yüklenirken hata:', error);
+          // Hata durumunda varsayılan değerleri göster
+          setDefaultHeroStats();
+        }
+      }
+      
+      // Varsayılan istatistikleri göster
+      function setDefaultHeroStats() {
+        const universityElement = document.getElementById('heroUniversityCount');
+        const courseElement = document.getElementById('heroCourseCount');
+        const studentElement = document.getElementById('heroStudentCount');
+        
+        if (universityElement) universityElement.textContent = '0';
+        if (courseElement) courseElement.textContent = '0';
+        if (studentElement) studentElement.textContent = '0';
+      }
+
       // Sayfa yüklendiğinde profili ve diğer verileri yükle
       document.addEventListener("DOMContentLoaded", function() {
         loadUserProfile();
+        loadHeroStatistics(); // Hero istatistiklerini yükle
         // Öğrenci değilse üniversite ve fakülte yükleme (artık gerekli değil)
         // loadUniversities();
         // loadFaculties();

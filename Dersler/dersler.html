@@ -239,9 +239,29 @@
         <div class="modal-content" style="max-width: 900px;">
             <button class="modal-close" onclick="closeApplicationsModal()">×</button>
             <div class="modal-body">
-                <h2 style="margin-bottom: 20px;">📋 Ders Başvuruları</h2>
-                <div id="applicationsList" class="applications-list">
-                    <div class="loading-message">Yükleniyor...</div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+                    <button id="applicationsTabBtn" onclick="switchApplicationsTab('applications')" style="flex: 1; padding: 10px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        📝 Başvurular
+                    </button>
+                    <button id="enrolledTabBtn" onclick="switchApplicationsTab('enrolled')" style="flex: 1; padding: 10px; background: #e9ecef; color: #495057; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        👥 Kayıtlı Öğrenciler
+                    </button>
+                </div>
+                
+                <!-- Başvurular Tab -->
+                <div id="applicationsTab" class="applications-tab">
+                    <h2 style="margin-bottom: 20px;">📋 Ders Başvuruları</h2>
+                    <div id="applicationsList" class="applications-list">
+                        <div class="loading-message">Yükleniyor...</div>
+                    </div>
+                </div>
+                
+                <!-- Kayıtlı Öğrenciler Tab -->
+                <div id="enrolledTab" class="applications-tab" style="display: none;">
+                    <h2 style="margin-bottom: 20px;">👥 Kayıtlı Öğrenciler</h2>
+                    <div id="enrolledStudentsList" class="applications-list">
+                        <div class="loading-message">Yükleniyor...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1790,6 +1810,148 @@
             }
         }
         
+        // Tab değiştirme
+        function switchApplicationsTab(tab) {
+            const applicationsTab = document.getElementById('applicationsTab');
+            const enrolledTab = document.getElementById('enrolledTab');
+            const applicationsTabBtn = document.getElementById('applicationsTabBtn');
+            const enrolledTabBtn = document.getElementById('enrolledTabBtn');
+            
+            if (tab === 'applications') {
+                applicationsTab.style.display = 'block';
+                enrolledTab.style.display = 'none';
+                applicationsTabBtn.style.background = '#667eea';
+                applicationsTabBtn.style.color = 'white';
+                enrolledTabBtn.style.background = '#e9ecef';
+                enrolledTabBtn.style.color = '#495057';
+            } else {
+                applicationsTab.style.display = 'none';
+                enrolledTab.style.display = 'block';
+                applicationsTabBtn.style.background = '#e9ecef';
+                applicationsTabBtn.style.color = '#495057';
+                enrolledTabBtn.style.background = '#667eea';
+                enrolledTabBtn.style.color = 'white';
+                
+                // Kayıtlı öğrencileri yükle
+                const modal = document.getElementById('applicationsModal');
+                const courseId = modal.dataset.courseId;
+                if (courseId) {
+                    loadEnrolledStudents(parseInt(courseId));
+                }
+            }
+        }
+        
+        // Akademisyen: Kayıtlı öğrencileri yükle
+        async function loadEnrolledStudents(offeringId) {
+            const enrolledStudentsList = document.getElementById('enrolledStudentsList');
+            
+            if (!userToken) {
+                enrolledStudentsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #dc3545;">Lütfen önce giriş yapın</p>';
+                return;
+            }
+            
+            enrolledStudentsList.innerHTML = '<div class="loading-message">Yükleniyor...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/summer-offerings/${offeringId}/students`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const students = data.data || [];
+                    
+                    if (students.length === 0) {
+                        enrolledStudentsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Bu derse henüz kayıtlı öğrenci bulunmuyor.</p>';
+                    } else {
+                        const formatDate = (dateStr) => {
+                            if (!dateStr) return 'Belirtilmemiş';
+                            const date = new Date(dateStr);
+                            return date.toLocaleDateString('tr-TR', { 
+                                day: 'numeric', 
+                                month: 'long', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        };
+                        
+                        enrolledStudentsList.innerHTML = students.map(student => {
+                            return `
+                                <div class="application-item" style="background: #d4edda; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                        <div>
+                                            <h3 style="margin: 0 0 5px 0; color: #212529;">${student.fullName}</h3>
+                                            <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📧 ${student.email}</p>
+                                            <p style="margin: 5px 0; color: #666; font-size: 0.9em;">🎓 Öğrenci No: ${student.studentNumber || 'Belirtilmemiş'}</p>
+                                            <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📅 Kayıt Tarihi: ${formatDate(student.enrolledAt)}</p>
+                                        </div>
+                                        <div>
+                                            <span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">✅ Kayıtlı</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                        <button onclick="removeStudentFromCourse(${offeringId}, ${student.id})" style="background: #dc3545; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
+                                            ❌ Dersten Çıkar
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    enrolledStudentsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #dc3545;">Öğrenciler yüklenirken bir hata oluştu: ' + (data.message || 'Bilinmeyen hata') + '</p>';
+                }
+            } catch (error) {
+                console.error('Kayıtlı öğrenciler yükleme hatası:', error);
+                enrolledStudentsList.innerHTML = '<p style="text-align: center; padding: 2rem; color: #dc3545;">Sunucuya bağlanılamadı: ' + error.message + '</p>';
+            }
+        }
+        
+        // Akademisyen: Öğrenciyi dersten çıkar
+        async function removeStudentFromCourse(offeringId, studentCourseId) {
+            if (!confirm('⚠️ Bu öğrenciyi dersten çıkarmak istediğinize emin misiniz?\n\nBu işlem geri alınamaz ve öğrencinin ders kaydı iptal edilecektir.')) {
+                return;
+            }
+            
+            if (!userToken) {
+                alert('Lütfen önce giriş yapın');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/summer-offerings/${offeringId}/students/${studentCourseId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert('✅ Öğrenci başarıyla dersten çıkarıldı!');
+                    // Kayıtlı öğrencileri yenile
+                    loadEnrolledStudents(offeringId);
+                    // Dersleri yenile
+                    loadCourses();
+                } else {
+                    alert('❌ Hata: ' + (data.message || 'Öğrenci çıkarılamadı'));
+                }
+            } catch (error) {
+                console.error('Öğrenci çıkarma hatası:', error);
+                alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+            }
+        }
+        
         // Akademisyen: Ders başvurularını göster
         async function showCourseApplications(courseId) {
             console.log('showCourseApplications çağrıldı, courseId:', courseId);
@@ -1810,6 +1972,10 @@
             
             modal.style.display = 'flex';
             modal.dataset.courseId = courseId;
+            
+            // İlk tab'ı göster (başvurular)
+            switchApplicationsTab('applications');
+            
             applicationsList.innerHTML = '<div class="loading-message">Yükleniyor...</div>';
             
             try {
