@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="htmlLang">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -296,26 +296,42 @@
             align-items: center;
             gap: 15px;
         }
-        .language-switcher {
+        .header-right .changeLanguage {
             display: flex;
-            align-items: center;
+            gap: 5px;
+            margin-right: 15px;
         }
-        .language-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .header-right .changeLanguage a {
             color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 20px;
+            display: block;
             transition: all 0.3s ease;
-            min-width: 50px;
-            text-align: center;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
         }
-        .language-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
+        .header-right .changeLanguage a::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(102, 126, 234, 0.2),
+                rgba(255, 215, 0, 0.2)
+            );
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        .header-right .changeLanguage a:hover::before {
+            left: 0;
+        }
+        .header-right .changeLanguage a:hover {
+            color: #ffd700;
             transform: translateY(-2px);
         }
     </style>
@@ -349,10 +365,9 @@
 
             <div class="header-right">
                 <!-- Dil Değiştirme Butonu -->
-                <div class="language-switcher">
-                    <button class="language-btn" id="languageToggle" onclick="toggleLanguage()">
-                        <span id="currentLanguage">EN</span>
-                    </button>
+                <div class="changeLanguage">
+                    <a href="#" onclick="event.preventDefault(); changeLanguage('en');" id="englishLink">English</a>
+                    <a href="#" onclick="event.preventDefault(); changeLanguage('tr');" id="turkishLink" style="display: none;">Türkçe</a>
                 </div>
             </div>
         </div>
@@ -626,26 +641,28 @@
             }
         });
 
-        // Dil değiştirme fonksiyonu
-        function toggleLanguage() {
-            const currentLang = getCurrentLanguage();
-            const newLang = currentLang === 'tr' ? 'en' : 'tr';
-            changeLanguage(newLang);
-            updateLanguageButton(newLang);
-        }
-
-        // Dil butonunu güncelle
-        function updateLanguageButton(lang) {
-            const langBtn = document.getElementById('languageToggle');
-            if (langBtn) {
-                langBtn.textContent = lang === 'tr' ? 'EN' : 'TR';
+        // Override changeLanguage to also update language toggle buttons
+        const originalChangeLanguage = window.changeLanguage;
+        window.changeLanguage = function(lang) {
+            originalChangeLanguage(lang);
+            
+            // Update language toggle buttons
+            const englishLink = document.getElementById('englishLink');
+            const turkishLink = document.getElementById('turkishLink');
+            
+            if (lang === 'en' && englishLink && turkishLink) {
+                englishLink.style.display = 'none';
+                turkishLink.style.display = 'block';
+            } else if (lang === 'tr' && englishLink && turkishLink) {
+                englishLink.style.display = 'block';
+                turkishLink.style.display = 'none';
             }
-        }
+        };
 
         // Sayfa yüklendiğinde dil butonunu ayarla
         document.addEventListener("DOMContentLoaded", function() {
             const currentLang = getCurrentLanguage();
-            updateLanguageButton(currentLang);
+            changeLanguage(currentLang);
         });
     </script>
 </body>

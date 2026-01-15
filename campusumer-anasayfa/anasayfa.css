@@ -40,34 +40,48 @@ body {
   gap: 15px;
 }
 
-/* Language Switcher */
-.language-switcher {
+/* Dil Değiştirme Butonları */
+.header-right .changeLanguage {
   display: flex;
-  align-items: center;
+  gap: 5px;
+  margin-right: 15px;
 }
 
-.language-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.header-right .changeLanguage a {
   color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 12px 20px;
+  display: block;
   transition: all 0.3s ease;
-  min-width: 50px;
-  text-align: center;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
 }
 
-.language-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+.header-right .changeLanguage a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(102, 126, 234, 0.2),
+    rgba(255, 215, 0, 0.2)
+  );
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.header-right .changeLanguage a:hover::before {
+  left: 0;
+}
+
+.header-right .changeLanguage a:hover {
+  color: #ffd700;
   transform: translateY(-2px);
-}
-
-.language-btn:active {
-  transform: translateY(0);
 }
 
 .logo {
