@@ -291,7 +291,35 @@
                 padding: 25px;
             }
         }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .language-switcher {
+            display: flex;
+            align-items: center;
+        }
+        .language-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            min-width: 50px;
+            text-align: center;
+        }
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
     </style>
+    <script src="../js/translations.js"></script>
 </head>
 <body>
     <header class="header">
@@ -303,28 +331,37 @@
 
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link">Anasayfa</a>
+                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link" data-translate="home">Anasayfa</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Dersler/dersler.html" class="nav-link">Dersler</a>
+                    <a href="../Dersler/dersler.html" class="nav-link" data-translate="courses">Dersler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link">Üniversiteler</a>
+                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link" data-translate="universities">Üniversiteler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Hakkımızda/Hakkımızda.html" class="nav-link">Hakkımızda</a>
+                    <a href="../Hakkımızda/Hakkımızda.html" class="nav-link" data-translate="about">Hakkımızda</a>
                 </div>
                 <div class="nav-item">
-                    <a href="iletisim.html" class="nav-link active">İletişim</a>
+                    <a href="iletisim.html" class="nav-link active" data-translate="contact">İletişim</a>
                 </div>
             </nav>
+
+            <div class="header-right">
+                <!-- Dil Değiştirme Butonu -->
+                <div class="language-switcher">
+                    <button class="language-btn" id="languageToggle" onclick="toggleLanguage()">
+                        <span id="currentLanguage">EN</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <section class="contact-hero">
         <div class="container">
-            <h1>📧 İletişim</h1>
-            <p>Bizimle iletişime geçin, sorularınızı yanıtlayalım</p>
+            <h1 data-translate="contactTitle">📧 İletişim</h1>
+            <p data-translate="contactSubtitle">Bizimle iletişime geçin, sorularınızı yanıtlayalım</p>
         </div>
     </section>
 
@@ -333,12 +370,12 @@
             <div class="contact-grid">
                 <!-- İletişim Bilgileri -->
                 <div class="contact-info-card">
-                    <h2>📍 İletişim Bilgileri</h2>
+                    <h2 data-translate="contactInfo">📍 İletişim Bilgileri</h2>
                     
                     <div class="contact-item">
                         <div class="contact-icon">📧</div>
                         <div class="contact-details">
-                            <h3>E-posta</h3>
+                            <h3 data-translate="emailLabel">E-posta</h3>
                             <p>
                                 <a href="mailto:atakan.baskir@std.hku.edu.tr">atakan.baskir@std.hku.edu.tr</a>
                             </p>
@@ -348,7 +385,7 @@
                     <div class="contact-item">
                         <div class="contact-icon">📧</div>
                         <div class="contact-details">
-                            <h3>E-posta</h3>
+                            <h3 data-translate="emailLabel">E-posta</h3>
                             <p>
                                 <a href="mailto:yusuf.tiken@std.hku.edu.tr">yusuf.tiken@std.hku.edu.tr</a>
                             </p>
@@ -358,7 +395,7 @@
                     <div class="contact-item">
                         <div class="contact-icon">📞</div>
                         <div class="contact-details">
-                            <h3>Telefon</h3>
+                            <h3 data-translate="phoneLabel">Telefon</h3>
                             <p>
                                 <a href="tel:+905065361780">+90 506 536 1780</a>
                             </p>
@@ -368,7 +405,7 @@
                     <div class="contact-item">
                         <div class="contact-icon">📞</div>
                         <div class="contact-details">
-                            <h3>Telefon</h3>
+                            <h3 data-translate="phoneLabel">Telefon</h3>
                             <p>
                                 <a href="tel:+905331332930">+90 533 133 2930</a>
                             </p>
@@ -378,62 +415,62 @@
                     <div class="contact-item">
                         <div class="contact-icon">📍</div>
                         <div class="contact-details">
-                            <h3>Adres</h3>
-                            <p>Gaziantep, Türkiye</p>
+                            <h3 data-translate="addressLabel">Adres</h3>
+                            <p data-translate="location">Gaziantep, Türkiye</p>
                         </div>
                     </div>
 
                     <div class="contact-item">
                         <div class="contact-icon">⏰</div>
                         <div class="contact-details">
-                            <h3>Çalışma Saatleri</h3>
-                            <p>Pazartesi - Cuma: 09:00 - 18:00</p>
-                            <p>Hafta Sonu: Kapalı</p>
+                            <h3 data-translate="workingHours">Çalışma Saatleri</h3>
+                            <p data-translate="weekdays">Pazartesi - Cuma: 09:00 - 18:00</p>
+                            <p data-translate="weekend">Hafta Sonu: Kapalı</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- İletişim Formu -->
                 <div class="contact-form-card">
-                    <h2>✉️ Bize Mesaj Gönderin</h2>
+                    <h2 data-translate="sendMessage">✉️ Bize Mesaj Gönderin</h2>
                     <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Ad Soyad *</label>
-                            <input type="text" id="name" name="name" required placeholder="Adınız ve soyadınız">
+                            <label for="name" data-translate="fullName">Ad Soyad *</label>
+                            <input type="text" id="name" name="name" required data-translate-placeholder="namePlaceholder" placeholder="Adınız ve soyadınız">
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="email">E-posta *</label>
-                                <input type="email" id="email" name="email" required placeholder="ornek@email.com">
+                                <label for="email" data-translate="emailLabel">E-posta *</label>
+                                <input type="email" id="email" name="email" required data-translate-placeholder="emailPlaceholder" placeholder="ornek@email.com">
                             </div>
                             <div class="form-group">
-                                <label for="phone">Telefon</label>
-                                <input type="tel" id="phone" name="phone" placeholder="+90 5XX XXX XX XX">
+                                <label for="phone" data-translate="phoneLabel">Telefon</label>
+                                <input type="tel" id="phone" name="phone" data-translate-placeholder="phonePlaceholder" placeholder="+90 5XX XXX XX XX">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="recipient">Kime Göndermek İstersiniz? *</label>
+                            <label for="recipient" data-translate="recipient">Kime Göndermek İstersiniz? *</label>
                             <select id="recipient" name="recipient" required>
-                                <option value="">Seçiniz...</option>
+                                <option value="" data-translate="select">Seçiniz...</option>
                                 <option value="atakan.baskir@std.hku.edu.tr">Atakan BAŞKIR</option>
                                 <option value="yusuf.tiken@std.hku.edu.tr">Yusuf TİKEN</option>
-                                <option value="both">Her İkisine</option>
+                                <option value="both" data-translate="both">Her İkisine</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="subject">Konu *</label>
-                            <input type="text" id="subject" name="subject" required placeholder="Mesajınızın konusu">
+                            <label for="subject" data-translate="subject">Konu *</label>
+                            <input type="text" id="subject" name="subject" required data-translate-placeholder="subjectPlaceholder" placeholder="Mesajınızın konusu">
                         </div>
 
                         <div class="form-group">
-                            <label for="message">Mesajınız *</label>
-                            <textarea id="message" name="message" required placeholder="Mesajınızı buraya yazın..."></textarea>
+                            <label for="message" data-translate="message">Mesajınız *</label>
+                            <textarea id="message" name="message" required data-translate-placeholder="messagePlaceholder" placeholder="Mesajınızı buraya yazın..."></textarea>
                         </div>
 
-                        <button type="submit" class="submit-btn">📤 Mesaj Gönder</button>
+                        <button type="submit" class="submit-btn" data-translate="send">📤 Mesaj Gönder</button>
                         
                         <div id="formMessage" class="form-message"></div>
                     </form>
@@ -442,12 +479,12 @@
 
             <!-- Ekip Üyeleri -->
             <div class="team-section">
-                <h2>👥 Ekibimiz</h2>
+                <h2 data-translate="ourTeam">👥 Ekibimiz</h2>
                 <div class="team-grid">
                     <div class="team-member">
                         <div class="team-member-icon">👨‍💻</div>
                         <h3>Atakan BAŞKIR</h3>
-                        <p><strong>Geliştirici</strong></p>
+                        <p><strong data-translate="developer">Geliştirici</strong></p>
                         <p>
                             <a href="mailto:atakan.baskir@std.hku.edu.tr">atakan.baskir@std.hku.edu.tr</a>
                         </p>
@@ -459,7 +496,7 @@
                     <div class="team-member">
                         <div class="team-member-icon">👨‍💻</div>
                         <h3>Yusuf TİKEN</h3>
-                        <p><strong>Geliştirici</strong></p>
+                        <p><strong data-translate="developer">Geliştirici</strong></p>
                         <p>
                             <a href="mailto:yusuf.tiken@std.hku.edu.tr">yusuf.tiken@std.hku.edu.tr</a>
                         </p>
@@ -477,34 +514,34 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Campus Summer</h3>
-                    <p>
+                    <p data-translate="footerDescription">
                         Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik
                         hedeflerinize ulaşmanın en kolay yolu.
                     </p>
                 </div>
                 <div class="footer-section">
-                    <h3>Hızlı Bağlantılar</h3>
-                    <a href="../campusumer-anasayfa/anasayfa.html">Ana Sayfa</a>
-                    <a href="../Üniversiteler/Üniversitler.html">Üniversiteler</a>
-                    <a href="../Dersler/dersler.html">Dersler</a>
-                    <a href="../Hakkımızda/Hakkımızda.html">Hakkımızda</a>
+                    <h3 data-translate="quickLinks">Hızlı Bağlantılar</h3>
+                    <a href="../campusumer-anasayfa/anasayfa.html" data-translate="mainPage">Ana Sayfa</a>
+                    <a href="../Üniversiteler/Üniversitler.html" data-translate="universities">Üniversiteler</a>
+                    <a href="../Dersler/dersler.html" data-translate="courses">Dersler</a>
+                    <a href="../Hakkımızda/Hakkımızda.html" data-translate="about">Hakkımızda</a>
                 </div>
                 <div class="footer-section">
-                    <h3>Destek</h3>
-                    <a href="iletisim.html">İletişim</a>
-                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html">Gizlilik Politikası</a>
+                    <h3 data-translate="support">Destek</h3>
+                    <a href="iletisim.html" data-translate="contact">İletişim</a>
+                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html" data-translate="privacyPolicy">Gizlilik Politikası</a>
                 </div>
                 <div class="footer-section">
-                    <h3>İletişim</h3>
+                    <h3 data-translate="contactLabel">İletişim</h3>
                     <p>📧 atakan.baskir@std.hku.edu.tr</p>
                     <p>📧 yusuf.tiken@std.hku.edu.tr</p>
                     <p>📞 +90 506 536 1780</p>
                     <p>📞 +90 533 133 2930</p>
-                    <p>📍 Gaziantep, Türkiye</p>
+                    <p data-translate="location">📍 Gaziantep, Türkiye</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Campus Summer. Tüm hakları saklıdır.</p>
+                <p>&copy; 2025 Campus Summer. <span data-translate="allRightsReserved">Tüm hakları saklıdır.</span></p>
             </div>
         </div>
     </footer>
@@ -531,16 +568,17 @@
             };
             
             // Validasyon
+            const currentLang = getCurrentLanguage();
             if (!data.name || !data.email || !data.recipient || !data.subject || !data.message) {
                 messageDiv.className = 'form-message error';
-                messageDiv.textContent = '❌ Lütfen tüm zorunlu alanları doldurun.';
+                messageDiv.textContent = '❌ ' + t('fillAllFields', currentLang);
                 messageDiv.style.display = 'block';
                 return;
             }
             
             // Butonu devre dışı bırak ve loading durumu göster
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Gönderiliyor...';
+            submitBtn.textContent = '⏳ ' + t('sending', currentLang);
             messageDiv.style.display = 'none';
             
             try {
@@ -554,10 +592,11 @@
                 
                 const result = await response.json();
                 
+                const currentLang = getCurrentLanguage();
                 if (response.ok && result.success) {
                     // Başarı mesajı
                     messageDiv.className = 'form-message success';
-                    messageDiv.textContent = '✅ ' + result.message;
+                    messageDiv.textContent = '✅ ' + (result.message || t('messageSent', currentLang));
                     messageDiv.style.display = 'block';
                     
                     // Formu temizle
@@ -570,19 +609,43 @@
                 } else {
                     // Hata mesajı
                     messageDiv.className = 'form-message error';
-                    messageDiv.textContent = '❌ ' + (result.message || 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+                    messageDiv.textContent = '❌ ' + (result.message || t('messageError', currentLang));
                     messageDiv.style.display = 'block';
                 }
             } catch (error) {
                 console.error('İletişim formu hatası:', error);
+                const currentLang = getCurrentLanguage();
                 messageDiv.className = 'form-message error';
-                messageDiv.textContent = '❌ Sunucuya bağlanılamadı. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.';
+                messageDiv.textContent = '❌ ' + t('connectionError', currentLang);
                 messageDiv.style.display = 'block';
             } finally {
                 // Butonu tekrar etkinleştir
+                const currentLang = getCurrentLanguage();
                 submitBtn.disabled = false;
-                submitBtn.textContent = '📤 Mesaj Gönder';
+                submitBtn.textContent = '📤 ' + t('send', currentLang);
             }
+        });
+
+        // Dil değiştirme fonksiyonu
+        function toggleLanguage() {
+            const currentLang = getCurrentLanguage();
+            const newLang = currentLang === 'tr' ? 'en' : 'tr';
+            changeLanguage(newLang);
+            updateLanguageButton(newLang);
+        }
+
+        // Dil butonunu güncelle
+        function updateLanguageButton(lang) {
+            const langBtn = document.getElementById('languageToggle');
+            if (langBtn) {
+                langBtn.textContent = lang === 'tr' ? 'EN' : 'TR';
+            }
+        }
+
+        // Sayfa yüklendiğinde dil butonunu ayarla
+        document.addEventListener("DOMContentLoaded", function() {
+            const currentLang = getCurrentLanguage();
+            updateLanguageButton(currentLang);
         });
     </script>
 </body>

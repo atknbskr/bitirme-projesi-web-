@@ -40,6 +40,36 @@ body {
   gap: 15px;
 }
 
+/* Language Switcher */
+.language-switcher {
+  display: flex;
+  align-items: center;
+}
+
+.language-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  text-align: center;
+}
+
+.language-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.language-btn:active {
+  transform: translateY(0);
+}
+
 .logo {
   display: flex;
   align-items: center;

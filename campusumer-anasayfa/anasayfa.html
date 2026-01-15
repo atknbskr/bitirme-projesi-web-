@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Summer</title>
     <link rel="stylesheet" href="anasayfa.css" />
+    <script src="../js/translations.js"></script>
   </head>
   <body>
     <header class="header">
@@ -16,28 +17,35 @@
 
         <nav class="nav-menu">
           <div class="nav-item">
-            <a href="anasayfa.html" class="nav-link active">Anasayfa</a>
+            <a href="anasayfa.html" class="nav-link active" data-translate="home">Anasayfa</a>
           </div>
           <div class="nav-item">
-            <a href="../Dersler/dersler.html" class="nav-link">Dersler</a>
+            <a href="../Dersler/dersler.html" class="nav-link" data-translate="courses">Dersler</a>
           </div>
           <div class="nav-item">
-            <a href="../Üniversiteler/Üniversitler.html" class="nav-link"
+            <a href="../Üniversiteler/Üniversitler.html" class="nav-link" data-translate="universities"
               >Üniversiteler</a
             >
           </div>
           <div class="nav-item">
-            <a href="../Hakkımızda/Hakkımızda.html" class="nav-link"
+            <a href="../Hakkımızda/Hakkımızda.html" class="nav-link" data-translate="about"
               >Hakkımızda</a
             >
           </div>
           <div class="nav-item">
-            <a href="../İletişim/iletisim.html" class="nav-link">İletişim</a>
+            <a href="../İletişim/iletisim.html" class="nav-link" data-translate="contact">İletişim</a>
           </div>
         </nav>
 
-        <!-- Sağ Taraf: Bildirim ve Profil -->
+        <!-- Sağ Taraf: Dil, Bildirim ve Profil -->
         <div class="header-right">
+          <!-- Dil Değiştirme Butonu -->
+          <div class="language-switcher">
+            <button class="language-btn" id="languageToggle" onclick="toggleLanguage()">
+              <span id="currentLanguage">EN</span>
+            </button>
+          </div>
+
           <!-- Bildirim Merkezi -->
           <div class="notification-section" id="notificationSection" style="display: none;">
             <div class="notification-icon" id="notificationToggle">
@@ -46,14 +54,14 @@
             </div>
             <div class="notification-dropdown" id="notificationDropdown">
               <div class="notification-header">
-                <h3>🔔 Bildirimler</h3>
-                <button class="btn-mark-all-read" id="markAllReadBtn" style="display: none;">Tümünü Okundu İşaretle</button>
+                <h3 data-translate="notifications">🔔 Bildirimler</h3>
+                <button class="btn-mark-all-read" id="markAllReadBtn" style="display: none;" data-translate="markAllRead">Tümünü Okundu İşaretle</button>
               </div>
               <div class="notification-list" id="notificationList">
-                <div class="loading-message">Yükleniyor...</div>
+                <div class="loading-message" data-translate="loading">Yükleniyor...</div>
               </div>
               <div class="notification-footer">
-                <a href="#" id="viewAllNotifications">Tümünü Gör</a>
+                <a href="#" id="viewAllNotifications" data-translate="viewAll">Tümünü Gör</a>
               </div>
             </div>
           </div>
@@ -69,23 +77,23 @@
                 <span id="avatarInitialsLarge">?</span>
               </div>
               <div class="profile-info">
-                <h4 id="profileName">Kullanıcı</h4>
+                <h4 id="profileName" data-translate="user">Kullanıcı</h4>
                 <p id="profileEmail">email@example.com</p>
               </div>
             </div>
             <div class="profile-details">
               <div class="profile-detail-item">
-                <span class="detail-label">Kullanıcı Tipi:</span>
+                <span class="detail-label" data-translate="userTypeLabel">Kullanıcı Tipi:</span>
                 <span class="detail-value" id="profileType">-</span>
               </div>
               <div class="profile-detail-item">
-                <span class="detail-label" id="profileDetailLabel">Okul Numarası:</span>
+                <span class="detail-label" id="profileDetailLabel" data-translate="studentNumberLabel">Okul Numarası:</span>
                 <span class="detail-value" id="profileStudentNumber">-</span>
               </div>
             </div>
             <div class="profile-actions">
-              <button class="btn-edit-profile" id="editProfileBtn">✏️ Profil Düzenle</button>
-              <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
+              <button class="btn-edit-profile" id="editProfileBtn" data-translate="editProfile">✏️ Profil Düzenle</button>
+              <button class="btn-logout" id="logoutBtn" data-translate="logout">🚪 Çıkış Yap</button>
             </div>
           </div>
         </div>
@@ -96,20 +104,20 @@
     <section class="hero" id="home">
       <div class="container">
         <div class="hero-content">
-          <h1>Türkiye'nin En Kapsamlı Yaz Dersleri Platformu</h1>
-          <p id="heroSubtitle">200+ üniversiteden binlerce yaz dersi seçeneği tek platformda.</p>
+          <h1 data-translate="heroTitle">Türkiye'nin En Kapsamlı Yaz Dersleri Platformu</h1>
+          <p id="heroSubtitle" data-translate="heroSubtitle">200+ üniversiteden binlerce yaz dersi seçeneği tek platformda.</p>
           <div class="hero-stats">
             <div class="stat">
               <div class="stat-number" id="heroUniversityCount">-</div>
-              <div class="stat-label">Üniversite</div>
+              <div class="stat-label" data-translate="university">Üniversite</div>
             </div>
             <div class="stat">
               <div class="stat-number" id="heroCourseCount">-</div>
-              <div class="stat-label">Yaz Dersi</div>
+              <div class="stat-label" data-translate="summerCourse">Yaz Dersi</div>
             </div>
             <div class="stat">
               <div class="stat-number" id="heroStudentCount">-</div>
-              <div class="stat-label">Mutlu Öğrenci</div>
+              <div class="stat-label" data-translate="happyStudent">Mutlu Öğrenci</div>
             </div>
           </div>
         </div>
@@ -120,8 +128,8 @@
     <section class="enrolled-courses-section" id="enrolledCoursesSection" style="display: none;">
       <div class="container">
         <div class="section-header">
-          <h2>📚 Kayıtlı Olduğum Dersler</h2>
-          <p>Onaylanmış ve aktif dersleriniz</p>
+          <h2 data-translate="enrolledCoursesTitle">📚 Kayıtlı Olduğum Dersler</h2>
+          <p data-translate="enrolledCoursesSubtitle">Onaylanmış ve aktif dersleriniz</p>
         </div>
         <div class="enrolled-courses-grid" id="enrolledCoursesGrid">
           <!-- Kayıtlı dersler buraya yüklenecek -->
@@ -133,8 +141,8 @@
     <section class="academician-dashboard-section" id="academicianDashboardSection" style="display: none;">
       <div class="container">
         <div class="section-header">
-          <h2>📊 Akademisyen Paneli</h2>
-          <p>Derslerinizi yönetin ve başvuruları takip edin</p>
+          <h2 data-translate="academicianDashboardTitle">📊 Akademisyen Paneli</h2>
+          <p data-translate="academicianDashboardSubtitle">Derslerinizi yönetin ve başvuruları takip edin</p>
         </div>
         
         <!-- İstatistikler -->
@@ -144,13 +152,13 @@
         
         <!-- Hızlı Erişim Butonları -->
         <div class="quick-actions">
-          <a href="../Dersler/dersler.html" class="quick-action-btn" id="addCourseBtn">
+          <a href="../Dersler/dersler.html" class="quick-action-btn" id="addCourseBtn" data-translate="addCourse">
             ➕ Yeni Ders Ekle
           </a>
-          <button class="quick-action-btn" id="viewMyCoursesBtn" onclick="scrollToMyCourses()">
+          <button class="quick-action-btn" id="viewMyCoursesBtn" onclick="scrollToMyCourses()" data-translate="viewMyCourses">
             📚 Derslerimi Görüntüle
           </button>
-          <button class="quick-action-btn" id="pendingApplicationsBtn" onclick="showPendingApplicationsModal()">
+          <button class="quick-action-btn" id="pendingApplicationsBtn" onclick="showPendingApplicationsModal()" data-translate="pendingApplications">
             📋 Bekleyen Başvurular
           </button>
         </div>
@@ -161,8 +169,8 @@
     <section class="my-courses-section" id="myCoursesSection" style="display: none;">
       <div class="container">
         <div class="section-header">
-          <h2>📚 Benim Derslerim</h2>
-          <p>Eklediğiniz tüm dersler</p>
+          <h2 data-translate="myCoursesTitle">📚 Benim Derslerim</h2>
+          <p data-translate="myCoursesSubtitle">Eklediğiniz tüm dersler</p>
         </div>
         <div class="my-courses-grid" id="myCoursesGrid">
           <!-- Akademisyenin dersleri buraya yüklenecek -->
@@ -174,8 +182,8 @@
     <section class="course-planning-section" id="coursePlanningSection" style="display: none;">
       <div class="container">
         <div class="section-header">
-          <h2>📅 Ders Planlama</h2>
-          <p>Kayıtlı olduğunuz derslerin takvimi ve planlaması</p>
+          <h2 data-translate="coursePlanningTitle">📅 Ders Planlama</h2>
+          <p data-translate="coursePlanningSubtitle">Kayıtlı olduğunuz derslerin takvimi ve planlaması</p>
         </div>
         
         <!-- İstatistikler -->
@@ -186,25 +194,25 @@
         <!-- Görünüm Seçenekleri -->
         <div class="view-controls">
           <div class="view-tabs">
-            <button class="view-tab active" data-view="calendar" onclick="switchView('calendar')">
+            <button class="view-tab active" data-view="calendar" onclick="switchView('calendar')" data-translate="calendar">
               📅 Takvim
             </button>
-            <button class="view-tab" data-view="timeline" onclick="switchView('timeline')">
+            <button class="view-tab" data-view="timeline" onclick="switchView('timeline')" data-translate="timeline">
               📊 Zaman Çizelgesi
             </button>
-            <button class="view-tab" data-view="weekly" onclick="switchView('weekly')">
+            <button class="view-tab" data-view="weekly" onclick="switchView('weekly')" data-translate="weekly">
               📆 Haftalık
             </button>
-            <button class="view-tab" data-view="list" onclick="switchView('list')">
+            <button class="view-tab" data-view="list" onclick="switchView('list')" data-translate="list">
               📋 Liste
             </button>
           </div>
           <div class="filter-controls">
             <select id="statusFilter" onchange="applyStatusFilter()">
-              <option value="all">Tüm Durumlar</option>
-              <option value="upcoming">Yaklaşan</option>
-              <option value="active">Devam Eden</option>
-              <option value="past">Tamamlanan</option>
+              <option value="all" data-translate="allStatuses">Tüm Durumlar</option>
+              <option value="upcoming" data-translate="upcoming">Yaklaşan</option>
+              <option value="active" data-translate="ongoing">Devam Eden</option>
+              <option value="past" data-translate="pastLabel">Tamamlanan</option>
             </select>
           </div>
         </div>
@@ -243,8 +251,8 @@
     <section class="favorite-courses-section" id="favoriteCourses" style="display: none;">
       <div class="container">
         <div class="section-header">
-          <h2>⭐ Favori Derslerim</h2>
-          <p>Seçtiğiniz yaz okulu dersleri</p>
+          <h2 data-translate="favoriteCoursesTitle">⭐ Favori Derslerim</h2>
+          <p data-translate="favoriteCoursesSubtitle">Seçtiğiniz yaz okulu dersleri</p>
         </div>
         <div class="favorite-courses-grid" id="favoriteCoursesGrid">
           <!-- Favori dersler dinamik olarak yüklenecek -->
@@ -256,7 +264,7 @@
     <div class="modal-overlay" id="pendingApplicationsModal" style="display: none;">
       <div class="modal-container" style="max-width: 800px;">
         <div class="modal-header">
-          <h2>📋 Bekleyen Başvurular</h2>
+          <h2 data-translate="pendingApplicationsTitle">📋 Bekleyen Başvurular</h2>
           <button class="modal-close" onclick="closePendingApplicationsModal()">&times;</button>
         </div>
         <div class="modal-body" id="pendingApplicationsModalBody">
@@ -269,13 +277,13 @@
     <div class="modal-overlay" id="editProfileModal" style="display: none;">
       <div class="modal-container">
         <div class="modal-header">
-          <h2>Profil Düzenle</h2>
+          <h2 data-translate="editProfileTitle">Profil Düzenle</h2>
           <button class="modal-close" id="closeModal">&times;</button>
         </div>
         <form class="modal-form" id="editProfileForm">
           <div class="form-row">
             <div class="form-group">
-              <label for="editFirstName">Ad</label>
+              <label for="editFirstName" data-translate="firstName">Ad</label>
               <input
                 type="text"
                 id="editFirstName"
@@ -284,7 +292,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="editLastName">Soyad</label>
+              <label for="editLastName" data-translate="lastName">Soyad</label>
               <input
                 type="text"
                 id="editLastName"
@@ -295,7 +303,7 @@
           </div>
 
           <div class="form-group">
-            <label for="editEmail">E-posta</label>
+            <label for="editEmail" data-translate="email">E-posta</label>
             <input type="email" id="editEmail" name="email" required />
           </div>
 
@@ -307,38 +315,41 @@
               name="identifier"
               readonly
             />
-            <small style="color: #666;" id="identifierHelp">Bu alan değiştirilemez</small>
+            <small style="color: #666;" id="identifierHelp" data-translate="cannotChangeField">Bu alan değiştirilemez</small>
           </div>
 
           <div class="password-section">
-            <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 15px;">
+            <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 15px;" data-translate="changePassword">
               Şifre Değiştir (Opsiyonel)
             </h3>
             <div class="form-group">
-              <label for="editCurrentPassword">Mevcut Şifre</label>
+              <label for="editCurrentPassword" data-translate="currentPassword">Mevcut Şifre</label>
               <input
                 type="password"
                 id="editCurrentPassword"
                 name="currentPassword"
+                data-translate-placeholder="passwordPlaceholder"
                 placeholder="Boş bırakılabilir"
               />
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label for="editNewPassword">Yeni Şifre</label>
+                <label for="editNewPassword" data-translate="newPassword">Yeni Şifre</label>
                 <input
                   type="password"
                   id="editNewPassword"
                   name="newPassword"
+                  data-translate-placeholder="passwordPlaceholder"
                   placeholder="Boş bırakılabilir"
                 />
               </div>
               <div class="form-group">
-                <label for="editConfirmPassword">Şifre Tekrar</label>
+                <label for="editConfirmPassword" data-translate="confirmPassword">Şifre Tekrar</label>
                 <input
                   type="password"
                   id="editConfirmPassword"
                   name="confirmPassword"
+                  data-translate-placeholder="passwordPlaceholder"
                   placeholder="Boş bırakılabilir"
                 />
               </div>
@@ -349,10 +360,10 @@
           <div id="editSuccessMessage" class="edit-success-message"></div>
 
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" id="cancelEdit">
+            <button type="button" class="btn-cancel" id="cancelEdit" data-translate="cancel">
               İptal
             </button>
-            <button type="submit" class="btn-save">Kaydet</button>
+            <button type="submit" class="btn-save" data-translate="save">Kaydet</button>
           </div>
         </form>
       </div>
@@ -388,21 +399,23 @@
           user.firstName || ""
         } ${user.lastName || ""}`;
         document.getElementById("profileEmail").textContent = user.email || "";
+        
+        const currentLang = getCurrentLanguage();
         document.getElementById("profileType").textContent =
-          user.userType === "student" ? "Öğrenci" : "Akademisyen";
+          user.userType === "student" ? t('student', currentLang) : t('academician', currentLang);
         
         // Kullanıcı tipine göre label ve değeri ayarla
         const profileDetailLabel = document.getElementById("profileDetailLabel");
         const profileStudentNumber = document.getElementById("profileStudentNumber");
         
         if (user.userType === "academician") {
-          profileDetailLabel.textContent = "Kullanıcı Adı:";
+          profileDetailLabel.textContent = t('usernameLabel', currentLang);
           profileStudentNumber.textContent = user.username || "-";
         } else if (user.userType === "student") {
-          profileDetailLabel.textContent = "Okul Numarası:";
+          profileDetailLabel.textContent = t('studentNumberLabel', currentLang);
           profileStudentNumber.textContent = user.studentNumber || "-";
         } else {
-          profileDetailLabel.textContent = "Kullanıcı Adı:";
+          profileDetailLabel.textContent = t('usernameLabel', currentLang);
           profileStudentNumber.textContent = user.username || "-";
         }
         
@@ -446,13 +459,15 @@
           if (data.success && courses.length > 0) {
             displayEnrolledCourses(courses);
           } else {
+            const currentLang = getCurrentLanguage();
             document.getElementById("enrolledCoursesGrid").innerHTML = 
-              '<p style="text-align: center; padding: 2rem; color: #666;">Henüz kayıtlı olduğunuz ders bulunmuyor. <a href="../Dersler/dersler.html" style="color: #667eea;">Derslere göz atın</a></p>';
+              `<p style="text-align: center; padding: 2rem; color: #666;">${t('noEnrolledCourses', currentLang)} <a href="../Dersler/dersler.html" style="color: #667eea;">${t('browseCourses', currentLang)}</a></p>`;
           }
         } catch (error) {
           console.error("Kayıtlı dersler yüklenirken hata:", error);
+          const currentLang = getCurrentLanguage();
           document.getElementById("enrolledCoursesGrid").innerHTML = 
-            '<p style="text-align: center; padding: 2rem; color: #dc3545;">Dersler yüklenirken bir hata oluştu.</p>';
+            `<p style="text-align: center; padding: 2rem; color: #dc3545;">${t('errorLoadingCourses', currentLang)}</p>`;
         }
       }
       
@@ -460,12 +475,14 @@
       function displayEnrolledCourses(courses) {
         const grid = document.getElementById("enrolledCoursesGrid");
         grid.innerHTML = "";
+        const currentLang = getCurrentLanguage();
         
         courses.forEach(course => {
           const formatDate = (dateStr) => {
-            if (!dateStr) return 'Belirtilmemiş';
+            if (!dateStr) return currentLang === 'tr' ? 'Belirtilmemiş' : 'Not specified';
             const date = new Date(dateStr);
-            return date.toLocaleDateString('tr-TR', { 
+            const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+            return date.toLocaleDateString(locale, { 
               day: 'numeric', 
               month: 'long', 
               year: 'numeric' 
@@ -474,32 +491,36 @@
           
           const card = document.createElement("div");
           card.className = "enrolled-course-card";
+          const statusText = course.status === 'active' 
+            ? (currentLang === 'tr' ? '✅ Aktif' : '✅ Active')
+            : (currentLang === 'tr' ? course.status : course.status);
+          
           card.innerHTML = `
             <div class="course-header">
-              <h3>${course.course_name || 'Ders Adı'}</h3>
+              <h3>${course.course_name || (currentLang === 'tr' ? 'Ders Adı' : 'Course Name')}</h3>
               ${course.course_code ? `<span class="course-code">${course.course_code}</span>` : ''}
             </div>
             <div class="course-info">
-              ${course.university_name ? `<p><strong>🏛️ Üniversite:</strong> ${course.university_name}</p>` : ''}
-              ${course.academician_name ? `<p><strong>👨‍🏫 Akademisyen:</strong> ${course.academician_title ? course.academician_title + ' ' : ''}${course.academician_name}</p>` : ''}
-              ${course.start_date ? `<p><strong>🎯 Başlangıç:</strong> ${formatDate(course.start_date)}</p>` : ''}
-              ${course.end_date ? `<p><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
-              ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
-              ${course.status ? `<p><strong>📊 Durum:</strong> <span class="status-badge status-${course.status}">${course.status === 'active' ? '✅ Aktif' : course.status}</span></p>` : ''}
+              ${course.university_name ? `<p><strong>🏛️ ${t('universityLabel', currentLang)}</strong> ${course.university_name}</p>` : ''}
+              ${course.academician_name ? `<p><strong>👨‍🏫 ${t('academicianLabel', currentLang)}</strong> ${course.academician_title ? course.academician_title + ' ' : ''}${course.academician_name}</p>` : ''}
+              ${course.start_date ? `<p><strong>🎯 ${t('startLabel', currentLang)}</strong> ${formatDate(course.start_date)}</p>` : ''}
+              ${course.end_date ? `<p><strong>🏁 ${t('endLabel', currentLang)}</strong> ${formatDate(course.end_date)}</p>` : ''}
+              ${course.credits ? `<p><strong>📚 ${t('creditsLabel', currentLang)}</strong> ${course.credits}</p>` : ''}
+              ${course.status ? `<p><strong>📊 ${t('statusLabel', currentLang)}</strong> <span class="status-badge status-${course.status}">${statusText}</span></p>` : ''}
             </div>
             <div class="course-actions">
               ${course.udemy_link ? `
                 <a href="${course.udemy_link}" target="_blank" class="btn-course-link">
-                  🔗 Ders Linkine Git
+                  🔗 ${t('courseLink', currentLang)}
                 </a>
               ` : `
                 <p style="color: #999; font-style: italic; text-align: center; padding: 10px;">
-                  Ders linki henüz eklenmedi
+                  ${t('courseLinkNotAdded', currentLang)}
                 </p>
               `}
               ${course.status === 'active' ? `
                 <button onclick="withdrawFromCourse(${course.id})" class="btn-withdraw-course" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: all 0.3s ease;">
-                  ❌ Dersi İptal Et
+                  ❌ ${t('cancelCourse', currentLang)}
                 </button>
               ` : ''}
             </div>
@@ -525,13 +546,15 @@
           if (data.success && courses.length > 0) {
             displayCoursePlanning(courses);
           } else {
+            const currentLang = getCurrentLanguage();
             document.getElementById("courseTimeline").innerHTML = 
-              '<p style="text-align: center; padding: 2rem; color: #666;">Planlanacak ders bulunmuyor.</p>';
+              `<p style="text-align: center; padding: 2rem; color: #666;">${t('noCoursesToPlan', currentLang)}</p>`;
           }
         } catch (error) {
           console.error("Ders planlama yüklenirken hata:", error);
+          const currentLang = getCurrentLanguage();
           document.getElementById("courseTimeline").innerHTML = 
-            '<p style="text-align: center; padding: 2rem; color: #dc3545;">Planlama yüklenirken bir hata oluştu.</p>';
+            `<p style="text-align: center; padding: 2rem; color: #dc3545;">${t('errorLoadingPlanning', currentLang)}</p>`;
         }
       }
       
@@ -564,6 +587,7 @@
         const now = new Date();
         let upcoming = 0, active = 0, past = 0;
         let totalCredits = 0;
+        const currentLang = getCurrentLanguage();
         
         courses.forEach(course => {
           if (course.start_date) {
@@ -588,27 +612,27 @@
             <div class="stat-card">
               <div class="stat-icon">📚</div>
               <div class="stat-value">${courses.length}</div>
-              <div class="stat-label">Toplam Ders</div>
+              <div class="stat-label">${t('totalCourseLabel', currentLang)}</div>
             </div>
             <div class="stat-card stat-upcoming">
               <div class="stat-icon">⏰</div>
               <div class="stat-value">${upcoming}</div>
-              <div class="stat-label">Yaklaşan</div>
+              <div class="stat-label">${t('upcomingLabel', currentLang)}</div>
             </div>
             <div class="stat-card stat-active">
               <div class="stat-icon">✅</div>
               <div class="stat-value">${active}</div>
-              <div class="stat-label">Devam Eden</div>
+              <div class="stat-label">${t('ongoingLabel', currentLang)}</div>
             </div>
             <div class="stat-card stat-past">
               <div class="stat-icon">🎓</div>
               <div class="stat-value">${past}</div>
-              <div class="stat-label">Tamamlanan</div>
+              <div class="stat-label">${t('pastLabel', currentLang)}</div>
             </div>
             <div class="stat-card stat-credits">
               <div class="stat-icon">📊</div>
               <div class="stat-value">${totalCredits}</div>
-              <div class="stat-label">Toplam Kredi</div>
+              <div class="stat-label">${t('totalCreditsLabel', currentLang)}</div>
             </div>
           </div>
         `;
@@ -704,8 +728,11 @@
         
         const sortedCourses = courses.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
         
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+        
         if (sortedCourses.length === 0) {
-          timeline.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Filtre kriterlerinize uygun ders bulunmuyor.</p>';
+          timeline.innerHTML = `<p style="text-align: center; padding: 2rem; color: #666;">${t('noCourses', currentLang)}</p>`;
           return;
         }
         
@@ -721,13 +748,13 @@
           const isPast = endDate && endDate < now;
           
           let statusClass = 'upcoming';
-          let statusText = 'Yaklaşan';
+          let statusText = t('upcomingStatus', currentLang);
           if (isActive) {
             statusClass = 'active';
-            statusText = 'Devam Ediyor';
+            statusText = t('ongoingStatus', currentLang);
           } else if (isPast) {
             statusClass = 'past';
-            statusText = 'Tamamlandı';
+            statusText = t('completedStatus', currentLang);
           }
           
           const daysUntil = isUpcoming ? Math.ceil((startDate - now) / (1000 * 60 * 60 * 24)) : null;
@@ -745,22 +772,22 @@
               <div class="timeline-marker"></div>
               <div class="timeline-content">
                 <div class="timeline-header">
-                  <h4>${course.course_name || 'Ders'}</h4>
+                  <h4>${course.course_name || (currentLang === 'tr' ? 'Ders' : 'Course')}</h4>
                   <span class="timeline-status status-${statusClass}">${statusText}</span>
                 </div>
                 ${course.course_code ? `<p class="course-code-small">${course.course_code}</p>` : ''}
                 <div class="timeline-dates">
-                  <p><strong>🎯 Başlangıç:</strong> ${startDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                  ${endDate ? `<p><strong>🏁 Bitiş:</strong> ${endDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
-                  ${daysUntil !== null && daysUntil > 0 ? `<p class="days-until"><strong>⏰ Kalan Süre:</strong> ${daysUntil} gün</p>` : ''}
-                  ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
+                  <p><strong>🎯 ${t('startLabel', currentLang)}</strong> ${startDate.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  ${endDate ? `<p><strong>🏁 ${t('endLabel', currentLang)}</strong> ${endDate.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+                  ${daysUntil !== null && daysUntil > 0 ? `<p class="days-until"><strong>⏰ ${t('daysRemaining', currentLang)}</strong> ${daysUntil} ${t('days', currentLang)}</p>` : ''}
+                  ${course.credits ? `<p><strong>📚 ${t('creditsLabel', currentLang)}</strong> ${course.credits}</p>` : ''}
                 </div>
                 ${isActive && endDate ? `
                   <div class="progress-bar-container">
                     <div class="progress-bar">
                       <div class="progress-fill" style="width: ${progressPercent}%"></div>
                     </div>
-                    <span class="progress-text">%${Math.round(progressPercent)} tamamlandı</span>
+                    <span class="progress-text">%${Math.round(progressPercent)} ${t('completedPercent', currentLang)}</span>
                   </div>
                 ` : ''}
                 ${course.university_name ? `<p class="university-name">🏛️ ${course.university_name}</p>` : ''}
@@ -776,13 +803,19 @@
       // Takvim görünümü
       function displayCalendarView(courses) {
         const calendar = document.getElementById("calendarView");
+        const currentLang = getCurrentLanguage();
         
         // Ay isimleri
-        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
-                           'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        const monthNames = currentLang === 'tr' 
+          ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+             'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
+          : ['January', 'February', 'March', 'April', 'May', 'June',
+             'July', 'August', 'September', 'October', 'November', 'December'];
         
         // Hafta günleri
-        const dayNames = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+        const dayNames = currentLang === 'tr'
+          ? ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
+          : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         
         // Ayın ilk günü ve gün sayısı
         const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
@@ -813,9 +846,9 @@
         
         let calendarHTML = `
           <div class="calendar-header">
-            <button class="calendar-nav-btn" onclick="changeMonth(-1)">← Önceki</button>
+            <button class="calendar-nav-btn" onclick="changeMonth(-1)">← ${t('previousMonth', currentLang)}</button>
             <h3>${monthNames[currentCalendarMonth]} ${currentCalendarYear}</h3>
-            <button class="calendar-nav-btn" onclick="changeMonth(1)">Sonraki →</button>
+            <button class="calendar-nav-btn" onclick="changeMonth(1)">${t('nextMonth', currentLang)} →</button>
           </div>
           <div class="calendar-grid">
             <div class="calendar-weekdays">
@@ -907,8 +940,11 @@
         
         const dayCourses = coursesByDate[dateKey] || [];
         if (dayCourses.length > 0) {
+          const currentLang = getCurrentLanguage();
+          const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
           const courseList = dayCourses.map(c => `• ${c.course_name}${c.course_code ? ` (${c.course_code})` : ''}`).join('\\n');
-          alert(`${date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}\\n\\nBu günkü dersler:\\n${courseList}`);
+          const todayCoursesText = currentLang === 'tr' ? 'Bu günkü dersler:' : 'Today\'s courses:';
+          alert(`${date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}\\n\\n${todayCoursesText}\\n${courseList}`);
         }
       }
       
@@ -924,11 +960,14 @@
           weekDays.push(day);
         }
         
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+        
         let weeklyHTML = `
           <div class="weekly-header">
-            <button class="calendar-nav-btn" onclick="changeWeek(-1)">← Önceki Hafta</button>
-            <h3>${weekDays[0].toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} - ${weekDays[6].toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</h3>
-            <button class="calendar-nav-btn" onclick="changeWeek(1)">Sonraki Hafta →</button>
+            <button class="calendar-nav-btn" onclick="changeWeek(-1)">← ${t('previousWeek', currentLang)}</button>
+            <h3>${weekDays[0].toLocaleDateString(locale, { day: 'numeric', month: 'long' })} - ${weekDays[6].toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}</h3>
+            <button class="calendar-nav-btn" onclick="changeWeek(1)">${t('nextWeek', currentLang)} →</button>
           </div>
           <div class="weekly-grid">
         `;
@@ -946,8 +985,8 @@
           weeklyHTML += `
             <div class="weekly-day ${isToday ? 'today' : ''}">
               <div class="weekly-day-header">
-                <div class="weekly-day-name">${day.toLocaleDateString('tr-TR', { weekday: 'long' })}</div>
-                <div class="weekly-day-date">${day.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</div>
+                <div class="weekly-day-name">${day.toLocaleDateString(locale, { weekday: 'long' })}</div>
+                <div class="weekly-day-date">${day.toLocaleDateString(locale, { day: 'numeric', month: 'short' })}</div>
               </div>
               <div class="weekly-day-courses">
                 ${dayCourses.length > 0 ? dayCourses.map(course => `
@@ -955,7 +994,7 @@
                     <div class="weekly-course-name">${course.course_name}</div>
                     ${course.course_code ? `<div class="weekly-course-code">${course.course_code}</div>` : ''}
                   </div>
-                `).join('') : '<div class="no-courses">Ders yok</div>'}
+                `).join('') : `<div class="no-courses">${t('noCourses', currentLang)}</div>`}
               </div>
             </div>
           `;
@@ -977,8 +1016,11 @@
         
         const sortedCourses = courses.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
         
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+        
         if (sortedCourses.length === 0) {
-          listView.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">Filtre kriterlerinize uygun ders bulunmuyor.</p>';
+          listView.innerHTML = `<p style="text-align: center; padding: 2rem; color: #666;">${t('noCourses', currentLang)}</p>`;
           return;
         }
         
@@ -994,13 +1036,13 @@
           const isPast = endDate && endDate < now;
           
           let statusClass = 'upcoming';
-          let statusText = 'Yaklaşan';
+          let statusText = t('upcomingStatus', currentLang);
           if (isActive) {
             statusClass = 'active';
-            statusText = 'Devam Ediyor';
+            statusText = t('ongoingStatus', currentLang);
           } else if (isPast) {
             statusClass = 'past';
-            statusText = 'Tamamlandı';
+            statusText = t('completedStatus', currentLang);
           }
           
           const duration = endDate ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) : null;
@@ -1008,17 +1050,17 @@
           listHTML += `
             <div class="list-item ${statusClass}">
               <div class="list-item-header">
-                <h4>${course.course_name || 'Ders'}</h4>
+                <h4>${course.course_name || (currentLang === 'tr' ? 'Ders' : 'Course')}</h4>
                 <span class="list-status status-${statusClass}">${statusText}</span>
               </div>
               <div class="list-item-content">
                 <div class="list-item-info">
-                  ${course.course_code ? `<p><strong>Kod:</strong> ${course.course_code}</p>` : ''}
-                  ${course.university_name ? `<p><strong>Üniversite:</strong> ${course.university_name}</p>` : ''}
-                  <p><strong>Başlangıç:</strong> ${startDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                  ${endDate ? `<p><strong>Bitiş:</strong> ${endDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
-                  ${duration ? `<p><strong>Süre:</strong> ${duration} gün</p>` : ''}
-                  ${course.credits ? `<p><strong>Kredi:</strong> ${course.credits}</p>` : ''}
+                  ${course.course_code ? `<p><strong>${t('courseCodeLabel', currentLang)}</strong> ${course.course_code}</p>` : ''}
+                  ${course.university_name ? `<p><strong>${t('universityLabel', currentLang)}</strong> ${course.university_name}</p>` : ''}
+                  <p><strong>${t('startLabel', currentLang)}</strong> ${startDate.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  ${endDate ? `<p><strong>${t('endLabel', currentLang)}</strong> ${endDate.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+                  ${duration ? `<p><strong>${t('duration', currentLang)}</strong> ${duration} ${t('days', currentLang)}</p>` : ''}
+                  ${course.credits ? `<p><strong>${t('creditsLabel', currentLang)}</strong> ${course.credits}</p>` : ''}
                 </div>
               </div>
             </div>
@@ -1271,24 +1313,30 @@
       function displayFavoriteCourses(favorites) {
         const grid = document.getElementById("favoriteCoursesGrid");
         grid.innerHTML = "";
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
 
         favorites.forEach(favorite => {
           const card = document.createElement("div");
           card.className = "favorite-course-card";
+          const removeTitle = currentLang === 'tr' ? 'Favorilerden Kaldır' : 'Remove from Favorites';
+          const notSpecified = currentLang === 'tr' ? 'Belirtilmemiş' : 'Not specified';
+          const addedText = currentLang === 'tr' ? 'Eklenme:' : 'Added:';
+          
           card.innerHTML = `
             <div class="course-header">
               <h3>${favorite.course_name}</h3>
-              <button class="remove-favorite-btn" onclick="removeFavorite(${favorite.id})" title="Favorilerden Kaldır">
+              <button class="remove-favorite-btn" onclick="removeFavorite(${favorite.id})" title="${removeTitle}">
                 ❌
               </button>
             </div>
             <div class="course-info">
-              <p><strong>Ders Kodu:</strong> ${favorite.course_code || '-'}</p>
-              <p><strong>Kategori:</strong> ${favorite.category || '-'}</p>
-              <p><strong>Akademisyen:</strong> ${favorite.academician_name || 'Belirtilmemiş'}</p>
+              <p><strong>${t('courseCodeLabel', currentLang)}</strong> ${favorite.course_code || '-'}</p>
+              <p><strong>${t('category', currentLang)}</strong> ${favorite.category || '-'}</p>
+              <p><strong>${t('academicianLabel', currentLang)}</strong> ${favorite.academician_name || notSpecified}</p>
             </div>
             <div class="course-meta">
-              <span class="added-date">📅 Eklenme: ${new Date(favorite.favorited_at || favorite.created_at).toLocaleDateString('tr-TR')}</span>
+              <span class="added-date">📅 ${addedText} ${new Date(favorite.favorited_at || favorite.created_at).toLocaleDateString(locale)}</span>
             </div>
           `;
           grid.appendChild(card);
@@ -1297,7 +1345,8 @@
 
       // Favoriden kaldır
       async function removeFavorite(courseId) {
-        if (!confirm("Bu dersi favorilerden kaldırmak istediğinize emin misiniz?")) {
+        const currentLang = getCurrentLanguage();
+        if (!confirm(t('removeFavoriteConfirm', currentLang))) {
           return;
         }
 
@@ -1312,14 +1361,15 @@
           const data = await response.json();
 
           if (data.success) {
-            alert("Ders favorilerden kaldırıldı!");
+            alert(t('favoriteRemoved', currentLang));
             loadFavoriteCourses();
           } else {
-            alert(data.message || "Bir hata oluştu");
+            alert(data.message || (currentLang === 'tr' ? 'Bir hata oluştu' : 'An error occurred'));
           }
         } catch (error) {
           console.error("Favori kaldırma hatası:", error);
-          alert("Bir hata oluştu");
+          const errorMsg = currentLang === 'tr' ? 'Bir hata oluştu' : 'An error occurred';
+          alert(errorMsg);
         }
       }
 
@@ -1403,23 +1453,24 @@
           const identifierLabel = document.getElementById("identifierLabel");
           const identifierHelp = document.getElementById("identifierHelp");
           
+          const currentLang = getCurrentLanguage();
           if (user.userType === "academician") {
-            identifierLabel.textContent = "Kullanıcı Adı";
+            identifierLabel.textContent = t('usernameLabel', currentLang);
             identifierInput.value = user.username || "";
             identifierInput.removeAttribute("readonly");
-            identifierHelp.textContent = "Kullanıcı adınızı değiştirebilirsiniz";
+            identifierHelp.textContent = t('canChangeUsername', currentLang);
             identifierHelp.style.color = "#667eea";
           } else if (user.userType === "student") {
-            identifierLabel.textContent = "Okul Numarası";
+            identifierLabel.textContent = t('studentNumberLabel', currentLang);
             identifierInput.value = user.studentNumber || "";
             identifierInput.setAttribute("readonly", "readonly");
-            identifierHelp.textContent = "Bu alan değiştirilemez";
+            identifierHelp.textContent = t('cannotChangeField', currentLang);
             identifierHelp.style.color = "#666";
           } else {
-            identifierLabel.textContent = "Kullanıcı Adı";
+            identifierLabel.textContent = t('usernameLabel', currentLang);
             identifierInput.value = user.username || "";
             identifierInput.setAttribute("readonly", "readonly");
-            identifierHelp.textContent = "Bu alan değiştirilemez";
+            identifierHelp.textContent = t('cannotChangeField', currentLang);
             identifierHelp.style.color = "#666";
           }
           
@@ -1465,8 +1516,9 @@
         const user = JSON.parse(localStorage.getItem("user"));
         const token = localStorage.getItem("token");
 
+        const currentLang = getCurrentLanguage();
         if (!user || !token) {
-          errorDiv.textContent = "Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapın.";
+          errorDiv.textContent = t('sessionNotFound', currentLang);
           errorDiv.style.display = "block";
           return;
         }
@@ -1483,17 +1535,17 @@
         // Şifre doğrulaması
         if (newPassword || confirmPassword) {
           if (!currentPassword) {
-            errorDiv.textContent = "Şifre değiştirmek için mevcut şifrenizi girmelisiniz.";
+            errorDiv.textContent = t('currentPasswordRequired', currentLang);
             errorDiv.style.display = "block";
             return;
           }
           if (newPassword !== confirmPassword) {
-            errorDiv.textContent = "Yeni şifreler eşleşmiyor.";
+            errorDiv.textContent = t('passwordsNotMatch', currentLang);
             errorDiv.style.display = "block";
             return;
           }
           if (newPassword.length < 6) {
-            errorDiv.textContent = "Yeni şifre en az 6 karakter olmalıdır.";
+            errorDiv.textContent = t('passwordMinLength', currentLang);
             errorDiv.style.display = "block";
             return;
           }
@@ -1502,12 +1554,12 @@
         // Akademisyen için kullanıcı adı kontrolü
         if (user.userType === "academician" && identifier) {
           if (identifier.length < 3) {
-            errorDiv.textContent = "Kullanıcı adı en az 3 karakter olmalıdır.";
+            errorDiv.textContent = t('usernameMinLength', currentLang);
             errorDiv.style.display = "block";
             return;
           }
           if (!/^[a-zA-Z0-9_]+$/.test(identifier)) {
-            errorDiv.textContent = "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir.";
+            errorDiv.textContent = t('usernameInvalidChars', currentLang);
             errorDiv.style.display = "block";
             return;
           }
@@ -1545,8 +1597,9 @@
 
           const data = await response.json();
 
+          const currentLang = getCurrentLanguage();
           if (response.ok && data.success) {
-            successDiv.textContent = "Profil başarıyla güncellendi!";
+            successDiv.textContent = t('profileUpdated', currentLang);
             successDiv.style.display = "block";
 
             // LocalStorage'ı güncelle - Backend'den dönen güncel kullanıcı bilgilerini kullan
@@ -1561,19 +1614,22 @@
               closeModal();
             }, 1500);
           } else {
-            errorDiv.textContent = data.message || "Profil güncellenirken bir hata oluştu.";
+            errorDiv.textContent = data.message || t('profileUpdateError', currentLang);
             errorDiv.style.display = "block";
           }
         } catch (error) {
           console.error("Profil güncelleme hatası:", error);
-          errorDiv.textContent = "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.";
+          const currentLang = getCurrentLanguage();
+          errorDiv.textContent = t('serverConnectionError', currentLang);
           errorDiv.style.display = "block";
         }
       });
 
       // Dersten çıkış yap (İptal Et)
       async function withdrawFromCourse(courseId) {
-        if (!confirm('⚠️ Bu dersten çıkış yapmak istediğinize emin misiniz?\n\nBu işlem geri alınamaz ve ders kaydınız iptal edilecektir.')) {
+        const currentLang = getCurrentLanguage();
+        const confirmMessage = `⚠️ ${t('withdrawCourseConfirm', currentLang)}\n\n${t('withdrawCourseWarning', currentLang)}`;
+        if (!confirm(confirmMessage)) {
           return;
         }
         
@@ -1588,17 +1644,18 @@
           const data = await response.json();
           
           if (response.ok && data.success) {
-            alert('✅ Dersten başarıyla çıkış yaptınız!');
+            alert('✅ ' + t('courseWithdrawn', currentLang));
             // Kayıtlı dersleri yenile
             loadEnrolledCourses();
             // Ders planlamasını da yenile
             loadCoursePlanning();
           } else {
-            alert('❌ Hata: ' + (data.message || 'Dersten çıkış yapılamadı'));
+            alert('❌ Hata: ' + (data.message || (currentLang === 'tr' ? 'Dersten çıkış yapılamadı' : 'Could not withdraw from course')));
           }
         } catch (error) {
           console.error('Dersten çıkış hatası:', error);
-          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+          const errorMsg = currentLang === 'tr' ? 'Sunucuya bağlanılamadı: ' : 'Could not connect to server: ';
+          alert('❌ ' + errorMsg + error.message);
         }
       }
 
@@ -1663,26 +1720,27 @@
       // Akademisyen istatistiklerini göster
       function displayAcademicianStats(stats) {
         const statsGrid = document.getElementById("academicianStatsGrid");
+        const currentLang = getCurrentLanguage();
         statsGrid.innerHTML = `
           <div class="stat-card">
             <div class="stat-icon">📚</div>
             <div class="stat-value">${stats.totalCourses}</div>
-            <div class="stat-label">Toplam Ders</div>
+            <div class="stat-label">${t('totalCourseLabel', currentLang)}</div>
           </div>
           <div class="stat-card stat-active">
             <div class="stat-icon">✅</div>
             <div class="stat-value">${stats.activeCourses}</div>
-            <div class="stat-label">Aktif Ders</div>
+            <div class="stat-label">${t('activeCourseLabel', currentLang)}</div>
           </div>
           <div class="stat-card stat-upcoming">
             <div class="stat-icon">👥</div>
             <div class="stat-value">${stats.totalStudents}</div>
-            <div class="stat-label">Toplam Öğrenci</div>
+            <div class="stat-label">${t('totalStudentLabel', currentLang)}</div>
           </div>
           <div class="stat-card stat-past">
             <div class="stat-icon">⏳</div>
             <div class="stat-value">${stats.pendingApplications}</div>
-            <div class="stat-label">Bekleyen Başvuru</div>
+            <div class="stat-label">${t('pendingApplicationLabel', currentLang)}</div>
           </div>
         `;
       }
@@ -1702,13 +1760,15 @@
           if (courses.length > 0) {
             displayMyCourses(courses);
           } else {
+            const currentLang = getCurrentLanguage();
             document.getElementById("myCoursesGrid").innerHTML = 
-              '<p style="text-align: center; padding: 2rem; color: #666; grid-column: 1/-1;">Henüz ders eklememişsiniz. <a href="../Dersler/dersler.html" style="color: #667eea;">Yeni ders ekleyin</a></p>';
+              `<p style="text-align: center; padding: 2rem; color: #666; grid-column: 1/-1;">${t('noCoursesAdded', currentLang)} <a href="../Dersler/dersler.html" style="color: #667eea;">${t('addNewCourse', currentLang)}</a></p>`;
           }
         } catch (error) {
           console.error("Dersler yüklenirken hata:", error);
+          const currentLang = getCurrentLanguage();
           document.getElementById("myCoursesGrid").innerHTML = 
-            '<p style="text-align: center; padding: 2rem; color: #dc3545; grid-column: 1/-1;">Dersler yüklenirken bir hata oluştu.</p>';
+            `<p style="text-align: center; padding: 2rem; color: #dc3545; grid-column: 1/-1;">${t('errorLoadingMyCourses', currentLang)}</p>`;
         }
       }
       
@@ -1716,12 +1776,14 @@
       function displayMyCourses(courses) {
         const grid = document.getElementById("myCoursesGrid");
         grid.innerHTML = "";
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
         
         courses.forEach(course => {
           const formatDate = (dateStr) => {
-            if (!dateStr) return 'Belirtilmemiş';
+            if (!dateStr) return currentLang === 'tr' ? 'Belirtilmemiş' : 'Not specified';
             const date = new Date(dateStr);
-            return date.toLocaleDateString('tr-TR', { 
+            return date.toLocaleDateString(locale, { 
               day: 'numeric', 
               month: 'long', 
               year: 'numeric' 
@@ -1730,25 +1792,29 @@
           
           const card = document.createElement("div");
           card.className = "enrolled-course-card";
+          const statusText = course.is_active 
+            ? (currentLang === 'tr' ? '✅ Aktif' : '✅ Active')
+            : (currentLang === 'tr' ? '❌ Pasif' : '❌ Inactive');
+          
           card.innerHTML = `
             <div class="course-header">
-              <h3>${course.course_name || 'Ders Adı'}</h3>
+              <h3>${course.course_name || (currentLang === 'tr' ? 'Ders Adı' : 'Course Name')}</h3>
               ${course.course_code ? `<span class="course-code">${course.course_code}</span>` : ''}
             </div>
             <div class="course-info">
-              ${course.university_name ? `<p><strong>🏛️ Üniversite:</strong> ${course.university_name}</p>` : ''}
-              ${course.start_date ? `<p><strong>🎯 Başlangıç:</strong> ${formatDate(course.start_date)}</p>` : ''}
-              ${course.end_date ? `<p><strong>🏁 Bitiş:</strong> ${formatDate(course.end_date)}</p>` : ''}
-              ${course.credits ? `<p><strong>📚 Kredi:</strong> ${course.credits}</p>` : ''}
-              <p><strong>👥 Kayıtlı Öğrenci:</strong> ${course.current_registrations || 0} / ${course.quota || 0}</p>
-              <p><strong>📊 Durum:</strong> <span class="status-badge status-${course.is_active ? 'active' : 'past'}">${course.is_active ? '✅ Aktif' : '❌ Pasif'}</span></p>
+              ${course.university_name ? `<p><strong>🏛️ ${t('universityLabel', currentLang)}</strong> ${course.university_name}</p>` : ''}
+              ${course.start_date ? `<p><strong>🎯 ${t('startLabel', currentLang)}</strong> ${formatDate(course.start_date)}</p>` : ''}
+              ${course.end_date ? `<p><strong>🏁 ${t('endLabel', currentLang)}</strong> ${formatDate(course.end_date)}</p>` : ''}
+              ${course.credits ? `<p><strong>📚 ${t('creditsLabel', currentLang)}</strong> ${course.credits}</p>` : ''}
+              <p><strong>👥 ${t('registeredStudents', currentLang)}</strong> ${course.current_registrations || 0} / ${course.quota || 0}</p>
+              <p><strong>📊 ${t('statusLabel', currentLang)}</strong> <span class="status-badge status-${course.is_active ? 'active' : 'past'}">${statusText}</span></p>
             </div>
             <div class="course-actions">
               <a href="../Dersler/dersler.html" class="btn-course-link" style="display: block; text-align: center; margin-bottom: 10px;">
-                📋 Dersi Yönet
+                📋 ${t('manageCourse', currentLang)}
               </a>
               <button onclick="viewCourseApplications(${course.id})" class="btn-withdraw-course" style="background: #ffc107; color: #212529;">
-                📝 Başvuruları Görüntüle
+                📝 ${t('viewApplications', currentLang)}
               </button>
             </div>
           `;
@@ -1800,25 +1866,29 @@
             }
           }
           
+          const currentLang = getCurrentLanguage();
           if (allPendingApplications.length > 0) {
             displayPendingApplications(allPendingApplications);
           } else {
-            modalBody.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><p style="font-size: 1.2rem; margin-bottom: 1rem;">✅ Bekleyen başvuru bulunmuyor</p><p>Tüm başvurularınız işleme alınmış.</p></div>';
+            modalBody.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;"><p style="font-size: 1.2rem; margin-bottom: 1rem;">✅ ${t('noPendingApplications', currentLang)}</p><p>${t('allApplicationsProcessed', currentLang)}</p></div>`;
           }
         } catch (error) {
           console.error("Bekleyen başvurular yüklenirken hata:", error);
-          modalBody.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;">Başvurular yüklenirken bir hata oluştu.</div>';
+          const currentLang = getCurrentLanguage();
+          modalBody.innerHTML = `<div style="text-align: center; padding: 40px; color: #dc3545;">${t('errorLoadingCourses', currentLang)}</div>`;
         }
       }
       
       // Bekleyen başvuruları göster
       function displayPendingApplications(applications) {
         const modalBody = document.getElementById('pendingApplicationsModalBody');
+        const currentLang = getCurrentLanguage();
+        const locale = currentLang === 'tr' ? 'tr-TR' : 'en-US';
         
         const formatDate = (dateStr) => {
-          if (!dateStr) return 'Belirtilmemiş';
+          if (!dateStr) return currentLang === 'tr' ? 'Belirtilmemiş' : 'Not specified';
           const date = new Date(dateStr);
-          return date.toLocaleDateString('tr-TR', { 
+          return date.toLocaleDateString(locale, { 
             day: 'numeric', 
             month: 'long', 
             year: 'numeric',
@@ -1829,15 +1899,15 @@
         
         let html = `
           <div style="margin-bottom: 20px;">
-            <h3 style="color: #212529; margin-bottom: 10px;">Bekleyen Başvurular (${applications.length})</h3>
-            <p style="color: #666; font-size: 0.9rem;">Aşağıdaki başvuruları onaylamanız veya reddetmeniz gerekiyor.</p>
+            <h3 style="color: #212529; margin-bottom: 10px;">${t('pendingApplicationsTitle', currentLang)} (${applications.length})</h3>
+            <p style="color: #666; font-size: 0.9rem;">${t('pendingApplicationsSubtitle', currentLang)}</p>
           </div>
           <div style="max-height: 500px; overflow-y: auto;">
         `;
         
         applications.forEach((app, index) => {
-          const studentName = `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Öğrenci';
-          const studentEmail = app.email || 'E-posta bulunamadı';
+          const studentName = `${app.first_name || ''} ${app.last_name || ''}`.trim() || (currentLang === 'tr' ? 'Öğrenci' : 'Student');
+          const studentEmail = app.email || t('studentEmail', currentLang);
           
           html += `
             <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
@@ -1845,29 +1915,29 @@
                 <div>
                   <h4 style="margin: 0 0 5px 0; color: #212529;">${studentName}</h4>
                   <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📧 ${studentEmail}</p>
-                  ${app.student_number ? `<p style="margin: 5px 0; color: #666; font-size: 0.9em;">🎓 Öğrenci No: ${app.student_number}</p>` : ''}
+                  ${app.student_number ? `<p style="margin: 5px 0; color: #666; font-size: 0.9em;">🎓 ${t('studentNumberShort', currentLang)} ${app.student_number}</p>` : ''}
                 </div>
-                <span style="background: #ffc107; color: #212529; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">⏳ Beklemede</span>
+                <span style="background: #ffc107; color: #212529; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">⏳ ${t('waitingStatus', currentLang)}</span>
               </div>
               <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                <p style="margin: 0 0 5px 0; font-weight: 600; color: #212529;">📚 Ders: ${app.course_name || app.course_code || 'Ders'}</p>
-                <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📅 Başvuru Tarihi: ${formatDate(app.application_date)}</p>
+                <p style="margin: 0 0 5px 0; font-weight: 600; color: #212529;">📚 ${t('courseLabel', currentLang)} ${app.course_name || app.course_code || (currentLang === 'tr' ? 'Ders' : 'Course')}</p>
+                <p style="margin: 5px 0; color: #666; font-size: 0.9em;">📅 ${t('applicationDate', currentLang)} ${formatDate(app.application_date)}</p>
               </div>
               ${app.application_note ? `
                 <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                  <strong>📝 Başvuru Notu:</strong>
+                  <strong>📝 ${t('applicationNoteLabel', currentLang)}</strong>
                   <p style="margin: 5px 0 0 0; color: #495057;">${app.application_note}</p>
                 </div>
               ` : ''}
               <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button onclick="approveApplication(${app.id}, ${app.course_id})" style="background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
-                  ✅ Onayla
+                  ✅ ${t('approve', currentLang)}
                 </button>
                 <button onclick="rejectApplication(${app.id}, ${app.course_id})" style="background: #dc3545; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
-                  ❌ Reddet
+                  ❌ ${t('reject', currentLang)}
                 </button>
                 <a href="../Dersler/dersler.html" style="background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; flex: 1;">
-                  📋 Tüm Başvurular
+                  📋 ${t('allApplications', currentLang)}
                 </a>
               </div>
             </div>
@@ -1880,7 +1950,8 @@
       
       // Başvuruyu onayla
       async function approveApplication(registrationId, courseId) {
-        if (!confirm('Bu başvuruyu onaylamak istediğinize emin misiniz?')) {
+        const currentLang = getCurrentLanguage();
+        if (!confirm(t('confirmApplication', currentLang))) {
           return;
         }
         
@@ -1899,7 +1970,7 @@
           const data = await response.json();
           
           if (response.ok && data.success) {
-            alert('✅ Başvuru başarıyla onaylandı!');
+            alert('✅ ' + t('applicationApproved', currentLang));
             // Modal'ı yenile
             showPendingApplicationsModal();
             // İstatistikleri yenile
@@ -1907,17 +1978,20 @@
             // Dersleri yenile
             loadMyCourses();
           } else {
-            alert('❌ Hata: ' + (data.message || 'Başvuru onaylanamadı'));
+            const errorMsg = currentLang === 'tr' ? 'Başvuru onaylanamadı' : 'Application could not be approved';
+            alert('❌ Hata: ' + (data.message || errorMsg));
           }
         } catch (error) {
           console.error('Başvuru onaylama hatası:', error);
-          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+          const errorMsg = currentLang === 'tr' ? 'Sunucuya bağlanılamadı: ' : 'Could not connect to server: ';
+          alert('❌ ' + errorMsg + error.message);
         }
       }
       
       // Başvuruyu reddet
       async function rejectApplication(registrationId, courseId) {
-        const rejectionReason = prompt('Red nedeni (isteğe bağlı):');
+        const currentLang = getCurrentLanguage();
+        const rejectionReason = prompt(t('rejectionReason', currentLang));
         if (rejectionReason === null) {
           return; // Kullanıcı iptal etti
         }
@@ -1938,7 +2012,7 @@
           const data = await response.json();
           
           if (response.ok && data.success) {
-            alert('✅ Başvuru reddedildi!');
+            alert('✅ ' + t('applicationRejected', currentLang));
             // Modal'ı yenile
             showPendingApplicationsModal();
             // İstatistikleri yenile
@@ -1946,11 +2020,13 @@
             // Dersleri yenile
             loadMyCourses();
           } else {
-            alert('❌ Hata: ' + (data.message || 'Başvuru reddedilemedi'));
+            const errorMsg = currentLang === 'tr' ? 'Başvuru reddedilemedi' : 'Application could not be rejected';
+            alert('❌ Hata: ' + (data.message || errorMsg));
           }
         } catch (error) {
           console.error('Başvuru reddetme hatası:', error);
-          alert('❌ Sunucuya bağlanılamadı: ' + error.message);
+          const errorMsg = currentLang === 'tr' ? 'Sunucuya bağlanılamadı: ' : 'Could not connect to server: ';
+          alert('❌ ' + errorMsg + error.message);
         }
       }
       
@@ -2018,7 +2094,8 @@
             // Alt başlığı güncelle
             const subtitleElement = document.getElementById('heroSubtitle');
             if (subtitleElement && universityCount > 0) {
-              subtitleElement.textContent = `${universityCount}+ üniversiteden binlerce yaz dersi seçeneği tek platformda.`;
+              const currentLang = getCurrentLanguage();
+              subtitleElement.textContent = t('heroSubtitle', currentLang).replace('200+', `${universityCount}+`);
             }
           } else {
             console.error('İstatistikler yüklenemedi:', data.message);
@@ -2043,10 +2120,46 @@
         if (studentElement) studentElement.textContent = '0';
       }
 
+      // Dil değiştirme fonksiyonu
+      function toggleLanguage() {
+        const currentLang = getCurrentLanguage();
+        const newLang = currentLang === 'tr' ? 'en' : 'tr';
+        changeLanguage(newLang);
+        updateLanguageButton(newLang);
+      }
+
+      // Dil butonunu güncelle
+      function updateLanguageButton(lang) {
+        const langBtn = document.getElementById('languageToggle');
+        if (langBtn) {
+          langBtn.textContent = lang === 'tr' ? 'EN' : 'TR';
+        }
+      }
+
+      // Dil değiştiğinde butonu güncelle ve dinamik içerikleri yenile
+      window.addEventListener('languageChanged', function(e) {
+        updateLanguageButton(e.detail.language);
+        // Dinamik içerikleri yeniden yükle
+        if (currentUser) {
+          if (currentUser.userType === "student") {
+            loadEnrolledCourses();
+            loadCoursePlanning();
+            loadFavoriteCourses();
+          }
+          if (currentUser.userType === "academician") {
+            loadAcademicianDashboard();
+            loadMyCourses();
+          }
+        }
+      });
+
       // Sayfa yüklendiğinde profili ve diğer verileri yükle
       document.addEventListener("DOMContentLoaded", function() {
         loadUserProfile();
         loadHeroStatistics(); // Hero istatistiklerini yükle
+        // Dil butonunu başlangıç durumuna ayarla
+        const currentLang = getCurrentLanguage();
+        updateLanguageButton(currentLang);
         // Öğrenci değilse üniversite ve fakülte yükleme (artık gerekli değil)
         // loadUniversities();
         // loadFaculties();
@@ -2058,36 +2171,36 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3>Campus Summer</h3>
-            <p>
+            <p data-translate="footerDescription">
               Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik
               hedeflerinize ulaşmanın en kolay yolu.
             </p>
           </div>
           <div class="footer-section">
-            <h3>Hızlı Bağlantılar</h3>
-            <a href="anasayfa.html">Ana Sayfa</a>
-            <a href="../Üniversiteler/Üniversitler.html">Üniversiteler</a>
-            <a href="../Dersler/dersler.html">Dersler</a>
-            <a href="../Hakkımızda/Hakkımızda.html">Hakkımızda</a>
+            <h3 data-translate="quickLinks">Hızlı Bağlantılar</h3>
+            <a href="anasayfa.html" data-translate="mainPage">Ana Sayfa</a>
+            <a href="../Üniversiteler/Üniversitler.html" data-translate="universities">Üniversiteler</a>
+            <a href="../Dersler/dersler.html" data-translate="courses">Dersler</a>
+            <a href="../Hakkımızda/Hakkımızda.html" data-translate="about">Hakkımızda</a>
           </div>
           <div class="footer-section">
-            <h3>Destek</h3>
-            <a href="../İletişim/iletisim.html">İletişim</a>
-            <a href="../Gizlilik-politikası/gizlilikpolitikası.html"
+            <h3 data-translate="support">Destek</h3>
+            <a href="../İletişim/iletisim.html" data-translate="contact">İletişim</a>
+            <a href="../Gizlilik-politikası/gizlilikpolitikası.html" data-translate="privacyPolicy"
               >Gizlilik Politikası</a
             >
           </div>
           <div class="footer-section">
-            <h3>İletişim</h3>
+            <h3 data-translate="contactLabel">İletişim</h3>
             <p>📧 atakan.baskir@std.hku.edu.tr</p>
             <p>📧 yusuf.tiken@std.hku.edu.tr</p>
             <p>📞 +90 506 536 1780</p>
             <p>📞 +90 533 133 2930</p>
-            <p>📍 Gaziantep, Türkiye</p>
+            <p data-translate="location">📍 Gaziantep, Türkiye</p>
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Campus Summer. Tüm hakları saklıdır.</p>
+          <p>&copy; 2025 Campus Summer. <span data-translate="allRightsReserved">Tüm hakları saklıdır.</span></p>
         </div>
       </div>
     </footer>

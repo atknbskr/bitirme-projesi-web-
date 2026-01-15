@@ -1,10 +1,42 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="htmlLang">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Üniversiteler - Campus Summer</title>
     <link rel="stylesheet" href="üniversiteler.css">
+    <script src="../js/translations.js"></script>
+    <style>
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header-right-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-right-section .changeLanguage {
+            display: flex;
+            gap: 5px;
+            margin-right: 15px;
+        }
+        .header-right-section .changeLanguage a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .header-right-section .changeLanguage a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
 <body>
     
@@ -17,57 +49,64 @@
             
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link">Anasayfa</a>
+                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link" data-translate="home">Anasayfa</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Dersler/dersler.html" class="nav-link">Dersler</a>
+                    <a href="../Dersler/dersler.html" class="nav-link" data-translate="courses">Dersler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link active">Üniversiteler</a>
+                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link active" data-translate="universities">Üniversiteler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Hakkımızda/Hakkımızda.html" class="nav-link">Hakkımızda</a>
+                    <a href="../Hakkımızda/Hakkımızda.html" class="nav-link" data-translate="about">Hakkımızda</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../İletişim/iletisim.html" class="nav-link">İletişim</a>
+                    <a href="../İletişim/iletisim.html" class="nav-link" data-translate="contact">İletişim</a>
                 </div>
             </nav>
 
-            <!-- Profil Bölümü -->
-            <div class="profile-section" id="profileSection" style="display: none;">
-                <div class="profile-avatar" id="profileToggle">
-                    <span id="avatarInitials">?</span>
+            <div class="header-right-section">
+                <!-- Dil Değiştirme Butonu -->
+                <div class="changeLanguage">
+                    <a href="#" onclick="event.preventDefault(); changeLanguage('en');" id="englishLink">English</a>
+                    <a href="#" onclick="event.preventDefault(); changeLanguage('tr');" id="turkishLink" style="display: none;">Türkçe</a>
                 </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-header">
-                        <div class="profile-avatar-large">
-                            <span id="avatarInitialsLarge">?</span>
-                        </div>
-                        <div class="profile-info">
-                            <h4 id="profileName">Kullanıcı</h4>
-                            <p id="profileEmail">email@example.com</p>
-                        </div>
+
+                <!-- Profil Bölümü -->
+                <div class="profile-section" id="profileSection" style="display: none;">
+                    <div class="profile-avatar" id="profileToggle">
+                        <span id="avatarInitials">?</span>
                     </div>
-                    <div class="profile-details">
-                        <div class="profile-detail-item">
-                            <span class="detail-label">Kullanıcı Tipi:</span>
-                            <span class="detail-value" id="profileType">-</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="profile-header">
+                            <div class="profile-avatar-large">
+                                <span id="avatarInitialsLarge">?</span>
+                            </div>
+                            <div class="profile-info">
+                                <h4 id="profileName" data-translate="user">Kullanıcı</h4>
+                                <p id="profileEmail">email@example.com</p>
+                            </div>
                         </div>
-                        <div class="profile-detail-item">
-                            <span class="detail-label" id="profileDetailLabel">Okul Numarası:</span>
-                            <span class="detail-value" id="profileStudentNumber">-</span>
+                        <div class="profile-details">
+                            <div class="profile-detail-item">
+                                <span class="detail-label" data-translate="userTypeLabel">Kullanıcı Tipi:</span>
+                                <span class="detail-value" id="profileType">-</span>
+                            </div>
+                            <div class="profile-detail-item">
+                                <span class="detail-label" id="profileDetailLabel" data-translate="studentNumberLabel">Okul Numarası:</span>
+                                <span class="detail-value" id="profileStudentNumber">-</span>
+                            </div>
+                            <div class="profile-detail-item" id="profileUniversityItem" style="display: none;">
+                                <span class="detail-label" data-translate="universityLabel">Üniversite:</span>
+                                <span class="detail-value" id="profileUniversity">-</span>
+                            </div>
                         </div>
-                        <div class="profile-detail-item" id="profileUniversityItem" style="display: none;">
-                            <span class="detail-label">Üniversite:</span>
-                            <span class="detail-value" id="profileUniversity">-</span>
+                        <div class="profile-actions">
+                            <button class="btn-logout" id="logoutBtn" data-translate="logout">🚪 Çıkış Yap</button>
                         </div>
-                    </div>
-                    <div class="profile-actions">
-                        <button class="btn-logout" id="logoutBtn">🚪 Çıkış Yap</button>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </header>
 
@@ -75,20 +114,20 @@
     <section class="hero-section">
         <div class="container">
             <div class="hero-content">
-                <h1>Üniversiteler</h1>
-                <p>200+ üniversiteden yaz dersleri ile akademik geleceğinizi şekillendirin</p>
+                <h1 data-translate="universitiesTitle">Üniversiteler</h1>
+                <p data-translate="universitiesSubtitle">200+ üniversiteden yaz dersleri ile akademik geleceğinizi şekillendirin</p>
                 <div class="hero-stats">
                     <div class="stat">
                         <div class="stat-number" id="universityCount">0</div>
-                        <div class="stat-label">Tüm Üniversiteler</div>
+                        <div class="stat-label" data-translate="allUniversities">Tüm Üniversiteler</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number" id="totalAcademicians">0</div>
-                        <div class="stat-label">Tüm Akademisyenler</div>
+                        <div class="stat-label" data-translate="allAcademicians">Tüm Akademisyenler</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number" id="totalStudents">0</div>
-                        <div class="stat-label">Tüm Öğrenciler</div>
+                        <div class="stat-label" data-translate="allStudents">Tüm Öğrenciler</div>
                     </div>
                 </div>
             </div>
@@ -101,10 +140,10 @@
             <div class="section-header" style="margin-bottom: 3rem;">
                 <div class="search-header-row">
                     <div>
-                        <h2 style="margin-bottom: 0.5rem;">Üniversiteler</h2>
-                        <p id="sectionSubtitle" style="color: #666; font-size: 1rem;">En çok tercih edilen üniversiteler</p>
+                        <h2 style="margin-bottom: 0.5rem;" data-translate="universitiesTitle">Üniversiteler</h2>
+                        <p id="sectionSubtitle" style="color: #666; font-size: 1rem;" data-translate="mostPreferred">En çok tercih edilen üniversiteler</p>
                     </div>
-                    <button class="add-university-btn" id="addUniversityBtnTop" style="display: none;">
+                    <button class="add-university-btn" id="addUniversityBtnTop" style="display: none;" data-translate="addUniversity">
                         ➕ Üniversite Ekle
                     </button>
                 </div>
@@ -120,35 +159,35 @@
     <div id="addUniversityModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeAddUniversityModal()">&times;</span>
-            <h2>Yeni Üniversite Ekle</h2>
+            <h2 data-translate="newUniversity">Yeni Üniversite Ekle</h2>
             <form id="addUniversityForm" onsubmit="addUniversity(event)">
                 <div class="form-group">
-                    <label for="universityName">Üniversite Adı *</label>
+                    <label for="universityName" data-translate="universityName">Üniversite Adı *</label>
                     <input type="text" id="universityName" required>
                 </div>
                 <div class="form-group">
-                    <label for="universityCity">Şehir</label>
+                    <label for="universityCity" data-translate="city">Şehir</label>
                     <input type="text" id="universityCity">
                 </div>
                 <div class="form-group">
-                    <label for="universityWebsite">Web Sitesi</label>
+                    <label for="universityWebsite" data-translate="website">Web Sitesi</label>
                     <input type="url" id="universityWebsite" placeholder="https://www.universite.edu.tr">
                 </div>
                 <div class="form-group">
-                    <label for="universityType">Tür</label>
+                    <label for="universityType" data-translate="type">Tür</label>
                     <select id="universityType">
-                        <option value="devlet">Devlet</option>
-                        <option value="vakif">Vakıf</option>
-                        <option value="ozel">Özel</option>
+                        <option value="devlet" data-translate="state">Devlet</option>
+                        <option value="vakif" data-translate="foundation">Vakıf</option>
+                        <option value="ozel" data-translate="private">Özel</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="universityDescription">Açıklama</label>
+                    <label for="universityDescription" data-translate="description">Açıklama</label>
                     <textarea id="universityDescription" rows="3"></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="btn-primary">Ekle</button>
-                    <button type="button" class="btn-secondary" onclick="closeAddUniversityModal()">İptal</button>
+                    <button type="submit" class="btn-primary" data-translate="add">Ekle</button>
+                    <button type="button" class="btn-secondary" onclick="closeAddUniversityModal()" data-translate="cancel">İptal</button>
                 </div>
             </form>
         </div>
@@ -159,30 +198,30 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Campus Summer</h3>
-                    <p>Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik hedeflerinize ulaşmanın en kolay yolu.</p>
+                    <p data-translate="footerDescription">Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik hedeflerinize ulaşmanın en kolay yolu.</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Hızlı Bağlantılar</h3>
-                    <a href="../campusumer-anasayfa/anasayfa.html">Ana Sayfa</a>
-                    <a href="../Üniversiteler/Üniversitler.html">Üniversiteler</a>
-                    <a href="../Dersler/dersler.html">Dersler</a>
-                    <a href="../Hakkımızda/Hakkımızda.html">Hakkımızda</a>
+                    <h3 data-translate="quickLinks">Hızlı Bağlantılar</h3>
+                    <a href="../campusumer-anasayfa/anasayfa.html" data-translate="mainPage">Ana Sayfa</a>
+                    <a href="../Üniversiteler/Üniversitler.html" data-translate="universities">Üniversiteler</a>
+                    <a href="../Dersler/dersler.html" data-translate="courses">Dersler</a>
+                    <a href="../Hakkımızda/Hakkımızda.html" data-translate="about">Hakkımızda</a>
                 </div>
                 <div class="footer-section">
-                    <h3>Destek</h3>                    
-                    <a href="../İletişim/iletisim.html">İletişim</a>
-                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html">Gizlilik Politikası</a>
+                    <h3 data-translate="support">Destek</h3>                    
+                    <a href="../İletişim/iletisim.html" data-translate="contact">İletişim</a>
+                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html" data-translate="privacyPolicy">Gizlilik Politikası</a>
                     
                 </div>
                 <div class="footer-section">
-                    <h3>İletişim</h3>
+                    <h3 data-translate="contactLabel">İletişim</h3>
                     <p>📧 atakan.baskir@std.hku.edu.tr</p>
                     <p>📞 +90 506 536 1780</p>
-                    <p>📍 Gaziantep, Türkiye</p>
+                    <p data-translate="location">📍 Gaziantep, Türkiye</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Campus Summer. Tüm hakları saklıdır.</p>
+                <p>&copy; 2025 Campus Summer. <span data-translate="allRightsReserved">Tüm hakları saklıdır.</span></p>
             </div>
         </div>
    </footer>
@@ -196,8 +235,17 @@
 
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
+            // Dil ayarını uygula
+            const currentLang = getCurrentLanguage();
+            changeLanguage(currentLang);
+            
             checkAuth();
+            
+            // API bağlantısını test et ve üniversiteleri yükle
             testApiConnection().then(() => {
+                loadUniversities();
+            }).catch(() => {
+                // API bağlantısı başarısız olsa bile üniversiteleri yüklemeyi dene
                 loadUniversities();
             });
             
@@ -219,10 +267,11 @@
                 console.error('API bağlantı hatası:', error);
                 const grid = document.getElementById('universitiesGrid');
                 if (grid) {
+                    const currentLang = getCurrentLanguage();
                     grid.innerHTML = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                            <p style="font-size: 1.2rem; color: #d32f2f; margin-bottom: 1rem;">⚠️ Backend sunucusuna bağlanılamıyor</p>
-                            <p style="color: #666; margin-bottom: 0.5rem;">Lütfen backend sunucusunun çalıştığından emin olun.</p>
+                            <p style="font-size: 1.2rem; color: #d32f2f; margin-bottom: 1rem;">⚠️ ${currentLang === 'tr' ? 'Backend sunucusuna bağlanılamıyor' : 'Could not connect to backend server'}</p>
+                            <p style="color: #666; margin-bottom: 0.5rem;">${currentLang === 'tr' ? 'Lütfen backend sunucusunun çalıştığından emin olun.' : 'Please make sure the backend server is running.'}</p>
                             <p style="color: #999; font-size: 0.9rem;">API URL: ${API_URL}</p>
                         </div>
                     `;
@@ -260,18 +309,18 @@
             document.getElementById("avatarInitialsLarge").textContent = initials.toUpperCase() || "?";
             document.getElementById("profileName").textContent = `${user.firstName || ""} ${user.lastName || ""}`;
             document.getElementById("profileEmail").textContent = user.email || "";
+            const currentLang = getCurrentLanguage();
             document.getElementById("profileType").textContent = 
-                user.userType === "student" ? "Öğrenci" : 
-                user.userType === "academician" ? "Akademisyen" : "Admin";
+                user.userType === "student" ? t('student', currentLang) : 
+                user.userType === "academician" ? t('academician', currentLang) : "Admin";
             
             // Kullanıcı tipine göre detay etiketini ve değerini ayarla
             const detailLabel = document.getElementById("profileDetailLabel");
             const detailValue = document.getElementById("profileStudentNumber");
             const universityItem = document.getElementById("profileUniversityItem");
             const universityValue = document.getElementById("profileUniversity");
-            
             if (user.userType === "academician") {
-                detailLabel.textContent = "Kullanıcı Adı:";
+                detailLabel.textContent = t('usernameLabel', currentLang);
                 detailValue.textContent = user.username || "-";
                 // Üniversite bilgisini göster
                 if (user.universityName) {
@@ -279,11 +328,11 @@
                     universityItem.style.display = "flex";
                 }
             } else if (user.userType === "student") {
-                detailLabel.textContent = "Okul Numarası:";
+                detailLabel.textContent = t('studentNumberLabel', currentLang);
                 detailValue.textContent = user.studentNumber || "-";
                 universityItem.style.display = "none";
             } else {
-                detailLabel.textContent = "Admin Kodu:";
+                detailLabel.textContent = t('adminCode', currentLang) + ":";
                 detailValue.textContent = user.adminCode || "-";
                 universityItem.style.display = "none";
             }
@@ -318,7 +367,7 @@
                     window.location.href = "../website-giriş-sayfası/website-giriş-sayfası.html";
                 });
             }
-        });
+        }, { once: true });
 
         // Üniversiteleri yükle
         async function loadUniversities() {
@@ -366,12 +415,13 @@
                         console.log('Filtrelenmiş üniversiteler:', displayedUniversities);
                         
                         // Subtitle'ı güncelle
+                        const currentLang = getCurrentLanguage();
                         if (displayedUniversities.length > 0) {
                             document.getElementById('sectionSubtitle').textContent = 
-                                `${displayedUniversities[0].name} - Akademisyen ve Öğrenci Sayıları`;
+                                `${displayedUniversities[0].name} - ${t('universityInfo', currentLang)}`;
                         } else {
                             document.getElementById('sectionSubtitle').textContent = 
-                                'Üniversite bilgisi bulunamadı';
+                                t('universityNotFound', currentLang);
                         }
                     }
                     
@@ -429,18 +479,19 @@
 
             if (universities.length === 0) {
                 let message = '';
+                const currentLang = getCurrentLanguage();
                 if (currentUser && currentUser.userType === 'academician') {
                     message = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 1rem;">Üniversite bilgisi bulunamadı.</p>
-                            <p style="color: #999;">Lütfen yönetici ile iletişime geçin.</p>
+                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 1rem;">${t('universityNotFound', currentLang)}</p>
+                            <p style="color: #999;">${t('contactAdmin', currentLang)}</p>
                         </div>
                     `;
                 } else {
                     message = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 1rem;">Henüz üniversite eklenmemiş.</p>
-                            ${isAdmin ? '<p style="color: #999;">Yeni üniversite eklemek için yukarıdaki butona tıklayın.</p>' : ''}
+                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 1rem;">${t('noUniversityAdded', currentLang)}</p>
+                            ${isAdmin ? `<p style="color: #999;">${t('clickToAdd', currentLang)}</p>` : ''}
                         </div>
                     `;
                 }
@@ -466,34 +517,35 @@
             const shortName = uni.name.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 4);
 
             // Tip adını al (hem Türkçe hem İngilizce değerleri destekle)
+            const currentLang = getCurrentLanguage();
             const typeMapping = {
-                'devlet': 'Devlet',
-                'vakif': 'Vakıf',
-                'vakıf': 'Vakıf',
-                'özel': 'Özel',
-                'ozel': 'Özel'
+                'devlet': t('state', currentLang),
+                'vakif': t('foundation', currentLang),
+                'vakıf': t('foundation', currentLang),
+                'özel': t('private', currentLang),
+                'ozel': t('private', currentLang)
             };
-            const typeName = typeMapping[normalizedType] || 'Devlet';
+            const typeName = typeMapping[normalizedType] || t('state', currentLang);
 
             card.innerHTML = `
-                ${isAdmin ? `<button class="delete-btn" onclick="deleteUniversity(${uni.id}, '${uni.name}')" title="Üniversiteyi Sil">🗑️</button>` : ''}
+                ${isAdmin ? `<button class="delete-btn" onclick="deleteUniversity(${uni.id}, '${uni.name}')" title="${t('deleteUniversity', currentLang)}">🗑️</button>` : ''}
                 <div class="universite-badge ${uni.type || 'devlet'}">${typeName}</div>
                 <div class="universite-logo">
                     <span>${shortName}</span>
                 </div>
                 <h3>${uni.name}</h3>
-                <p class="universite-location">📍 ${uni.city || 'Türkiye'}</p>
+                <p class="universite-location">📍 ${uni.city || (currentLang === 'tr' ? 'Türkiye' : 'Turkey')}</p>
                 <div class="universite-stats">
                     <div class="stat-item">
                         <span class="stat-number">${uni.academician_count || 0}</span>
-                        <span class="stat-label">Akademisyen</span>
+                        <span class="stat-label">${t('academician', currentLang)}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number">${uni.student_count || 0}</span>
-                        <span class="stat-label">Öğrenci</span>
+                        <span class="stat-label">${t('student', currentLang)}</span>
                     </div>
                 </div>
-                ${uni.website ? `<a href="${uni.website}" target="_blank" class="universite-button">Web Sitesine Git</a>` : '<button class="universite-button" disabled>Web Sitesi Yok</button>'}
+                ${uni.website ? `<a href="${uni.website}" target="_blank" class="universite-button">${t('goToWebsite', currentLang)}</a>` : `<button class="universite-button" disabled>${t('noWebsite', currentLang)}</button>`}
             `;
 
             return card;
@@ -515,8 +567,9 @@
             event.preventDefault();
             
             const token = localStorage.getItem('token');
+            const currentLang = getCurrentLanguage();
             if (!token) {
-                alert('Lütfen önce giriş yapın');
+                alert(t('pleaseLogin', currentLang));
                 return;
             }
 
@@ -545,27 +598,32 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Üniversite başarıyla eklendi!');
+                    const currentLang = getCurrentLanguage();
+                    alert(t('universityAdded', currentLang));
                     closeAddUniversityModal();
                     loadUniversities(); // Listeyi yenile
                 } else {
-                    alert('Hata: ' + data.message);
+                    const currentLang = getCurrentLanguage();
+                    alert(t('error', currentLang) + ': ' + data.message);
                 }
             } catch (error) {
                 console.error('Üniversite eklenirken hata:', error);
-                alert('Üniversite eklenirken bir hata oluştu');
+                const currentLang = getCurrentLanguage();
+                const errorMsg = currentLang === 'tr' ? 'Üniversite eklenirken bir hata oluştu' : 'An error occurred while adding university';
+                alert(errorMsg);
             }
         }
 
         // Üniversite sil
         async function deleteUniversity(id, name) {
-            if (!confirm(`"${name}" üniversitesini silmek istediğinizden emin misiniz?`)) {
+            const currentLang = getCurrentLanguage();
+            if (!confirm(`"${name}" ${t('confirmDeleteUniversity', currentLang)}?`)) {
                 return;
             }
 
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Lütfen önce giriş yapın');
+                alert(t('pleaseLogin', currentLang));
                 return;
             }
 
@@ -580,14 +638,18 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Üniversite başarıyla silindi!');
+                    const currentLang = getCurrentLanguage();
+                    alert(t('universityDeleted', currentLang));
                     loadUniversities(); // Listeyi yenile
                 } else {
-                    alert('Hata: ' + data.message);
+                    const currentLang = getCurrentLanguage();
+                    alert(t('error', currentLang) + ': ' + data.message);
                 }
             } catch (error) {
                 console.error('Üniversite silinirken hata:', error);
-                alert('Üniversite silinirken bir hata oluştu');
+                const currentLang = getCurrentLanguage();
+                const errorMsg = currentLang === 'tr' ? 'Üniversite silinirken bir hata oluştu' : 'An error occurred while deleting university';
+                alert(errorMsg);
             }
         }
 
@@ -599,6 +661,36 @@
                 closeAddUniversityModal();
             }
         }
+
+        // Override changeLanguage to also update language toggle buttons
+        const originalChangeLanguage = window.changeLanguage;
+        window.changeLanguage = function(lang) {
+            originalChangeLanguage(lang);
+            
+            // Update language toggle buttons
+            const englishLink = document.getElementById('englishLink');
+            const turkishLink = document.getElementById('turkishLink');
+            
+            if (lang === 'en' && englishLink && turkishLink) {
+                englishLink.style.display = 'none';
+                turkishLink.style.display = 'block';
+            } else if (lang === 'tr' && englishLink && turkishLink) {
+                englishLink.style.display = 'block';
+                turkishLink.style.display = 'none';
+            }
+        };
+
+        // Dil değişikliğinde içeriği yeniden yükle
+        window.addEventListener('languageChanged', function(event) {
+            const lang = event.detail.language;
+            // Profil bilgilerini yeniden yükle
+            if (currentUser) {
+                loadUserProfile();
+            }
+            // Üniversiteleri yeniden yükle
+            loadUniversities();
+        });
+
     </script>
 
 </body>

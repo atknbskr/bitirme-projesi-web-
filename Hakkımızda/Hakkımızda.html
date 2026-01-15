@@ -6,6 +6,36 @@
     <title>Hakkımızda - Campus Summer</title>
     <link rel="stylesheet" href="anasayfa.css">
     <link rel="stylesheet" href="hakkımızda.css">
+    <script src="../js/translations.js"></script>
+    <style>
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .language-switcher {
+            display: flex;
+            align-items: center;
+        }
+        .language-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            min-width: 50px;
+            text-align: center;
+        }
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
     
@@ -18,43 +48,52 @@
             
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link">Anasayfa</a>
+                    <a href="../campusumer-anasayfa/anasayfa.html" class="nav-link" data-translate="home">Anasayfa</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Dersler/dersler.html" class="nav-link">Dersler</a>
+                    <a href="../Dersler/dersler.html" class="nav-link" data-translate="courses">Dersler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link">Üniversiteler</a>
+                    <a href="../Üniversiteler/Üniversitler.html" class="nav-link" data-translate="universities">Üniversiteler</a>
                 </div>
                 <div class="nav-item">
-                    <a href="Hakkımızda.html" class="nav-link active">Hakkımızda</a>
+                    <a href="Hakkımızda.html" class="nav-link active" data-translate="about">Hakkımızda</a>
                 </div>
                 <div class="nav-item">
-                    <a href="../İletişim/iletisim.html" class="nav-link">İletişim</a>
+                    <a href="../İletişim/iletisim.html" class="nav-link" data-translate="contact">İletişim</a>
                 </div>
             </nav>
+
+            <div class="header-right">
+                <!-- Dil Değiştirme Butonu -->
+                <div class="language-switcher">
+                    <button class="language-btn" id="languageToggle" onclick="toggleLanguage()">
+                        <span id="currentLanguage">EN</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <section class="breadcrumb">
         <div class="container">
             <div class="breadcrumb-content">
-                <a href="../campusumer-anasayfa/anasayfa.html">Ana Sayfa</a>                
+                <a href="../campusumer-anasayfa/anasayfa.html" data-translate="breadcrumbHome">Ana Sayfa</a>                
                 <span>/</span>
-                <span>Hakkımızda</span>
+                <span data-translate="breadcrumbAbout">Hakkımızda</span>
             </div>
         </div>
     </section>
                 <section class="content-area">
                     <div class="hero-banner">
-                        <h1>Genel Bilgi</h1>
+                        <h1 data-translate="aboutTitle">Genel Bilgi</h1>
                     </div>
                     <div class="content-body">
-                        <div class="content-text">
+                        <div class="content-text" data-translate="aboutText1">
                             Campus Summer İç ve Dış Ticaret A.Ş., 2025 yılında kurulmuştur ve 2025 yılından bu yana üniversitelerde yaz dersleri alanında hizmet görmektedir. Campus Summer, "Herkes için teknoloji" felsefesiyle her an, her yerde öğrencilerin yanında olarak teknolojiye erişimi kolaylaştırıp keyifli bir üniversite ortamı sunmaktadır.
                         </div>
 
-                        <div class="content-text">
+                        <div class="content-text" data-translate="aboutText2">
                             Yaygınlığı, hizmet kalitesi, güvenilirliği ve ürün çeşitliliği ile dinamik, yenilikçi ve atılımcı yapısı sayesinde sektöründe fark yaratan Campus Summer, paydaşlarıyla birlikte geleceği şekillendirmektedir.
                         </div>
 
@@ -63,25 +102,25 @@
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-number" id="universityCount">-</div>
-                                <div class="stat-label">Üniversite</div>
+                                <div class="stat-label" data-translate="university">Üniversite</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number" id="courseCount">-</div>
-                                <div class="stat-label">Yaz Dersi</div>
+                                <div class="stat-label" data-translate="summerCourse">Yaz Dersi</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number" id="studentCount">-</div>
-                                <div class="stat-label">Mutlu Öğrenci</div>
+                                <div class="stat-label" data-translate="happyStudent">Mutlu Öğrenci</div>
                             </div>
                         </div>
 
                         
 
-                        <div class="content-text">
+                        <div class="content-text" data-translate="aboutText3">
                             Campus Summer, öğrencilerin üniversitesinin uzamaması için yaz okulu ararken kolaylıkla bulabileceği , üniversiteyle öğrenci arasındaki bağın kurulacağı bir platformdur.
                         </div>
 
-                        <div class="content-text">
+                        <div class="content-text" data-translate="aboutText4">
                             Türkiye'de öğrencilerin ilk defa yaz okulu platformuyla tanıştıran Campus Summer , bugün geniş öğrenci kitlesine hitap etmektedir. Campus Summer, gücünü öğrencilerden , başarısını yöneticilerinden , geleceğini ise sürdürülebilirlik anlayışından almaktadır.
                         </div>
                     </div>
@@ -95,31 +134,31 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Campus Summer</h3>
-                    <p>Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik hedeflerinize ulaşmanın en kolay yolu.</p>
+                    <p data-translate="footerDescription">Türkiye'nin en kapsamlı yaz dersleri takip platformu. Akademik hedeflerinize ulaşmanın en kolay yolu.</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Hızlı Bağlantılar</h3>
-                    <a href="../campusumer-anasayfa/anasayfa.html">Ana Sayfa</a>
-                    <a href="../Üniversiteler/Üniversitler.html">Üniversiteler</a>
-                    <a href="../Dersler/dersler.html">Dersler</a>
+                    <h3 data-translate="quickLinks">Hızlı Bağlantılar</h3>
+                    <a href="../campusumer-anasayfa/anasayfa.html" data-translate="mainPage">Ana Sayfa</a>
+                    <a href="../Üniversiteler/Üniversitler.html" data-translate="universities">Üniversiteler</a>
+                    <a href="../Dersler/dersler.html" data-translate="courses">Dersler</a>
                 </div>
                 <div class="footer-section">
-                    <h3>Destek</h3>                    
-                    <a href="../İletişim/iletisim.html">İletişim</a>
-                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html">Gizlilik Politikası</a>
+                    <h3 data-translate="support">Destek</h3>                    
+                    <a href="../İletişim/iletisim.html" data-translate="contact">İletişim</a>
+                    <a href="../Gizlilik-politikası/gizlilikpolitikası.html" data-translate="privacyPolicy">Gizlilik Politikası</a>
                     
                 </div>
                 <div class="footer-section">
-                    <h3>İletişim</h3>
+                    <h3 data-translate="contactLabel">İletişim</h3>
                     <p>📧 atakan.baskir@std.hku.edu.tr</p>
                     <p>📧 yusuf.tiken@std.hku.edu.tr</p>
                     <p>📞 +90 506 536 1780</p>
                     <p>📞 +90 533 133 2930</p>
-                    <p>📍 Gaziantep, Türkiye</p>
+                    <p data-translate="location">📍 Gaziantep, Türkiye</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Campus Summer. Tüm hakları saklıdır.</p>
+                <p>&copy; 2025 Campus Summer. <span data-translate="allRightsReserved">Tüm hakları saklıdır.</span></p>
             </div>
         </div>
     </footer>
@@ -162,9 +201,27 @@
             }
         }
         
+        // Dil değiştirme fonksiyonu
+        function toggleLanguage() {
+            const currentLang = getCurrentLanguage();
+            const newLang = currentLang === 'tr' ? 'en' : 'tr';
+            changeLanguage(newLang);
+            updateLanguageButton(newLang);
+        }
+
+        // Dil butonunu güncelle
+        function updateLanguageButton(lang) {
+            const langBtn = document.getElementById('languageToggle');
+            if (langBtn) {
+                langBtn.textContent = lang === 'tr' ? 'EN' : 'TR';
+            }
+        }
+
         // Sayfa yüklendiğinde istatistikleri yükle
         document.addEventListener('DOMContentLoaded', function() {
             loadStatistics();
+            const currentLang = getCurrentLanguage();
+            updateLanguageButton(currentLang);
         });
     </script>
 

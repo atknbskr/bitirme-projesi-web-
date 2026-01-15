@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="htmlLang">
   <head>
     <meta charset="UTF-8" />
     <title>Campus Summer</title>
@@ -11,28 +11,56 @@
         <img src="2.3.logo.png" alt="Logo" />
         <span>Campus Summer</span>
       </div>
-      <div class="right-text">Öğrenci Bilgi Sistemi</div>
+      <div class="right-text" data-translate="studentInfoSystem">Öğrenci Bilgi Sistemi</div>
     </div>
     <div class="changeLanguage">
-      <a href="#" onclick="changeLanguage('en')">English</a>
+      <a href="#" onclick="event.preventDefault(); changeLanguage('en');" id="englishLink">English</a>
+      <a href="#" onclick="event.preventDefault(); changeLanguage('tr');" id="turkishLink" style="display: none;">Türkçe</a>
     </div>
     <div class="login-section">
-      <a href="../öğrenci-giriş/öğrenci-giriş.html">Öğrenci Girişi</a>
-      <a href="../akademisyen-giriş/akademisyen-giriş.html"
+      <a href="../öğrenci-giriş/öğrenci-giriş.html" data-translate="studentLogin">Öğrenci Girişi</a>
+      <a href="../akademisyen-giriş/akademisyen-giriş.html" data-translate="academicianLogin"
         >Akademisyen Girişi</a
       >
-      <a href="../admin-giriş/admin-giriş.html" style="background: linear-gradient(45deg, #dc3545, #c82333);"
+      <a href="../admin-giriş/admin-giriş.html" style="background: linear-gradient(45deg, #dc3545, #c82333);" data-translate="adminLogin"
         >Admin Girişi</a
       >
     </div>
     <div class="register-section">
-      <p>Hesabınız yok mu?</p>
-      <a href="../öğrenci-kayıt/öğrenci-kayıt.html" class="register-btn"
+      <p data-translate="noAccount">Hesabınız yok mu?</p>
+      <a href="../öğrenci-kayıt/öğrenci-kayıt.html" class="register-btn" data-translate="studentRegister"
         >Öğrenci Kayıt</a
       >
-      <a href="../akademisyen-kayıt/akademisyen-kayıt.html" class="register-btn"
+      <a href="../akademisyen-kayıt/akademisyen-kayıt.html" class="register-btn" data-translate="academicianRegister"
         >Akademisyen Kayıt</a
       >
     </div>
+
+    <script src="../js/translations.js"></script>
+    <script>
+      // Override changeLanguage to also update language toggle buttons
+      const originalChangeLanguage = window.changeLanguage;
+      window.changeLanguage = function(lang) {
+        originalChangeLanguage(lang);
+        
+        // Update language toggle buttons
+        const englishLink = document.getElementById('englishLink');
+        const turkishLink = document.getElementById('turkishLink');
+        
+        if (lang === 'en' && englishLink && turkishLink) {
+          englishLink.style.display = 'none';
+          turkishLink.style.display = 'block';
+        } else if (lang === 'tr' && englishLink && turkishLink) {
+          englishLink.style.display = 'block';
+          turkishLink.style.display = 'none';
+        }
+      };
+      
+      // Apply language on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        const currentLang = getCurrentLanguage();
+        changeLanguage(currentLang);
+      });
+    </script>
   </body>
 </html>
